@@ -1,0 +1,100 @@
+#
+# libics: Image Cytometry Standard file reading and writing.
+#
+# Copyright (C) 2000-2006 Cris Luengo and others
+# email: clluengo@users.sourceforge.net
+#
+# Makefile to compile libics under Win32 with Visual C++ 5 / 6
+#
+#
+# TO COMPILE:
+#    nmake /f Makefile.vc
+# For a dynamic library:
+#    nmake /f Makefile.vc dynamic
+
+#
+# Remove the following line to disable ZLIB support
+#
+ZLIB_SUPPORT = 1
+
+#
+# Paths
+#
+MSVC_ROOT = $(MSVCDIR)
+MSVC_LIB = $(MSVCDIR)\lib
+LIBPATH = .
+ZLIB_PATH = ..\vc_zlib-1.2.3
+ZLIB_LIB = $(ZLIB_PATH)\zlib.lib
+
+#
+# Microsoft C++ tools
+#
+CC = cl /c
+LIB = lib
+LINK = link /DLL
+
+#
+# Other Defines
+#
+LIBNAME = $(LIBPATH)\libics.lib
+DLLNAME = $(LIBPATH)\libics.dll
+DLLIMPNAME = $(LIBPATH)\libics.dll.lib
+LIBOBJECTS = libics_read.obj \
+             libics_write.obj \
+             libics_binary.obj \
+             libics_gzip.obj \
+             libics_data.obj \
+             libics_util.obj \
+             libics_top.obj \
+             libics_history.obj \
+             libics_preview.obj \
+             libics_sensor.obj \
+             libics_test.obj
+
+#
+# Options
+#
+DEFINES = /DWIN32 /DBUILD_ICSLIB
+INCLUDE = /I. /I"$(MSVC_ROOT)\include"
+CFLAGS = /nologo /YX /Op /Zp8 /Gd /W3
+
+!ifdef DEBUG
+CFLAGS = $(CFLAGS) /MDd /LDd /Gm /Zi /Od
+!else
+CFLAGS = $(CFLAGS) /MD /LD /O2 /Ob2 /G5 /GD
+!endif
+
+!ifdef ZLIB_SUPPORT
+DEFINES = $(DEFINES) /DICS_ZLIB
+INCLUDE = $(INCLUDE) /I"$(ZLIB_PATH)"
+LIBS = $(LIBS) "$(ZLIB_LIB)"
+!endif
+
+#
+# Dependency List
+#
+all : static
+static : libics_conf.h $(LIBNAME)
+dynamic : libics_conf.h $(DLLNAME)
+
+$(LIBNAME) : $(LIBOBJECTS)
+  @if not exist $(LIBPATH) md $(LIBPATH)
+  @$(LIB) /out:$@ $** $(LIBS)
+
+$(DLLNAME) : $(LIBOBJECTS)
+  @if not exist $(LIBPATH) md $(LIBPATH)
+  $(LINK) $** $(LIBS) /OUT:$@ /LIBPATH:"$(MSVC_LIB)" /IMPLIB:$(DLLIMPNAME)
+
+.c.obj:
+  @$(CC) $(CFLAGS) $(DEFINES) $(INCLUDE) /Fo$@ $**
+
+libics_conf.h : libics_conf.h.in
+  @copy libics_conf.h.in libics_conf.h
+
+clean :
+  @-del /q *.obj
+  @-del /q *.pch
+  @-del /q $(LIBNAME)
+  @-del /q $(DLLNAME)
+  @-del /q $(DLLNAME).exp
+  @-del /q $(DLLIMPNAME)

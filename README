@@ -1,0 +1,273 @@
+
+                             libics v.1.5.2
+          Image Cytometry Standard file reading and writing.
+
+This is the reference library for ICS (Image Cytometry Standard), an
+open standard for writing images of any dimensionality and data type to
+file, together with associated information regarding the recording
+equipment or recorded subject.
+
+   ICS version 1.0 and 2.0
+=============================
+
+ICS stands for Image Cytometry Standard, and was first proposed in:
+     P. Dean, L. Mascio, D. Ow, D. Sudar, J. Mullikin, "Propsed
+     standard for image cytometry data files", Cytometry, n.11,
+     pp.561-569, 1990.
+
+It writes 2 files, one is the header, with an '.ics' extension, and the
+other is the actual image data (with an '.ids' extension.)
+
+ICS version 2.0 extends this standard to allow for a more versatile
+placement of the image data. It can now be placed either in the same
+'.ics' file or inbedded in any other file, by specifying the file name
+and the byte offset for the data.
+
+The advantage of ICS over other open standards such as TIFF is that it
+allows data of any type and dimensionality to be stored. A TIFF file
+can contain a collection of 2D images; it's up to the user to determine
+how these relate to each other. An ICS file can contain, for exmaple, a
+5D image in which the 4th dimension is the light frequency and the 5th
+time. Also, all of the information regarding the microscope settings
+(or whatever instument was used to acquire the image) and the sample
+preparation can be included in the file.
+
+This library is distributed under the GNU LESSER GENERAL PUBLIC
+LICENSE. See the file GNU_LICENSE for terms.
+
+Please mail comments to: clluengo@users.sourceforge.net
+
+
+   Installation Instructions
+===============================
+
+Obtain the source distribution from
+   http://sourceforge.net/projects/libics .
+It is recommended you also install zlib (http://www.zlib.org).
+
+ - Compilation under UNIX / Linux / Cygwin
+
+Run the following commands from the source directory:
+   ./configure
+   make
+   make install
+Read the INSTALL file for more information.
+
+ - Compilation under Windows with Borland C++
+
+Edit the paths defined at the beginning of Makefile.bcc, then type
+   make -f Makefile.bcc
+from a command prompt in the source directory. This will create a file
+libics.lib in the same directory. To build a dynamic library, type
+   make -f Makefile.bcc dynamic
+The dynamic library libics.dll has an import library named
+libics.dll.lib. To make a debug version add '-DDEBUG' to these commands.
+To disable zlib support, remove the definition of ZLIB_SUPPORT from the
+file Makefile.bcc.
+
+ - Compilation under Windows with Microsoft Visual C++ 9
+
+Edit the paths defined in Makefile.vc9, then type
+   nmake /f Makefile.vc9
+from a command prompt in the source directory. This will create a dynamic
+library libics.dll in the same directory, and an import library libics.lib.
+Change the definitions of SHARED or DEBUG in the makefile to create static
+and/or debug versions of the library. To disable zlib support, remove the
+definition of ZLIB_SUPPORT from the makefile.
+
+ - Compilation under Windows with older versions of Microsoft Visual C++
+
+Edit the paths defined at the beginning of Makefile.vc6, then type
+   nmake /f Makefile.vc6
+from a command prompt in the source directory. This will create a file
+libics.lib in the same directory. To build a dynamic library, type
+   nmake /f Makefile.vc6 dynamic
+The dynamic library libics.dll has an import library named
+libics.dll.lib. To make a debug version add '/D DEBUG' to these
+commands. To disable zlib support, remove the definition of ZLIB_SUPPORT
+from the file Makefile.vc.
+
+
+   CREDITS
+=============
+
+This library is written and maintained by
+   Cris Luengo
+   Life Science Division
+   Lawrence Berkeley National Laboratory
+   One Cyclotron Road, Mail Stop 84R0171
+   Berkeley, CA 94720, USA
+With help from
+   Bert Gijsbers, Scientific Volume Imaging BV, Hilversum, NL
+      (Most changes for version 1.3)
+   Frank de Jong, Delft University of Technology, Delft, NL
+      (IcsViewer utility improvements)
+   Fons Laan, Hubrecht Laboratorium, Utrecht, NL
+      (SCIL_Image compatability, make files, bug fixes)
+   Glenn Pierce
+      (Idea of opening in "rw" mode and history iterator)
+   David Svoboda, Masaryk University, Brno, Czech Republic
+      (Windows make files)
+   Peter Verveer, Max Planck Institute, Dortmund, Germany
+      (autoconf/automake script)
+
+Most of the code herein hasn't changed since the previous version, by
+   Dr. Hans T.M. van der Voort
+   Scientific Volume Imaging BV
+   J. Geradtsweg 181
+   1222 PS Hilversum
+   The Netherlands
+
+Which ultimately is based upon stuff written by:
+   Damir Sudar, Geert van Kempen, Jan Jitze Krol,
+   Chiel Baarslag, Fons Laan and Hans van der Voort.
+
+
+   HISTORY
+=============
+
+in CVS
+   Added functionality:
+   - UNIX make files now also generate a shared object using libtool.
+   - Added a Makefile for MSVC9.
+   Changes / improvements / fixes:
+   - Fixed bug in IcsGetDataWithStrides() when stride[0]==1.
+   - Fixed buffer overflow in IcsInternAddHistory() when adding lots of
+     history strings (not an exploitable vulnerability).
+   - Fixed bug in "l" option to IcsOpen, it behaved in the oposite way
+     to that advertised (bug #2943839).
+
+version 1.5.1
+   Added functionality:
+   - IcsGetDataWithStrides() makes it easy to read in an ICS file into
+     a non-contiguous memory block such as an ROI, or to have different
+     dimension ordering in memory.
+   Changes / improvements / fixes:
+   - Fixed buffer overflow when trying to read a binary file (not an
+     exploitable vulnerability).
+   - Fixed bug in IcsInternAddHistory() if key==NULL.
+   - Rewrote IcsStrCpy(), it no longer needs the full len chars in dest
+     if src is shorter than len.
+   - The MATLAB MEX-files in support/matlab have finally been updated
+     to work on 64-bit platforms.
+
+version 1.5
+   Added functionality:
+   - IcsSetIdsBlock() in low-level interface does fseek() on image data.
+   - Added "rw" mode to IcsOpen(). It's now possible to change metadata
+     in an ICS file.
+   - Added functions to delete, replace and retrieve history lines.
+   Changes / improvements / fixes:
+   - When reading and writing the ICS header file, the locale is set to
+     "C". This can be avoided with the "l" flag in IcsOpen().
+   - Fixed printf type mismatch	according to bug #1245419.
+   - Added a bunch of 'const' modifiers according to feature request
+     #1245471.
+   - Reorganized a few things on the website and added a menu bar.
+   - Windows makefile changes relating to zlib.
+   - The strcasecmp/stricmp is finally resolved neatly.
+   - Renamed libics_compress.c to libics_gzip.c to prepare for the
+     inclusion of 'compress' decompression.
+   - Separated all history code into new libics_history.c file.
+   - Renamed a few internal functions in libics_write.c for consistency.
+   - Stop writing 0.0 in exponential notation.
+   - FileMode replaces Reading in the ICS data structure.
+   - Default 5th dimension now is "probe" instead of "p".
+   - The history lines are stored in a more useful fashion in the
+     IcsHeader struct. The struct itself changed.
+
+version 1.4.1
+   Added functionality:
+   - Replaced config files with autoconf scripts.
+   Changes / improvements / fixes:
+   - The MAXPATHLEN define is replaced by a custom ICS_MAXPATHLEN. This
+     improves portability.
+   - The strcasecmp/stricmp thing is moved to where it matters:
+     libics_util.c
+   - Fixed compile bug when not linking with zlib.
+   - Moved web stuff to SourceForge.net.
+   - Changed the presentation page of the website a bit.
+   The documentation still carries the version number 1.4.
+
+version 1.4
+   Added functionality:
+   - IcsSetDataWithStrides() allows writing data that is not stored in
+     the default x-y-z order, as well as a ROI in a larger image.
+   - IcsOpen() now also has a mode "rf" which avoids adding the ".ics"
+     extension to the given file name.
+   Changes / improvements / fixes:
+   - IcsVersion(), IcsReadIcs() and IcsGetIcsName() have an extra
+     parameter that indicates whether to add the extension to the given
+     file name or not.
+   - IcsInit() is now declared as a void function.
+   - The ICS structure has a new element: DataStrides.
+   - The file libics_compress.non.ansi.c is no longer.
+   - ICS_MAXDIM now is 10, up from 5.
+   - Allowing for axes scaling to be <= 0.
+   - Bugfix: small values are also written in scientific notation.
+   - Creation of DLL added to Windows Makefiles.
+
+version 1.3 (Most changes by Bert Gijsbers)
+   Added functionality:
+   - Added PinholeSpacing to sensor parameters.
+   - IcsExtensionFind() finds extensions including .ids.Z and .ids.gz.
+   - IcsGetSensor and IcsSetSensor functions to get and set the sensor
+     parameters.
+   - IcsGetErrorText() returns string representation of error.
+   Changes / improvements / fixes:
+   - IcsGetIcsName() and IcsGetIdsName() now preserve the case in the
+     extension.
+   - 'struct _ICS' is now defined besides the 'ICS' typedef.
+   - IcsPrintIcs() would loop forever with non-zero sensor channels.
+   - Some %d format strings were called with a long int argument.
+   - Dimension types are now always size_t instead of int.
+   - Big improvements in the IcsViewer utility (by Frank de Jong).
+
+version 1.2.1
+   A few small bug fixes:
+   - 12 bytes got lost because a free() call was missing.
+   - Reading a compressed file in blocks caused a SGV if the last imel
+     was included in the block (because of the CRC).
+   - support/icsviewer now adds some padding to each image line so that
+     Windows correctly displays the image.
+   The documentation still carries the version number 1.2.
+
+version 1.2
+   Added functions:
+   - IcsGetROIData(), and the more general IcsGetDataBlock(),
+     IcsSkipDataBlock(). These funcions make it possible to read in
+     only a portion of the image data.
+   - IcsGetPreviewData() reads in a 2D sub-image, and converts it to
+     unsinged 8-bit integers for display.
+   - IcsLoadPreview() does the same, but just takes a file name. It
+     allocates the image buffer for you.
+   Changes / improvements / fixes:
+   - Many "unsigned int" parameters have been changed to "size_t". This
+     improves portability to 64-bit systems (and fixes some bugs too).
+   - Added return error codes to the documentation, as well as some
+     other interesting information.
+   - Corrected some bugs in the documentation.
+   - Added 'extern "C" {}' to the public header files so libics can be
+     used with C++.
+
+version 1.1
+   Some improvements:
+   - Added support for the 'SCIL_TYPE' parameter (thanks to Fons Laan).
+     Call IcsSetScilType() or IcsGuessScilType() to write the parameter
+     to the ICS file.
+   - Any character is now allowed as a line separator, as specified in
+     the standard.
+   - ICS files with CR/LF pairs instead of CR characters only are now
+     also supported. The CR/LF pair problem is caused by some windows
+     applications that automatically convert 'text' files to the MS-DOS
+     format. These were not read by libics.
+   - Some low-level library functions have been renamed to make the
+     interface more consistent:
+     IcsRead()   -> IcsReadIcs()
+     IcsWrite()  -> IcsWriteIcs()
+     IdsRead()   -> IcsReadIds()
+     IdsWrite()  -> IcsWriteIds()
+   - The documentation has been updated and corrected.
+
+version 1.0
+   Initial release.

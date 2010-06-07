@@ -1,0 +1,63 @@
+
+libics MATLAB interface
+=======================
+
+This directory contains the sources for MATLAB MEX-files
+that use libics to read and write ICS files. They serve
+as examples on how to use libics, but are also useful for
+people that use MATLAB and want to add ICS support.
+
+The code in this directory falls under the same licence
+terms as libics itself.
+
+
+USAGE
+=====
+
+The two MEX-files are used in this way:
+
+-------------------------------------------------------------
+ICSREAD   Reads a numeric array from an ICS file.
+    A = ICSREAD(FILENAME) reads the numeric data in
+    an ICS image file named FILENAME into A.
+
+    Known limitations:
+       - Complex data is not read.
+-------------------------------------------------------------
+ICSWRITE   Writes a numeric array to an ICS file.
+    ICSWRITE(A,FILENAME,COMPRESS) writes the numeric data
+    in A to an ICS image file named FILENAME. If COMPRESS
+    is non-zero the data will be written compressed.
+
+    Known limitations:
+       - Complex data is not written.
+-------------------------------------------------------------
+
+
+COMPILING
+=========
+
+If your version of MATLAB is 7.3 or newer, remove the line at
+the top of both source files that defines mwSize.
+
+Within MATLAB (on UNIX), type
+  mex -I<icspath> icsread.c /<icspath>/libics.a /<zpath>/libz.a
+  mex -I<icspath> icswrite.c /<icspath>/libics.a /<zpath>/libz.a
+from the directory containing both source files.
+
+Within MATLAB (on Windows), type:
+  mex -I<icspath> icsread.c <icspath>\libics.lib <zpath>\libz.lib
+  mex -I<icspath> icswrite.c <icspath>\libics.lib <zpath>\libz.lib
+from the directory containing both source files.
+
+Alternatively, use the makefile from the system's prompt. The
+provided makefile is written for both Borland BCC and Microsoft
+Visual C++ (under Windows), but should be easy to adapt to another
+system/compiler. Note that you need to configure MEX before running
+the makefile.
+
+
+-------------------------------------------------------------
+Copyright (C) 2000-2007 Cris Luengo and others
+email: clluengo@users.sourceforge.net
+-------------------------------------------------------------

@@ -1,0 +1,23 @@
+
+Windows viewer example code
+===========================
+
+This directory contains the sources for a very simple viewer
+utility. You'll need Visual C++ and Windows to run this.
+
+Basically, it's an example on how to use libics to read in
+a 2D preview of an ICS file. The file readics.c is the basis
+of the ICS plug-in for IrfanView (http://www.irfanview.com).
+
+The code in this directory falls under the same licence
+terms as libics itself.
+
+
+-------------------------------------------------------------
+Copyright (C) 2001-2002          Cris L. Luengo Hendriks
+                                 Frank de Jong
+
+                                 Pattern Recognition Group
+                                 Delft University of Technology
+                                 The Netherlands
+-------------------------------------------------------------

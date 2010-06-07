@@ -1,0 +1,113 @@
+##############################################################################
+#
+# libics: Image Cytometry Standard file reading and writing.
+#
+# Copyright (C) 2000-2009 Cris Luengo and others
+# email: clluengo@users.sourceforge.net
+#
+# Makefile to compile libics under Win32 platfom with Visual C++ 9.0/2008
+# Modified by David Svoboda <svoboda@fi.muni.cz>, October 2009
+#
+#
+# To compile and build:
+# 	nmake /f Makefile.vc9
+#
+# To clean:
+# 	name /f Makefile.vc9 clean
+#
+##############################################################################
+!include <win32.mak>
+
+#
+# debug/release version
+#
+DEBUG = 0
+
+#
+# shared/static version
+#
+SHARED = 1
+
+#
+# Comment the following line to disable ZLIB support
+#
+ZLIB_SUPPORT = 1
+
+#
+# Microsoft C++ tools and paths
+#
+MSVC_ROOT = $(VSINSTALLDIR)\VC
+MSVC_LIB = $(MSVC_ROOT)\lib
+MSVC_INCLUDE = $(MSVC_ROOT)\include
+
+#
+# Names
+#
+LIBNAME = libics
+SOURCES = libics_read.obj \
+          libics_write.obj \
+          libics_binary.obj \
+          libics_gzip.obj \
+          libics_data.obj \
+          libics_util.obj \
+          libics_top.obj \
+          libics_history.obj \
+          libics_preview.obj \
+          libics_sensor.obj \
+          libics_test.obj
+
+#
+# Options
+#
+DEFINES = /DWIN32 /DBUILD_ICSLIB
+INCLUDE = /I. /I"$(MSVC_ROOT)\include"
+LDFLAGS= /dll /manifest
+CFLAGS = /nologo /c
+
+!if $(DEBUG)
+CFLAGS = $(CFLAGS) /MDd  
+DEFINES = $(DEFINES) /DDEBUG
+DEBUG_FLAG = d
+!else
+CFLAGS = $(CFLAGS) /MD /O2 
+!endif
+
+!if $(ZLIB_SUPPORT)
+# change the path to fit the location of your software
+ZLIB_PATH = D:\devel\lib\zlib
+ZLIB_LIB = $(ZLIB_PATH)\lib\cbia.lib.z.dyn.rel.x86.9.lib
+DEFINES = $(DEFINES) /DICS_ZLIB
+INCLUDE = $(INCLUDE) /I"$(ZLIB_PATH)\include"
+LIBS = $(LIBS) "$(ZLIB_LIB)"
+!endif
+
+#
+# Dependency list
+#
+!if $(SHARED)
+all: libics_conf.h $(LIBNAME)$(DEBUG_FLAG).dll 
+!else
+all: libics_conf.h $(LIBNAME)$(DEBUG_FLAG).lib
+!endif
+
+$(LIBNAME)$(DEBUG_FLAG).lib: $(SOURCES)
+       	$(implib) /out:$@ $** $(LIBS)
+
+$(LIBNAME)$(DEBUG_FLAG).dll: $(SOURCES)
+       	$(link) $(LDFLAGS) $** /out:$@ /implib:"$(LIBNAME)$(DEBUG_FLAG).lib" /libpath:"$(MSVC_LIB)" $(LIBS) 
+
+.c.obj:
+	$(cc) $(CFLAGS) $(DEFINES) $(INCLUDE) /Fo$@ $**
+
+libics_conf.h : libics_conf.h.in
+       	copy libics_conf.h.in libics_conf.h
+
+clean:
+	-del /q *.obj
+	-del /q *.pch
+	-del /q $(LIBNAME)$(DEBUG_FLAG).lib
+	-del /q $(LIBNAME)$(DEBUG_FLAG).dll
+	-del /q $(LIBNAME)$(DEBUG_FLAG).exp
+	-del /q *.manifest
+	-del /q libics_conf.h
+

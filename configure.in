@@ -1,0 +1,120 @@
+dnl
+dnl libics: Image Cytometry Standard file reading and writing.
+dnl
+dnl Copyright (C) 2000-2009 Cris Luengo and others
+dnl email: clluengo@sourceforge.net
+dnl
+dnl Script for automake and autoconfig.
+dnl Written by Peter Verveer, Cris Luengo
+dnl
+
+AC_INIT
+AC_CONFIG_SRCDIR([libics.h])
+AC_CONFIG_HEADERS([config.h libics_conf.h])
+AC_CONFIG_MACRO_DIR([m4])
+
+dnl Library version number (make sure to also change it in 'libics.h'):
+AM_INIT_AUTOMAKE(libics, 1.5.2)
+
+AM_MAINTAINER_MODE
+
+dnl Library versioning (CURRENT:REVISION:AGE)
+dnl See the libtool manual for an explanation of the numbers
+dnl
+dnl Version history:
+dnl ics-1.5.2  libics 0:0:0
+dnl
+dnl How to update library version number
+dnl ====================================
+dnl
+dnl CURRENT: increment if the interface has additions, changes, removals.
+dnl
+dnl REVISION: increment any time the source changes; set to 0 if you
+dnl incremented CURRENT
+dnl
+dnl AGE: increment if any interfaces have been added; set to 0 if any
+dnl interfaces have been removed. removal has precedence over adding,
+dnl so set to 0 if both happened.
+
+ICS_LT_VERSION="0:0:0"
+AC_SUBST(ICS_LT_VERSION)
+
+AC_PROG_CC
+AC_PROG_LIBTOOL
+AC_HEADER_STDC
+AC_C_CONST
+AC_TYPE_SIZE_T
+
+# If this variable is not defined, libics_conf.h will revert to the old version.
+AC_DEFINE([ICS_USING_CONFIGURE], [], [Using the configure script.])
+
+dnl Check for proper include file for strcasecmp
+ETR_STRING_STRCASECMP
+if test x"$ac_cv_string_strcasecmp" = "xno" ; then
+   ETR_STRINGS_STRCASECMP
+fi
+
+dnl Check if you want to use .ids.gz and .ids.Z extensions
+AC_ARG_ENABLE(gzext, AS_HELP_STRING([--disable-gz-extensions], [disable .ids.gz and .ids.Z extensions (enabled by default)]),,)
+
+dnl ---------------------------------------------------------------------------
+dnl Check for ZLIB (copied from libtiff, with some additions)
+dnl ---------------------------------------------------------------------------
+
+HAVE_ZLIB=no
+
+AC_ARG_ENABLE(zlib, AS_HELP_STRING([--disable-zlib], [disable Zlib usage (required for zip compression, enabled by default)]),,)
+AC_ARG_WITH(zlib-include-dir, AS_HELP_STRING([--with-zlib-include-dir=DIR], [location of Zlib headers]),,)
+AC_ARG_WITH(zlib-lib-dir, AS_HELP_STRING([--with-zlib-lib-dir=DIR], [location of Zlib library binary]),,)
+
+if test "x$enable_zlib" != "xno" ; then
+
+  if test "x$with_zlib_lib_dir" != "x" ; then
+    LIBS="-L$with_zlib_lib_dir $LIBS"
+  fi
+  AC_CHECK_LIB(z, inflateEnd, [zlib_lib=yes], [zlib_lib=no],)
+  if test "$zlib_lib" = "no" -a "x$with_zlib_lib_dir" != "x"; then
+    AC_MSG_ERROR([Zlib library not found at $with_zlib_lib_dir])
+  fi
+
+  if test "x$with_zlib_include_dir" != "x" ; then
+    CPPFLAGS="-I$with_zlib_include_dir $CPPFLAGS"
+  fi
+  AC_CHECK_HEADER(zlib.h, [zlib_h=yes], [zlib_h=no])
+  if test "$zlib_h" = "no" -a "x$with_zlib_include_dir" != "x" ; then
+    AC_MSG_ERROR([Zlib headers not found at $with_zlib_include_dir])
+  fi
+
+  if test "$zlib_lib" = "yes" -a "$zlib_h" = "yes" ; then
+    HAVE_ZLIB=yes
+  fi
+
+fi
+
+if test "$HAVE_ZLIB" = "yes" ; then
+  AC_DEFINE(ICS_ZLIB, 1, [Whether to use zlib compression.])
+  LIBS="-lz $LIBS"
+  if test "x$enable_gzext" != "xno" ; then
+    AC_DEFINE(ICS_DO_GZEXT, 1, [Whether to search for files with .ids.gz or .ids.Z extension.])
+  fi
+fi
+
+dnl ---------------------------------------------------------------------------
+
+dnl Check for -lm:
+AC_CHECK_LIB(m, sqrt, [], [AC_MSG_ERROR([math lib is required])])
+
+dnl Get the sizes of the types in bytes:
+AC_CHECK_SIZEOF(char, 0)
+AC_CHECK_SIZEOF(unsigned char, 0)
+AC_CHECK_SIZEOF(short, 0)
+AC_CHECK_SIZEOF(unsigned short, 0)
+AC_CHECK_SIZEOF(int, 0)
+AC_CHECK_SIZEOF(unsigned int, 0)
+AC_CHECK_SIZEOF(long, 0)
+AC_CHECK_SIZEOF(unsigned long, 0)
+AC_CHECK_SIZEOF(float, 0)
+AC_CHECK_SIZEOF(double, 0)
+
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT

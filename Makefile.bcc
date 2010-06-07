@@ -1,0 +1,107 @@
+#
+# libics: Image Cytometry Standard file reading and writing.
+#
+# Copyright (C) 2000-2006 Cris Luengo and others
+# email: clluengo@users.sourceforge.net
+#
+# Makefile to compile libics under Win32 with Borland C++ 5
+#
+#
+# TO COMPILE:
+#    make -fMakefile.bcc
+# For a dynamic library:
+#    make -fMakefile.bcc dynamic
+
+#
+# Remove the following line to disable ZLIB support
+#
+ZLIB_SUPPORT = 1
+
+#
+# Paths
+#
+BC_ROOT = C:\BCC55
+BC_LIB = $(BC_ROOT)\lib
+LIBPATH = .
+ZLIB_PATH = ..\bcc_zlib-1.2.3
+ZLIB_LIB = $(ZLIB_PATH)\zlib.lib
+
+#
+# Borland C++ tools
+#
+CC = bcc32 -c -P-
+LIB = tlib
+LINK = ilink32 -Tpd -Gi
+
+#
+# Other Defines
+#
+LIBNAME = $(LIBPATH)\libics.lib
+DLLNAME = $(LIBPATH)\libics.dll
+DLLIMPNAME = $(LIBPATH)\libics.dll.lib
+LIBOBJECTS = libics_read.obj \
+             libics_write.obj \
+             libics_binary.obj \
+             libics_gzip.obj \
+             libics_data.obj \
+             libics_util.obj \
+             libics_top.obj \
+             libics_history.obj \
+             libics_preview.obj \
+             libics_sensor.obj \
+             libics_test.obj
+
+#
+# Options
+#
+DEFINES = -DWIN32 -DBUILD_ICSLIB
+INCLUDE = -I.;$(BC_ROOT)\include
+CFLAGS = -3 -A -a8
+
+!ifdef DEBUG
+CFLAGS = $(CFLAGS) -v -y -w
+!else
+CFLAGS = $(CFLAGS) -O2 -d -w-
+!endif
+
+!ifdef ZLIB_SUPPORT
+DEFINES = $(DEFINES) -DICS_ZLIB
+INCLUDE = $(INCLUDE) -I"$(ZLIB_PATH)"
+LIBS = $(LIBS) "$(ZLIB_LIB)"
+!endif
+
+#
+# Dependency List
+#
+.AUTODEPEND
+.precious: $(LIBNAME) $(DLLNAME)
+all : static
+static : libics_conf.h $(LIBNAME)
+dynamic : libics_conf.h $(DLLNAME)
+
+$(LIBNAME) : $(LIBOBJECTS)
+  @if not exist $(LIBPATH) md $(LIBPATH)
+  @&-$(LIB) $@ /C -+$?
+
+$(DLLNAME) : $(LIBOBJECTS)
+  @if not exist $(LIBPATH) md $(LIBPATH)
+  @$(LINK) $** , $@ , , $(BC_LIB)\cw32.lib $(BC_LIB)\import32.lib $(LIBS)
+  @move $(DLLNAME:.dll=.lib) $(DLLIMPNAME)
+
+.c.obj:
+  @$(CC) $(CFLAGS) $(DEFINES) $(INCLUDE) -o$@ $**
+
+libics_conf.h : libics_conf.h.in
+  @copy libics_conf.h.in libics_conf.h
+
+clean :
+  @-del /q *.obj
+  @-del /q $(LIBNAME)
+  @-del /q $(LIBNAME:.lib=.BAK)
+  @-del /q $(DLLNAME)
+  @-del /q $(DLLIMPNAME)
+  @-del /q $(DLLNAME:.dll=.lib)
+  @-del /q $(DLLNAME:.dll=.exp)
+  @-del /q $(DLLNAME:.dll=.il?)
+  @-del /q $(DLLNAME:.dll=.tds)
+  @-del /q $(DLLNAME:.dll=.map)
