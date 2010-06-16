@@ -10,7 +10,7 @@
   </head>
 
   <body>
-    <p class=header>libics v.1.5 Online Documentation. &copy;2000-2009 by Cris Luengo and others.</p>
+    <p class=header>libics v.1.5 Online Documentation. &copy;2000-2010 by Cris Luengo and others.</p>
 
     <div class="navbar">
       <ul>
@@ -144,9 +144,13 @@
     integers. The slice is chosen with <tt class="varident">planenumber</tt> (see
     <tt class="funcident"><a href="#IcsGetPreviewData">IcsGetPreviewData</a></tt>).
 
+    <p>This function does currently not work when the data is compressed with
+    <tt class="constant"><a href="Enums.html#Ics_Compression">IcsCompr_compress</a></tt>.</p>
+
     <p class="info"><span class="headtxt">errors</span>:
     <tt class="constant">IcsErr_Alloc</tt>,
     <tt class="constant">IcsErr_BitsVsSizeConfl</tt>,
+    <tt class="constant">IcsErr_BlockNotAllowed</tt>,
     <tt class="constant">IcsErr_BufferTooSmall</tt>,
     <tt class="constant">IcsErr_CompressionProblem</tt>,
     <tt class="constant">IcsErr_CorruptedStream</tt>,
@@ -298,10 +302,16 @@
     <p>Read a portion of the actual image data from an ICS file.
     <tt class="varident">n</tt> is the size of the buffer
     <tt class="varident">dest</tt> in bytes.</p>
+    
+    <p>When the data is compressed with
+    <tt class="constant"><a href="Enums.html#Ics_Compression">IcsCompr_compress</a></tt>,
+    this function can only be called once. That is, only one block of data, starting
+    at the beginning, can be read from the file.</p>
 
     <p class="info"><span class="headtxt">errors</span>:
     <tt class="constant">IcsErr_Alloc</tt>,
     <tt class="constant">IcsErr_BitsVsSizeConfl</tt>,
+    <tt class="constant">IcsErr_BlockNotAllowed</tt>,
     <tt class="constant">IcsErr_CorruptedStream</tt>,
     <tt class="constant">IcsErr_DecompressionProblem</tt>,
     <tt class="constant">IcsErr_EndOfStream</tt>,
@@ -338,9 +348,13 @@
     equal to the dimensionality of the data as returned by
     <tt class="funcident"><a href="#IcsGetLayout">IcsGetLayout</a></tt></p>
 
+    <p>This function does currently not work when the data is compressed with
+    <tt class="constant"><a href="Enums.html#Ics_Compression">IcsCompr_compress</a></tt>.</p>
+
     <p class="info"><span class="headtxt">errors</span>:
     <tt class="constant">IcsErr_Alloc</tt>,
     <tt class="constant">IcsErr_BitsVsSizeConfl</tt>,
+    <tt class="constant">IcsErr_BlockNotAllowed</tt>,
     <tt class="constant">IcsErr_CorruptedStream</tt>,
     <tt class="constant">IcsErr_DecompressionProblem</tt>,
     <tt class="constant">IcsErr_EndOfStream</tt>,
@@ -407,9 +421,13 @@
     <tt><span class="constant">m</span> + <span class="constant">n</span>*<span class="varident">dims</span>[<span class="constant">2</span>] +
     <span class="constant">k</span>*<span class="varident">dims</span>[<span class="constant">2</span>]*<span class="varident">dims</span>[<span class="constant">3</span>]</tt>.</p>
 
+    <p>This function does currently not work when the data is compressed with
+    <tt class="constant"><a href="Enums.html#Ics_Compression">IcsCompr_compress</a></tt>.</p>
+
     <p class="info"><span class="headtxt">errors</span>:
     <tt class="constant">IcsErr_Alloc</tt>,
     <tt class="constant">IcsErr_BitsVsSizeConfl</tt>,
+    <tt class="constant">IcsErr_BlockNotAllowed</tt>,
     <tt class="constant">IcsErr_BufferTooSmall</tt>,
     <tt class="constant">IcsErr_CorruptedStream</tt>,
     <tt class="constant">IcsErr_DecompressionProblem</tt>,
@@ -445,9 +463,13 @@
     set to <tt class="constant">NULL</tt>, the default is used (the offset is 0, the size
     is equal to the image size, and the sampling is 1 in each direction).</p>
 
+    <p>This function does currently not work when the data is compressed with
+    <tt class="constant"><a href="Enums.html#Ics_Compression">IcsCompr_compress</a></tt>.</p>
+
     <p class="info"><span class="headtxt">errors</span>:
     <tt class="constant">IcsErr_Alloc</tt>,
     <tt class="constant">IcsErr_BitsVsSizeConfl</tt>,
+    <tt class="constant">IcsErr_BlockNotAllowed</tt>,
     <tt class="constant">IcsErr_BufferTooSmall</tt>,
     <tt class="constant">IcsErr_CorruptedStream</tt>,
     <tt class="constant">IcsErr_DecompressionProblem</tt>,
@@ -490,8 +512,12 @@
     <tt class="funcident"><a href="#IcsGetROIData">IcsGetROIData</a></tt>, which
     might simplifies this task.</p>
 
+    <p>This function does currently not work when the data is compressed with
+    <tt class="constant"><a href="Enums.html#Ics_Compression">IcsCompr_compress</a></tt>.</p>
+
     <p class="info"><span class="headtxt">errors</span>:
     <tt class="constant">IcsErr_Alloc</tt>,
+    <tt class="constant">IcsErr_BlockNotAllowed</tt>,
     <tt class="constant">IcsErr_CorruptedStream</tt>,
     <tt class="constant">IcsErr_DecompressionProblem</tt>,
     <tt class="constant">IcsErr_EndOfStream</tt>,

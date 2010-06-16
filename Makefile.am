@@ -8,6 +8,7 @@ libics_la_LDFLAGS = -version-info $(ICS_LT_VERSION)
 # distributed, except for libics_conf.h, which is generated from
 # libics_conf.h.in:
 libics_la_SOURCES = libics_binary.c \
+                    libics_compress.c \
                     libics_data.c \
                     libics_gzip.c \
                     libics_history.c \
@@ -32,7 +33,8 @@ EXTRA_DIST = INSTALL \
              README \
              bootstrap.sh \
              Makefile.bcc \
-             Makefile.vc \
+             Makefile.vc6 \
+             Makefile.vc9 \
              Documentation/index.html \
              Documentation/Credits.html \
              Documentation/Documentation.html \

@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2006 Cris Luengo and others
+ * Copyright (C) 2000-2010 Cris Luengo and others
  * email: clluengo@users.sourceforge.net
  *
  * Large chunks of this library written by
@@ -998,77 +998,89 @@ char const* IcsGetErrorText (Ics_Error error)
       case IcsErr_Ok:
          msg = "A-OK";
          break;
-      case IcsErr_Alloc:
-         msg = "Memory allocation error";
-         break;
-      case IcsErr_FOpenIcs:
-         msg = "File open error on .ics file";
-         break;
-      case IcsErr_FReadIcs:
-         msg = "File read error on .ics file";
-         break;
-      case IcsErr_FWriteIcs:
-         msg = "File write error on .ics file";
-         break;
-      case IcsErr_FCloseIcs:
-         msg = "File close error on .ics file";
-         break;
-      case IcsErr_FOpenIds:
-         msg = "File open error on .ids file";
-         break;
-      case IcsErr_FReadIds:
-         msg = "File read error on .ids file";
-         break;
-      case IcsErr_FWriteIds:
-         msg = "File write error on .ids file";
-         break;
-      case IcsErr_FCloseIds:
-         msg = "File close error on .ids file";
-         break;
-      case IcsErr_FailWriteLine:
-         msg = "Failed to write a line in .ics file";
-         break;
       case IcsErr_FSizeConflict:
          msg = "Non fatal error: unexpected data size";
          break;
       case IcsErr_OutputNotFilled:
          msg = "Non fatal error: the output buffer could not be completely filled";
          break;
+      case IcsErr_Alloc:
+         msg = "Memory allocation error";
+         break;
+      case IcsErr_BitsVsSizeConfl:
+         msg = "Image size conflicts with bits per element";
+         break;
+      case IcsErr_BlockNotAllowed:
+         msg = "It is not possible to read COMPRESS-compressed data in blocks";
+         break;
       case IcsErr_BufferTooSmall:
          msg = "The buffer was too small to hold the given ROI";
          break;
-      case IcsErr_IllegalROI:
-         msg = "The given ROI extends outside the image";
+      case IcsErr_CompressionProblem:
+         msg = "Some error occurred during compression";
          break;
-      case IcsErr_EndOfStream:
-         msg = "Unexpected end of stream";
+      case IcsErr_CorruptedStream:
+         msg = "The compressed input stream is currupted";
          break;
-      case IcsErr_NotIcsFile:
-         msg = "Not an ICS file";
-         break;
-      case IcsErr_NotValidAction:
-         msg = "The function won't work on the ICS given";
-         break;
-      case IcsErr_EndOfHistory:
-         msg = "All history lines have already been returned";
-         break;
-      case IcsErr_MissingData:
-         msg = "There is no Data defined";
+      case IcsErr_DecompressionProblem:
+         msg = "Some error occurred during decompression";
          break;
       case IcsErr_DuplicateData:
          msg = "The ICS data structure already contains incompatible stuff";
          break;
-      case IcsErr_UnknownDataType:
-         msg = "The datatype is not recognized";
+      case IcsErr_EmptyField:
+         msg = "Empty field";
          break;
-      case IcsErr_NoLayout:
-         msg = "Layout parameters missing or not defined";
+      case IcsErr_EndOfHistory:
+         msg = "All history lines have already been returned";
          break;
-      case IcsErr_TooManyDims:
-         msg = "Data has too many dimensions";
+      case IcsErr_EndOfStream:
+         msg = "Unexpected end of stream";
          break;
-      case IcsErr_TooManyChans:
-         msg = "Too many channels specified";
+      case IcsErr_FailWriteLine:
+         msg = "Failed to write a line in .ics file";
+         break;
+      case IcsErr_FCloseIcs:
+         msg = "File close error on .ics file";
+         break;
+      case IcsErr_FCloseIds:
+         msg = "File close error on .ids file";
+         break;
+      case IcsErr_FCopyIds:
+         msg = "Failed to copy image data from temporary file on .ics file opened for updating";
+         break;
+      case IcsErr_FOpenIcs:
+         msg = "File open error on .ics file";
+         break;
+      case IcsErr_FOpenIds:
+         msg = "File open error on .ids file";
+         break;
+      case IcsErr_FReadIcs:
+         msg = "File read error on .ics file";
+         break;
+      case IcsErr_FReadIds:
+         msg = "File read error on .ids file";
+         break;
+      case IcsErr_FTempMoveIcs:
+         msg = "Failed to remane .ics file opened for updating";
+         break;
+      case IcsErr_FWriteIcs:
+         msg = "File write error on .ics file";
+         break;
+      case IcsErr_FWriteIds:
+         msg = "File write error on .ids file";
+         break;
+      case IcsErr_IllegalROI:
+         msg = "The given ROI extends outside the image";
+         break;
+      case IcsErr_IllIcsToken:
+         msg = "Illegal ICS token detected";
+         break;
+      case IcsErr_IllParameter:
+         msg = "A function parameter has a value that is not legal or does not match with a value previously given";
+         break;
+      case IcsErr_LineOverflow:
+         msg = "Line overflow in .ics file";
          break;
       case IcsErr_MissBits:
          msg = "Missing \"bits\" element in .ics file";
@@ -1076,17 +1088,17 @@ char const* IcsGetErrorText (Ics_Error error)
       case IcsErr_MissCat:
          msg = "Missing main category";
          break;
-      case IcsErr_MissSubCat:
-         msg = "Missing sub category";
+      case IcsErr_MissingData:
+         msg = "There is no Data defined";
          break;
       case IcsErr_MissLayoutSubCat:
          msg = "Missing layout subcategory";
          break;
-      case IcsErr_MissRepresSubCat:
-         msg = "Missing representation subcategory";
-         break;
       case IcsErr_MissParamSubCat:
          msg = "Missing parameter subcategory";
+         break;
+      case IcsErr_MissRepresSubCat:
+         msg = "Missing representation subcategory";
          break;
       case IcsErr_MissSensorSubCat:
          msg = "Missing sensor subcategory";
@@ -1094,41 +1106,32 @@ char const* IcsGetErrorText (Ics_Error error)
       case IcsErr_MissSensorSubSubCat:
          msg = "Missing sensor subsubcategory";
          break;
-      case IcsErr_EmptyField:
-         msg = "Empty field";
+      case IcsErr_MissSubCat:
+         msg = "Missing sub category";
          break;
-      case IcsErr_LineOverflow:
-         msg = "Line overflow in .ics file";
-         break;
-      case IcsErr_BitsVsSizeConfl:
-         msg = "Image size conflicts with bits per element";
-         break;
-      case IcsErr_IllIcsToken:
-         msg = "Illegal ICS token detected";
-         break;
-      case IcsErr_UnknownCompression:
-         msg = "Unknown compression type";
-         break;
-      case IcsErr_CompressionProblem:
-         msg = "Some error occurred during compression";
-         break;
-      case IcsErr_DecompressionProblem:
-         msg = "Some error occurred during decompression";
-         break;
-      case IcsErr_CorruptedStream:
-         msg = "The compressed input stream is currupted";
+      case IcsErr_NoLayout:
+         msg = "Layout parameters missing or not defined";
          break;
       case IcsErr_NoScilType:
          msg = "There doesn't exist a SCIL_TYPE value for this image";
          break;
-      case IcsErr_IllParameter:
-         msg = "A function parameter has a value that is not legal or does not match with a value previously given";
+      case IcsErr_NotIcsFile:
+         msg = "Not an ICS file";
          break;
-      case IcsErr_FCopyIds:
-         msg = "Failed to copy image data from temporary file on .ics file opened for updating";
+      case IcsErr_NotValidAction:
+         msg = "The function won't work on the ICS given";
          break;
-      case IcsErr_FTempMoveIcs:
-         msg = "Failed to remane .ics file opened for updating";
+      case IcsErr_TooManyChans:
+         msg = "Too many channels specified";
+         break;
+      case IcsErr_TooManyDims:
+         msg = "Data has too many dimensions";
+         break;
+      case IcsErr_UnknownCompression:
+         msg = "Unknown compression type";
+         break;
+      case IcsErr_UnknownDataType:
+         msg = "The datatype is not recognized";
          break;
       case IcsErr_WrongZlibVersion:
          msg = "libics is linking to a different version of zlib than used during compilation";

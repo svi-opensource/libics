@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2007 Cris Luengo and others
+ * Copyright (C) 2000-2010 Cris Luengo and others
  * email: clluengo@users.sourceforge.net
  *
  * Large chunks of this library written by
@@ -38,7 +38,7 @@
 extern "C" {
 #endif
 
-#define ICSLIB_VERSION "1.5.2" /* also defined in configure.in */
+#define ICSLIB_VERSION "1.5.2dev" /* also defined in configure.in */
 
 #if defined(__WIN32__) && !defined(WIN32)
 #define WIN32
@@ -185,6 +185,7 @@ typedef enum {
     IcsErr_OutputNotFilled,     /* Non fatal error: the output buffer could not be completely filled (meaning that your buffer was too large) */
     IcsErr_Alloc,               /* Memory allocation error */
     IcsErr_BitsVsSizeConfl,     /* Image size conflicts with bits per element */
+    IcsErr_BlockNotAllowed,     /* It is not possible to read COMPRESS-compressed data in blocks */
     IcsErr_BufferTooSmall,      /* The buffer was too small to hold the given ROI */
     IcsErr_CompressionProblem,  /* Some error occurred during compression */
     IcsErr_CorruptedStream,     /* The compressed input stream is currupted */
@@ -193,7 +194,6 @@ typedef enum {
     IcsErr_EmptyField,          /* Empty field (intern error) */
     IcsErr_EndOfHistory,        /* All history lines have already been returned */
     IcsErr_EndOfStream,         /* Unexpected end of stream */
-    IcsErr_FailWriteLine,       /* Failed to write a line in .ics file */
     IcsErr_FCloseIcs,           /* File close error on .ics file */
     IcsErr_FCloseIds,           /* File close error on .ids file */
     IcsErr_FCopyIds,            /* Failed to copy image data from temporary file on .ics file opened for updating */
@@ -204,19 +204,20 @@ typedef enum {
     IcsErr_FTempMoveIcs,        /* Failed to remane .ics file opened for updating */
     IcsErr_FWriteIcs,           /* File write error on .ics file */
     IcsErr_FWriteIds,           /* File write error on .ids file */
-    IcsErr_IllegalROI,          /* The given ROI extends outside the image */
+    IcsErr_FailWriteLine,       /* Failed to write a line in .ics file */
     IcsErr_IllIcsToken,         /* Illegal ICS token detected */
     IcsErr_IllParameter,        /* A function parameter has a value that is not legal or does not match with a value previously given */
+    IcsErr_IllegalROI,          /* The given ROI extends outside the image */
     IcsErr_LineOverflow,        /* Line overflow in ics file */
     IcsErr_MissBits,            /* Missing "bits" element in .ics file */
     IcsErr_MissCat,             /* Missing main category */
-    IcsErr_MissingData,         /* There is no Data defined */
     IcsErr_MissLayoutSubCat,    /* Missing layout subcategory */
     IcsErr_MissParamSubCat,     /* Missing parameter subcategory */
     IcsErr_MissRepresSubCat,    /* Missing representation subcategory */
     IcsErr_MissSensorSubCat,    /* Missing sensor subcategory */
     IcsErr_MissSensorSubSubCat, /* Missing sensor subsubcategory */
     IcsErr_MissSubCat,          /* Missing sub category */
+    IcsErr_MissingData,         /* There is no Data defined */
     IcsErr_NoLayout,            /* Layout parameters missing or not defined */
     IcsErr_NoScilType,          /* There doesn't exist a SCIL_TYPE value for this image */
     IcsErr_NotIcsFile,          /* Not an ICS file */

@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2006 Cris Luengo and others
+ * Copyright (C) 2000-2010 Cris Luengo and others
  * email: clluengo@users.sourceforge.net
  *
  * Large chunks of this library written by
@@ -206,6 +206,7 @@ typedef struct {
     void* ZlibInputBuffer;      /* Input buffer for compressed data */
     unsigned long ZlibCRC;      /* running CRC */
 #endif
+    int CompressRead;           /* set to non-zero when IcsReadCompress has been called */
 } Ics_BlockRead;
 
 /* Assorted support functions */
@@ -234,5 +235,8 @@ Ics_Error IcsOpenZip (Ics_Header* IcsStruct);
 Ics_Error IcsCloseZip (Ics_Header* IcsStruct);
 Ics_Error IcsReadZipBlock (Ics_Header* IcsStruct, void* outbuf, size_t len);
 Ics_Error IcsSetZipBlock (Ics_Header* IcsStruct, long offset, int whence);
+
+/* Reading COMPRESS-compressed data */
+Ics_Error IcsReadCompress (Ics_Header* IcsStruct, void* outbuf, size_t len);
 
 #endif /* LIBICS_INTERN_H */

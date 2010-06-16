@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2006 Cris Luengo and others
+ * Copyright (C) 2000-2010 Cris Luengo and others
  * email: clluengo@users.sourceforge.net
  *
  * Large chunks of this library written by
@@ -373,6 +373,7 @@ Ics_Error IcsOpenIds (Ics_Header* IcsStruct)
    br->ZlibStream = NULL;
    br->ZlibInputBuffer = NULL;
 #endif
+   br->CompressRead = 0;
    IcsStruct->BlockRead = br;
 
 #ifdef ICS_ZLIB
@@ -432,6 +433,13 @@ Ics_Error IcsReadIdsBlock (Ics_Header* IcsStruct, void* dest, size_t n)
          break;
 #endif
       case IcsCompr_compress:
+         if (br->CompressRead) {
+            error = IcsErr_BlockNotAllowed;
+         } else {
+            error = IcsReadCompress (IcsStruct, dest, n);
+            br->CompressRead = 1;
+         }
+         break;
       default:
          error = IcsErr_UnknownCompression;
    }
@@ -483,6 +491,8 @@ Ics_Error IcsSetIdsBlock (Ics_Header* IcsStruct, long offset, int whence)
          break;
 #endif
       case IcsCompr_compress:
+         error = IcsErr_BlockNotAllowed;
+         break;
       default:
          error = IcsErr_UnknownCompression;
    }

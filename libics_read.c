@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2006 Cris Luengo and others
+ * Copyright (C) 2000-2010 Cris Luengo and others
  * email: clluengo@users.sourceforge.net
  *
  * Large chunks of this library written by
@@ -380,14 +380,17 @@ Ics_Error IcsReadIcs (Ics_Header* IcsStruct, char const* filename, int forcename
                      case ICSTOK_COMPR_UNCOMPRESSED:
                         IcsStruct->Compression = IcsCompr_uncompressed;
                         break;
-#ifdef ICS_ZLIB
                      case ICSTOK_COMPR_COMPRESS:
-                        IcsStruct->Compression = IcsCompr_compress;
+                        if (IcsStruct->Version==1) {
+                           IcsStruct->Compression = IcsCompr_compress;
+                        }
+                        else { /* A version 2.0 file never uses COMPRESS, maybe it means GZIP? */
+                           IcsStruct->Compression = IcsCompr_gzip;
+                        }
                         break;
                      case ICSTOK_COMPR_GZIP:
                         IcsStruct->Compression = IcsCompr_gzip;
                         break;
-#endif
                      default:
                         error = IcsErr_UnknownCompression;
                   }

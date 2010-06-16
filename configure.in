@@ -1,7 +1,7 @@
 dnl
 dnl libics: Image Cytometry Standard file reading and writing.
 dnl
-dnl Copyright (C) 2000-2009 Cris Luengo and others
+dnl Copyright (C) 2000-2010 Cris Luengo and others
 dnl email: clluengo@sourceforge.net
 dnl
 dnl Script for automake and autoconfig.
@@ -14,7 +14,7 @@ AC_CONFIG_HEADERS([config.h libics_conf.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 dnl Library version number (make sure to also change it in 'libics.h'):
-AM_INIT_AUTOMAKE(libics, 1.5.2)
+AM_INIT_AUTOMAKE(libics, 1.5.2dev)
 
 AM_MAINTAINER_MODE
 
@@ -26,6 +26,9 @@ dnl ics-1.5.2  libics 0:0:0
 dnl
 dnl How to update library version number
 dnl ====================================
+dnl
+dnl Update the version information only immediately before a public
+dnl release of the software. More frequent updates are unnecessary.
 dnl
 dnl CURRENT: increment if the interface has additions, changes, removals.
 dnl

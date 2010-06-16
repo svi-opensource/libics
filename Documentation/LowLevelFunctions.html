@@ -10,7 +10,7 @@
   </head>
 
   <body>
-    <p class=header>libics v.1.5 Online Documentation. &copy;2000-2009 by Cris Luengo and others.</p>
+    <p class=header>libics v.1.5 Online Documentation. &copy;2000-2010 by Cris Luengo and others.</p>
 
     <div class="navbar">
       <ul>
@@ -172,8 +172,14 @@
     <p>Reads image data block from disk. You need to call
     <tt class="typeident"><a href="#IcsOpenIds">IcsOpenIds</a></tt> first.</p>
 
+    <p>When the data is compressed with
+    <tt class="constant"><a href="Enums.html#Ics_Compression">IcsCompr_compress</a></tt>,
+    this function can only be called once. That is, only one block of data, starting
+    at the beginning, can be read from the file.</p>
+
     <p class="info"><span class="headtxt">errors</span>:
     <tt class="constant">IcsErr_BitsVsSizeConfl</tt>,
+    <tt class="constant">IcsErr_BlockNotAllowed</tt>,
     <tt class="constant">IcsErr_CorruptedStream</tt>,
     <tt class="constant">IcsErr_DecompressionProblem</tt>,
     <tt class="constant">IcsErr_EndOfStream</tt>,
@@ -196,8 +202,12 @@
     or <tt class="constant">SEEK_CUR</tt>, defined in
     <tt class="preprocess">&lt;stdio.h&gt;</tt>.</p>
 
+    <p>This function does currently not work when the data is compressed with
+    <tt class="constant"><a href="Enums.html#Ics_Compression">IcsCompr_compress</a></tt>.</p>
+
     <p class="info"><span class="headtxt">errors</span>:
     <tt class="constant">IcsErr_Alloc</tt>,
+    <tt class="constant">IcsErr_BlockNotAllowed</tt>,
     <tt class="constant">IcsErr_CorruptedStream</tt>,
     <tt class="constant">IcsErr_DecompressionProblem</tt>,
     <tt class="constant">IcsErr_EndOfStream</tt>,
@@ -216,8 +226,12 @@
     <p>Skips image data block on disk. You need to call
     <tt class="typeident"><a href="#IcsOpenIds">IcsOpenIds</a></tt> first.</p>
 
+    <p>This function does currently not work when the data is compressed with
+    <tt class="constant"><a href="Enums.html#Ics_Compression">IcsCompr_compress</a></tt>.</p>
+
     <p class="info"><span class="headtxt">errors</span>:
     <tt class="constant">IcsErr_Alloc</tt>,
+    <tt class="constant">IcsErr_BlockNotAllowed</tt>,
     <tt class="constant">IcsErr_CorruptedStream</tt>,
     <tt class="constant">IcsErr_DecompressionProblem</tt>,
     <tt class="constant">IcsErr_EndOfStream</tt>,

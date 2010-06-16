@@ -40,7 +40,7 @@ host_triplet = @host@
 DIST_COMMON = README $(am__configure_deps) $(include_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/config.h.in $(srcdir)/libics_conf.h.in \
-	$(top_srcdir)/configure INSTALL config.guess config.sub \
+	$(top_srcdir)/configure INSTALL TODO config.guess config.sub \
 	depcomp install-sh ltmain.sh missing
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -64,10 +64,10 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includedir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libics_la_LIBADD =
-am_libics_la_OBJECTS = libics_binary.lo libics_data.lo libics_gzip.lo \
-	libics_history.lo libics_preview.lo libics_read.lo \
-	libics_sensor.lo libics_test.lo libics_top.lo libics_util.lo \
-	libics_write.lo
+am_libics_la_OBJECTS = libics_binary.lo libics_compress.lo \
+	libics_data.lo libics_gzip.lo libics_history.lo \
+	libics_preview.lo libics_read.lo libics_sensor.lo \
+	libics_test.lo libics_top.lo libics_util.lo libics_write.lo
 libics_la_OBJECTS = $(am_libics_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I. -I.
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -207,6 +207,7 @@ libics_la_LDFLAGS = -version-info $(ICS_LT_VERSION)
 # distributed, except for libics_conf.h, which is generated from
 # libics_conf.h.in:
 libics_la_SOURCES = libics_binary.c \
+                    libics_compress.c \
                     libics_data.c \
                     libics_gzip.c \
                     libics_history.c \
@@ -233,7 +234,8 @@ EXTRA_DIST = INSTALL \
              README \
              bootstrap.sh \
              Makefile.bcc \
-             Makefile.vc \
+             Makefile.vc6 \
+             Makefile.vc9 \
              Documentation/index.html \
              Documentation/Credits.html \
              Documentation/Documentation.html \
@@ -363,6 +365,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libics_binary.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libics_compress.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libics_data.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libics_gzip.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libics_history.Plo@am__quote@

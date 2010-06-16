@@ -10,7 +10,7 @@
   </head>
 
   <body>
-    <p class=header>libics v.1.5 Online Documentation. &copy;2000-2009 by Cris Luengo and others.</p>
+    <p class=header>libics v.1.5 Online Documentation. &copy;2000-2010 by Cris Luengo and others.</p>
 
     <div class="navbar">
       <ul>
@@ -94,10 +94,12 @@
       <tt class="keyword">compress</tt> utility, which uses LZW compression.
       When setting this value for writing, it is automatically translated to
       <tt class="constant">IcsCompr_gzip</tt>, which is a better method.
-      Currently the library is not able to read files written with this
-      compression method. Manually <tt class="keyword">uncompress</tt>
-      the .ids file and edit the <tt class="constant">'.ics'</tt> header
-      to read <tt class="keyword">compression uncompressed</tt>.</li>
+      Files written with this method can be read, but only if all data is
+      read in one go. That is, block-wise reading is not supported. For more
+      flexibility, it is possible to manually <tt class="keyword">uncompress</tt>
+      (<tt class="keyword">gunzip</tt> is also able to do this) the .ids file
+      and edit the <tt class="constant">'.ics'</tt> header to read
+      <tt class="keyword">compression uncompressed</tt>.</li>
 
       <li><tt class="constant">IcsCompr_gzip</tt>: Using the
       <tt class="keyword">gzip</tt> compression method

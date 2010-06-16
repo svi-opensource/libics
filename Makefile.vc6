@@ -43,6 +43,7 @@ LIBOBJECTS = libics_read.obj \
              libics_write.obj \
              libics_binary.obj \
              libics_gzip.obj \
+             libics_compress.obj \
              libics_data.obj \
              libics_util.obj \
              libics_top.obj \

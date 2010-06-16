@@ -40,7 +40,7 @@ host_triplet = x86_64-unknown-linux-gnu
 DIST_COMMON = README $(am__configure_deps) $(include_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/config.h.in $(srcdir)/libics_conf.h.in \
-	$(top_srcdir)/configure INSTALL config.guess config.sub \
+	$(top_srcdir)/configure INSTALL TODO config.guess config.sub \
 	depcomp install-sh ltmain.sh missing
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -64,10 +64,10 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includedir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libics_la_LIBADD =
-am_libics_la_OBJECTS = libics_binary.lo libics_data.lo libics_gzip.lo \
-	libics_history.lo libics_preview.lo libics_read.lo \
-	libics_sensor.lo libics_test.lo libics_top.lo libics_util.lo \
-	libics_write.lo
+am_libics_la_OBJECTS = libics_binary.lo libics_compress.lo \
+	libics_data.lo libics_gzip.lo libics_history.lo \
+	libics_preview.lo libics_read.lo libics_sensor.lo \
+	libics_test.lo libics_top.lo libics_util.lo libics_write.lo
 libics_la_OBJECTS = $(am_libics_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I. -I.
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -97,20 +97,20 @@ DIST_ARCHIVES = $(distdir).tar.gz
 GZIP_ENV = --best
 distuninstallcheck_listfiles = find . -type f -print
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /home/cris/localhome/src/libics/missing --run aclocal-1.9
+ACLOCAL = ${SHELL} /local/home/cris/src/libics/missing --run aclocal-1.9
 AMDEP_FALSE = #
 AMDEP_TRUE = 
-AMTAR = ${SHELL} /home/cris/localhome/src/libics/missing --run tar
+AMTAR = ${SHELL} /local/home/cris/src/libics/missing --run tar
 AR = ar
-AUTOCONF = ${SHELL} /home/cris/localhome/src/libics/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/cris/localhome/src/libics/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/cris/localhome/src/libics/missing --run automake-1.9
+AUTOCONF = ${SHELL} /local/home/cris/src/libics/missing --run autoconf
+AUTOHEADER = ${SHELL} /local/home/cris/src/libics/missing --run autoheader
+AUTOMAKE = ${SHELL} /local/home/cris/src/libics/missing --run automake-1.9
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -g -O2
+CFLAGS = -fPIC
 CPP = gcc -E
-CPPFLAGS = 
+CPPFLAGS = -I/home/cris/include
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
@@ -131,7 +131,7 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = ${SHELL} $(install_sh) -c -s
-LDFLAGS = 
+LDFLAGS = -L/home/cris/lib
 LIBOBJS = 
 LIBS = -lm -lz 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
@@ -140,7 +140,7 @@ LTLIBOBJS =
 MAINT = #
 MAINTAINER_MODE_FALSE = 
 MAINTAINER_MODE_TRUE = #
-MAKEINFO = ${SHELL} /home/cris/localhome/src/libics/missing --run makeinfo
+MAKEINFO = ${SHELL} /local/home/cris/src/libics/missing --run makeinfo
 OBJEXT = o
 PACKAGE = libics
 PACKAGE_BUGREPORT = 
@@ -154,7 +154,7 @@ SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
 STRIP = strip
-VERSION = 1.5.2
+VERSION = 1.5.2dev
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
@@ -185,14 +185,14 @@ host_os = linux-gnu
 host_vendor = unknown
 includedir = ${prefix}/include
 infodir = ${prefix}/info
-install_sh = /home/cris/localhome/src/libics/install-sh
+install_sh = /local/home/cris/src/libics/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localstatedir = ${prefix}/var
 mandir = ${prefix}/man
 mkdir_p = mkdir -p --
 oldincludedir = /usr/include
-prefix = /usr/local
+prefix = /home/cris
 program_transform_name = s,x,x,
 sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com
@@ -207,6 +207,7 @@ libics_la_LDFLAGS = -version-info $(ICS_LT_VERSION)
 # distributed, except for libics_conf.h, which is generated from
 # libics_conf.h.in:
 libics_la_SOURCES = libics_binary.c \
+                    libics_compress.c \
                     libics_data.c \
                     libics_gzip.c \
                     libics_history.c \
@@ -233,7 +234,8 @@ EXTRA_DIST = INSTALL \
              README \
              bootstrap.sh \
              Makefile.bcc \
-             Makefile.vc \
+             Makefile.vc6 \
+             Makefile.vc9 \
              Documentation/index.html \
              Documentation/Credits.html \
              Documentation/Documentation.html \
@@ -363,6 +365,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/libics_binary.Plo
+include ./$(DEPDIR)/libics_compress.Plo
 include ./$(DEPDIR)/libics_data.Plo
 include ./$(DEPDIR)/libics_gzip.Plo
 include ./$(DEPDIR)/libics_history.Plo
