@@ -96,10 +96,9 @@ from the file Makefile.vc.
 
 This library is written and maintained by
    Cris Luengo
-   Life Science Division
-   Lawrence Berkeley National Laboratory
-   One Cyclotron Road, Mail Stop 84R0171
-   Berkeley, CA 94720, USA
+   Centre for Image Analysis
+   Swedish University of Agricultural Sciences & Uppsala University
+   Uppsala, Sweden
 With help from
    Bert Gijsbers, Scientific Volume Imaging BV, Hilversum, NL
       (Most changes for version 1.3)
@@ -141,6 +140,7 @@ version 1.5.2
      history strings (not an exploitable vulnerability).
    - Fixed bug in "l" option to IcsOpen, it behaved in the oposite way
      to that advertised (bug #2943839).
+   The documentation still carries the version number 1.5.
 
 version 1.5.1
    Added functionality:
@@ -155,6 +155,7 @@ version 1.5.1
      if src is shorter than len.
    - The MATLAB MEX-files in support/matlab have finally been updated
      to work on 64-bit platforms.
+   The documentation still carries the version number 1.5.
 
 version 1.5
    Added functionality:
