@@ -1,8 +1,6 @@
 libics to do list
 -----------------
 
-- Put test/ into CVS and have it run through the makefile system.
-
 - Add bzip2 support, or rather xz (through XZ Utils).
 
 - 1-bit-per-pixel data should be packed when written. Ics_DataType

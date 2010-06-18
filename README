@@ -1,5 +1,5 @@
 
-                             libics v.1.5.2dev
+                             libics v.1.5.2
           Image Cytometry Standard file reading and writing.
 
 This is the reference library for ICS (Image Cytometry Standard), an
@@ -52,6 +52,9 @@ Run the following commands from the source directory:
    make
    make install
 Read the INSTALL file for more information.
+
+The library can be tested for problems using
+   make check
 
  - Compilation under Windows with Borland C++
 
@@ -126,11 +129,12 @@ Which ultimately is based upon stuff written by:
    HISTORY
 =============
 
-in CVS (1.5.2dev)
+version 1.5.2
    Added functionality:
    - UNIX make files now also generate a shared object using libtool.
    - Added a Makefile for MSVC9.
    - Added code to read COMPRESS-compressed data (.ids.Z).
+   - Added a test suite for the library.
    Changes / improvements / fixes:
    - Fixed bug in IcsGetDataWithStrides() when stride[0]==1.
    - Fixed buffer overflow in IcsInternAddHistory() when adding lots of

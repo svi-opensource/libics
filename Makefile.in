@@ -14,6 +14,16 @@
 
 @SET_MAKE@
 
+#
+# libics: Image Cytometry Standard file reading and writing.
+#
+# Copyright (C) 2000-2010 Cris Luengo and others
+# email: clluengo@sourceforge.net
+#
+# Script for automake and autoconfig.
+# Written by Peter Verveer, Cris Luengo
+#
+
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -37,6 +47,10 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+check_PROGRAMS = test_ics1$(EXEEXT) test_ics2a$(EXEEXT) \
+	test_ics2b$(EXEEXT) test_compress$(EXEEXT) test_gzip$(EXEEXT) \
+	test_strides$(EXEEXT) test_strides2$(EXEEXT) \
+	test_metadata$(EXEEXT) test_history$(EXEEXT)
 DIST_COMMON = README $(am__configure_deps) $(include_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/config.h.in $(srcdir)/libics_conf.h.in \
@@ -69,6 +83,33 @@ am_libics_la_OBJECTS = libics_binary.lo libics_compress.lo \
 	libics_preview.lo libics_read.lo libics_sensor.lo \
 	libics_test.lo libics_top.lo libics_util.lo libics_write.lo
 libics_la_OBJECTS = $(am_libics_la_OBJECTS)
+am_test_compress_OBJECTS = test_compress.$(OBJEXT)
+test_compress_OBJECTS = $(am_test_compress_OBJECTS)
+test_compress_DEPENDENCIES = libics.la
+am_test_gzip_OBJECTS = test_gzip.$(OBJEXT)
+test_gzip_OBJECTS = $(am_test_gzip_OBJECTS)
+test_gzip_DEPENDENCIES = libics.la
+am_test_history_OBJECTS = test_history.$(OBJEXT)
+test_history_OBJECTS = $(am_test_history_OBJECTS)
+test_history_DEPENDENCIES = libics.la
+am_test_ics1_OBJECTS = test_ics1.$(OBJEXT)
+test_ics1_OBJECTS = $(am_test_ics1_OBJECTS)
+test_ics1_DEPENDENCIES = libics.la
+am_test_ics2a_OBJECTS = test_ics2a.$(OBJEXT)
+test_ics2a_OBJECTS = $(am_test_ics2a_OBJECTS)
+test_ics2a_DEPENDENCIES = libics.la
+am_test_ics2b_OBJECTS = test_ics2b.$(OBJEXT)
+test_ics2b_OBJECTS = $(am_test_ics2b_OBJECTS)
+test_ics2b_DEPENDENCIES = libics.la
+am_test_metadata_OBJECTS = test_metadata.$(OBJEXT)
+test_metadata_OBJECTS = $(am_test_metadata_OBJECTS)
+test_metadata_DEPENDENCIES = libics.la
+am_test_strides_OBJECTS = test_strides.$(OBJEXT)
+test_strides_OBJECTS = $(am_test_strides_OBJECTS)
+test_strides_DEPENDENCIES = libics.la
+am_test_strides2_OBJECTS = test_strides2.$(OBJEXT)
+test_strides2_OBJECTS = $(am_test_strides2_OBJECTS)
+test_strides2_DEPENDENCIES = libics.la
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I. -I.
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -80,8 +121,16 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libics_la_SOURCES)
-DIST_SOURCES = $(libics_la_SOURCES)
+SOURCES = $(libics_la_SOURCES) $(test_compress_SOURCES) \
+	$(test_gzip_SOURCES) $(test_history_SOURCES) \
+	$(test_ics1_SOURCES) $(test_ics2a_SOURCES) \
+	$(test_ics2b_SOURCES) $(test_metadata_SOURCES) \
+	$(test_strides_SOURCES) $(test_strides2_SOURCES)
+DIST_SOURCES = $(libics_la_SOURCES) $(test_compress_SOURCES) \
+	$(test_gzip_SOURCES) $(test_history_SOURCES) \
+	$(test_ics1_SOURCES) $(test_ics2a_SOURCES) \
+	$(test_ics2b_SOURCES) $(test_metadata_SOURCES) \
+	$(test_strides_SOURCES) $(test_strides2_SOURCES)
 includeHEADERS_INSTALL = $(INSTALL_HEADER)
 HEADERS = $(include_HEADERS)
 ETAGS = etags
@@ -227,6 +276,34 @@ include_HEADERS = libics.h \
                   libics_sensor.h \
                   libics_test.h
 
+test_ics1_SOURCES = test_ics1.c
+test_ics2a_SOURCES = test_ics2a.c
+test_ics2b_SOURCES = test_ics2b.c
+test_compress_SOURCES = test_compress.c
+test_gzip_SOURCES = test_gzip.c
+test_strides_SOURCES = test_strides.c
+test_strides2_SOURCES = test_strides2.c
+test_metadata_SOURCES = test_metadata.c
+test_history_SOURCES = test_history.c
+test_ics1_LDADD = libics.la
+test_ics2a_LDADD = libics.la
+test_ics2b_LDADD = libics.la
+test_compress_LDADD = libics.la
+test_gzip_LDADD = libics.la
+test_strides_LDADD = libics.la
+test_strides2_LDADD = libics.la
+test_metadata_LDADD = libics.la
+test_history_LDADD = libics.la
+TESTS = test_ics1.sh \
+        test_ics2a.sh \
+        test_ics2b.sh \
+        test_compress.sh \
+        test_gzip.sh \
+        test_strides.sh \
+        test_strides2.sh \
+        test_metadata.sh \
+        test_history.sh
+
 
 # list other files that must go into the distribution:
 EXTRA_DIST = INSTALL \
@@ -261,7 +338,12 @@ EXTRA_DIST = INSTALL \
              support/matlab/README \
              support/matlab/icsread.c \
              support/matlab/icswrite.c \
-             support/matlab/makefile
+             support/matlab/makefile \
+             test/testim.ics \
+             test/testim.ids \
+             test/testim_c.ics \
+             test/testim_c.ids.Z \
+             $(TESTS)
 
 all: config.h libics_conf.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -358,6 +440,40 @@ clean-libLTLIBRARIES:
 libics.la: $(libics_la_OBJECTS) $(libics_la_DEPENDENCIES) 
 	$(LINK) -rpath $(libdir) $(libics_la_LDFLAGS) $(libics_la_OBJECTS) $(libics_la_LIBADD) $(LIBS)
 
+clean-checkPROGRAMS:
+	@list='$(check_PROGRAMS)'; for p in $$list; do \
+	  f=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
+	  echo " rm -f $$p $$f"; \
+	  rm -f $$p $$f ; \
+	done
+test_compress$(EXEEXT): $(test_compress_OBJECTS) $(test_compress_DEPENDENCIES) 
+	@rm -f test_compress$(EXEEXT)
+	$(LINK) $(test_compress_LDFLAGS) $(test_compress_OBJECTS) $(test_compress_LDADD) $(LIBS)
+test_gzip$(EXEEXT): $(test_gzip_OBJECTS) $(test_gzip_DEPENDENCIES) 
+	@rm -f test_gzip$(EXEEXT)
+	$(LINK) $(test_gzip_LDFLAGS) $(test_gzip_OBJECTS) $(test_gzip_LDADD) $(LIBS)
+test_history$(EXEEXT): $(test_history_OBJECTS) $(test_history_DEPENDENCIES) 
+	@rm -f test_history$(EXEEXT)
+	$(LINK) $(test_history_LDFLAGS) $(test_history_OBJECTS) $(test_history_LDADD) $(LIBS)
+test_ics1$(EXEEXT): $(test_ics1_OBJECTS) $(test_ics1_DEPENDENCIES) 
+	@rm -f test_ics1$(EXEEXT)
+	$(LINK) $(test_ics1_LDFLAGS) $(test_ics1_OBJECTS) $(test_ics1_LDADD) $(LIBS)
+test_ics2a$(EXEEXT): $(test_ics2a_OBJECTS) $(test_ics2a_DEPENDENCIES) 
+	@rm -f test_ics2a$(EXEEXT)
+	$(LINK) $(test_ics2a_LDFLAGS) $(test_ics2a_OBJECTS) $(test_ics2a_LDADD) $(LIBS)
+test_ics2b$(EXEEXT): $(test_ics2b_OBJECTS) $(test_ics2b_DEPENDENCIES) 
+	@rm -f test_ics2b$(EXEEXT)
+	$(LINK) $(test_ics2b_LDFLAGS) $(test_ics2b_OBJECTS) $(test_ics2b_LDADD) $(LIBS)
+test_metadata$(EXEEXT): $(test_metadata_OBJECTS) $(test_metadata_DEPENDENCIES) 
+	@rm -f test_metadata$(EXEEXT)
+	$(LINK) $(test_metadata_LDFLAGS) $(test_metadata_OBJECTS) $(test_metadata_LDADD) $(LIBS)
+test_strides$(EXEEXT): $(test_strides_OBJECTS) $(test_strides_DEPENDENCIES) 
+	@rm -f test_strides$(EXEEXT)
+	$(LINK) $(test_strides_LDFLAGS) $(test_strides_OBJECTS) $(test_strides_LDADD) $(LIBS)
+test_strides2$(EXEEXT): $(test_strides2_OBJECTS) $(test_strides2_DEPENDENCIES) 
+	@rm -f test_strides2$(EXEEXT)
+	$(LINK) $(test_strides2_LDFLAGS) $(test_strides2_OBJECTS) $(test_strides2_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -376,6 +492,15 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libics_top.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libics_util.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libics_write.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_compress.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_gzip.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_history.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_ics1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_ics2a.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_ics2b.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_metadata.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_strides.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_strides2.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -473,10 +598,83 @@ GTAGS:
 distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
+check-TESTS: $(TESTS)
+	@failed=0; all=0; xfail=0; xpass=0; skip=0; \
+	srcdir=$(srcdir); export srcdir; \
+	list='$(TESTS)'; \
+	if test -n "$$list"; then \
+	  for tst in $$list; do \
+	    if test -f ./$$tst; then dir=./; \
+	    elif test -f $$tst; then dir=; \
+	    else dir="$(srcdir)/"; fi; \
+	    if $(TESTS_ENVIRONMENT) $${dir}$$tst; then \
+	      all=`expr $$all + 1`; \
+	      case " $(XFAIL_TESTS) " in \
+	      *" $$tst "*) \
+		xpass=`expr $$xpass + 1`; \
+		failed=`expr $$failed + 1`; \
+		echo "XPASS: $$tst"; \
+	      ;; \
+	      *) \
+		echo "PASS: $$tst"; \
+	      ;; \
+	      esac; \
+	    elif test $$? -ne 77; then \
+	      all=`expr $$all + 1`; \
+	      case " $(XFAIL_TESTS) " in \
+	      *" $$tst "*) \
+		xfail=`expr $$xfail + 1`; \
+		echo "XFAIL: $$tst"; \
+	      ;; \
+	      *) \
+		failed=`expr $$failed + 1`; \
+		echo "FAIL: $$tst"; \
+	      ;; \
+	      esac; \
+	    else \
+	      skip=`expr $$skip + 1`; \
+	      echo "SKIP: $$tst"; \
+	    fi; \
+	  done; \
+	  if test "$$failed" -eq 0; then \
+	    if test "$$xfail" -eq 0; then \
+	      banner="All $$all tests passed"; \
+	    else \
+	      banner="All $$all tests behaved as expected ($$xfail expected failures)"; \
+	    fi; \
+	  else \
+	    if test "$$xpass" -eq 0; then \
+	      banner="$$failed of $$all tests failed"; \
+	    else \
+	      banner="$$failed of $$all tests did not behave as expected ($$xpass unexpected passes)"; \
+	    fi; \
+	  fi; \
+	  dashes="$$banner"; \
+	  skipped=""; \
+	  if test "$$skip" -ne 0; then \
+	    skipped="($$skip tests were not run)"; \
+	    test `echo "$$skipped" | wc -c` -le `echo "$$banner" | wc -c` || \
+	      dashes="$$skipped"; \
+	  fi; \
+	  report=""; \
+	  if test "$$failed" -ne 0 && test -n "$(PACKAGE_BUGREPORT)"; then \
+	    report="Please report to $(PACKAGE_BUGREPORT)"; \
+	    test `echo "$$report" | wc -c` -le `echo "$$banner" | wc -c` || \
+	      dashes="$$report"; \
+	  fi; \
+	  dashes=`echo "$$dashes" | sed s/./=/g`; \
+	  echo "$$dashes"; \
+	  echo "$$banner"; \
+	  test -z "$$skipped" || echo "$$skipped"; \
+	  test -z "$$report" || echo "$$report"; \
+	  echo "$$dashes"; \
+	  test "$$failed" -eq 0; \
+	else :; fi
+
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/Documentation $(distdir)/m4 $(distdir)/support/icsviewer $(distdir)/support/matlab
+	$(mkdir_p) $(distdir)/Documentation $(distdir)/m4 $(distdir)/support/icsviewer $(distdir)/support/matlab $(distdir)/test
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -601,6 +799,8 @@ distcleancheck: distclean
 	       $(distcleancheck_listfiles) ; \
 	       exit 1; } >&2
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
+	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
 all-am: Makefile $(LTLIBRARIES) $(HEADERS) config.h libics_conf.h
 installdirs:
@@ -633,8 +833,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
-	mostlyclean-am
+clean-am: clean-checkPROGRAMS clean-generic clean-libLTLIBRARIES \
+	clean-libtool mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
@@ -673,7 +873,7 @@ maintainer-clean-am: distclean-am maintainer-clean-generic
 mostlyclean: mostlyclean-am
 
 mostlyclean-am: mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool
+	mostlyclean-libtool mostlyclean-local
 
 pdf: pdf-am
 
@@ -686,22 +886,28 @@ ps-am:
 uninstall-am: uninstall-includeHEADERS uninstall-info-am \
 	uninstall-libLTLIBRARIES
 
-.PHONY: CTAGS GTAGS all all-am am--refresh check check-am clean \
-	clean-generic clean-libLTLIBRARIES clean-libtool ctags dist \
-	dist-all dist-bzip2 dist-gzip dist-shar dist-tarZ dist-zip \
-	distcheck distclean distclean-compile distclean-generic \
-	distclean-hdr distclean-libtool distclean-tags distcleancheck \
-	distdir distuninstallcheck dvi dvi-am html html-am info \
-	info-am install install-am install-data install-data-am \
-	install-exec install-exec-am install-includeHEADERS \
-	install-info install-info-am install-libLTLIBRARIES \
-	install-man install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
+.PHONY: CTAGS GTAGS all all-am am--refresh check check-TESTS check-am \
+	clean clean-checkPROGRAMS clean-generic clean-libLTLIBRARIES \
+	clean-libtool ctags dist dist-all dist-bzip2 dist-gzip \
+	dist-shar dist-tarZ dist-zip distcheck distclean \
+	distclean-compile distclean-generic distclean-hdr \
+	distclean-libtool distclean-tags distcleancheck distdir \
+	distuninstallcheck dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am install-exec \
+	install-exec-am install-includeHEADERS install-info \
+	install-info-am install-libLTLIBRARIES install-man \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	mostlyclean-local pdf pdf-am ps ps-am tags uninstall \
 	uninstall-am uninstall-includeHEADERS uninstall-info-am \
 	uninstall-libLTLIBRARIES
 
+
+# list other files that should be cleaned
+#MOSTLYCLEANFILES = result_v1.ics result_v1.ids  result_v2a.ics result_v2b.ics
+mostlyclean-local:
+	-rm -f result*
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

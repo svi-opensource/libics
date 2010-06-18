@@ -19,6 +19,11 @@ Specific options of the configure script for libics are:
 
 --disable-zlib also implies --disable-gz-extensions.
 
+For instructions to compile under Windows with MS Visual C++ or Borland
+compilers, see the README file.
+
+
+
 Here are the generic installation instructions:
 
 Basic Installation
