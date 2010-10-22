@@ -33,6 +33,12 @@ SHARED = 1
 #
 ZLIB_SUPPORT = 1
 
+!if $(ZLIB_SUPPORT)
+# change the path to fit the location of Zlib on your computer
+ZLIB_PATH = D:\devel\lib\zlib
+ZLIB_LIB = $(ZLIB_PATH)\lib\zlib.lib
+!endif
+
 #
 # Microsoft C++ tools and paths
 #
@@ -74,9 +80,6 @@ CFLAGS = $(CFLAGS) /MD /O2
 !endif
 
 !if $(ZLIB_SUPPORT)
-# change the path to fit the location of your software
-ZLIB_PATH = D:\devel\lib\zlib
-ZLIB_LIB = $(ZLIB_PATH)\lib\cbia.lib.z.dyn.rel.x86.9.lib
 DEFINES = $(DEFINES) /DICS_ZLIB
 INCLUDE = $(INCLUDE) /I"$(ZLIB_PATH)\include"
 LIBS = $(LIBS) "$(ZLIB_LIB)"

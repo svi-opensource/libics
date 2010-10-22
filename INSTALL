@@ -1,6 +1,15 @@
 Installation of libics
 ======================
 
+This file gives instructions to compile and install libics using the GNU
+tools. This requires Unix, Linux, Mac OS X, or Windows with Cygwin or
+MinGW installed.
+
+For instructions to compile under Windows with MS Visual C++ or Borland
+compilers, see the README file.
+
+
+
 For a quick install do the following in the package directory:
 
   ./configure
@@ -9,18 +18,15 @@ For a quick install do the following in the package directory:
 
 Specific options of the configure script for libics are:
 
-  --disable-gz-extensions disable .ids.gz and .ids.Z extensions (enabled by
-                          default)
-  --disable-zlib          disable zlib usage (required for zip compression,
-                          enabled by default)
+  --disable-gz-extensions disable .ids.gz and .ids.Z extensions (enabled
+                          by default)
+  --disable-zlib          disable zlib usage (required for zip
+                          compression, enabled by default)
   --with-zlib-include-dir=DIR
                           location of zlib headers
   --with-zlib-lib-dir=DIR location of zlib library binary
 
 --disable-zlib also implies --disable-gz-extensions.
-
-For instructions to compile under Windows with MS Visual C++ or Borland
-compilers, see the README file.
 
 
 

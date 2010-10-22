@@ -41,14 +41,20 @@ If your version of MATLAB is 7.3 or newer, remove the line at
 the top of both source files that defines mwSize.
 
 Within MATLAB (on UNIX), type
-  mex -I<icspath> icsread.c /<icspath>/libics.a /<zpath>/libz.a
-  mex -I<icspath> icswrite.c /<icspath>/libics.a /<zpath>/libz.a
+  mex -I<icspath> icsread.c <icspath>/libics.a <zpath>/libz.a
+  mex -I<icspath> icswrite.c <icspath>/libics.a <zpath>/libz.a
 from the directory containing both source files.
 
 Within MATLAB (on Windows), type:
-  mex -I<icspath> icsread.c <icspath>\libics.lib <zpath>\libz.lib
-  mex -I<icspath> icswrite.c <icspath>\libics.lib <zpath>\libz.lib
-from the directory containing both source files.
+  mex -I<icspath> -DWIN32 icsread.c <icspath>\libics.lib <zpath>\libz.lib
+  mex -I<icspath> -DWIN32 icswrite.c <icspath>\libics.lib <zpath>\libz.lib
+from the directory containing both source files. If you compiled
+the dynamic version of libics (DLL) you should type this instead:
+  mex -I<icspath> -DWIN32 -DUSE_ICSLIB_DLL icsread.c <icspath>\libics.lib <zpath>\libz.lib
+  mex -I<icspath> -DWIN32 -DUSE_ICSLIB_DLL icswrite.c <icspath>\libics.lib <zpath>\libz.lib
+Finally, if you used MinGW or Cygwin under Windows to compile libics,
+you can use Gnumex (http://gnumex.sourceforge.net/) to configure your
+MEX script correctly.
 
 Alternatively, use the makefile from the system's prompt. The
 provided makefile is written for both Borland BCC and Microsoft
@@ -58,6 +64,6 @@ the makefile.
 
 
 -------------------------------------------------------------
-Copyright (C) 2000-2007 Cris Luengo and others
+Copyright (C) 2000-2010 Cris Luengo and others
 email: clluengo@users.sourceforge.net
 -------------------------------------------------------------

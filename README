@@ -45,7 +45,7 @@ Obtain the source distribution from
    http://sourceforge.net/projects/libics .
 It is recommended you also install zlib (http://www.zlib.org).
 
- - Compilation under UNIX / Linux / Cygwin
+ - Compilation under UNIX / Linux / Mac OS X / Cygwin
 
 Run the following commands from the source directory:
    ./configure
@@ -61,22 +61,27 @@ The library can be tested for problems using
 Edit the paths defined at the beginning of Makefile.bcc, then type
    make -f Makefile.bcc
 from a command prompt in the source directory. This will create a file
-libics.lib in the same directory. To build a dynamic library, type
+libics.lib in the same directory. To build a dynamic library (DLL), type
    make -f Makefile.bcc dynamic
 The dynamic library libics.dll has an import library named
 libics.dll.lib. To make a debug version add '-DDEBUG' to these commands.
 To disable zlib support, remove the definition of ZLIB_SUPPORT from the
 file Makefile.bcc.
+When compiling a program that uses the dynamic library, you need to
+define the USE_ICSLIB_DLL pre-processor variable.
 
  - Compilation under Windows with Microsoft Visual C++ 9
 
-Edit the paths defined in Makefile.vc9, then type
+Edit the path to Zlib defined at the beginning of Makefile.vc9, then
+type
    nmake /f Makefile.vc9
-from a command prompt in the source directory. This will create a dynamic
-library libics.dll in the same directory, and an import library libics.lib.
-Change the definitions of SHARED or DEBUG in the makefile to create static
-and/or debug versions of the library. To disable zlib support, remove the
-definition of ZLIB_SUPPORT from the makefile.
+from a command prompt in the source directory. This will create a
+dynamic library libics.dll in the same directory, and an import library
+libics.lib. Change the definitions of SHARED or DEBUG in the makefile to
+create static and/or debug versions of the library. To disable zlib
+support, remove the definition of ZLIB_SUPPORT from the makefile.
+When compiling a program that uses the dynamic library, you need to
+define the USE_ICSLIB_DLL pre-processor variable.
 
  - Compilation under Windows with older versions of Microsoft Visual C++
 
