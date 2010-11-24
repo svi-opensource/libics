@@ -297,7 +297,7 @@ void IcsInit (Ics_Header* IcsStruct)
 {
    int ii;
 
-   IcsStruct->Version = 1; /* We write an ICS v.1.0 as default */
+   IcsStruct->Version = 2; /* We write an ICS v.2.0 as default */
    IcsStruct->FileMode = IcsFileMode_write;
    IcsStruct->Data = NULL;
    IcsStruct->DataLength = 0;

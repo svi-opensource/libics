@@ -608,7 +608,7 @@ static Ics_Error MarkEndOfFile (Ics_Header* IcsStruct, FILE* fp)
    ICSINIT;
    char line[ICS_LINE_LENGTH];
 
-   if ((IcsStruct->Version >= 2) && (IcsStruct->SrcFile[0] == '\0')) {
+   if ((IcsStruct->Version ~= 1) && (IcsStruct->SrcFile[0] == '\0')) {
       error = IcsFirstToken (line, ICSTOK_END);
       ICSTR( error, IcsErr_FailWriteLine );
       IcsAppendChar (line, ICS_EOL);

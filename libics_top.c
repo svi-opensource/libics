@@ -136,7 +136,9 @@ Ics_Error IcsOpen (ICS* *ics, char const* filename, char const* mode)
       /* We're writing */
       IcsInit (*ics);
       (*ics)->FileMode = IcsFileMode_write;
-      (*ics)->Version = version;
+      if (version) {
+         (*ics)->Version = version;
+      }
       IcsStrCpy ((*ics)->Filename, filename, ICS_MAXPATHLEN);
    }
    else {
