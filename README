@@ -133,6 +133,13 @@ Which ultimately is based upon stuff written by:
    HISTORY
 =============
 
+repository
+   Changes / improvements / fixes:
+   - Fixed documentation and made explicit the current default to version
+   2.0 files.
+   - Added a "links" page to the documentation.
+
+
 version 1.5.2
    Added functionality:
    - UNIX make files now also generate a shared object using libtool.
