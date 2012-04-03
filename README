@@ -138,6 +138,8 @@ repository
    - Fixed documentation and made explicit the current default to version
    2.0 files.
    - Added a "links" page to the documentation.
+   - Fixed tests 1 and 2a, which didn't work for big-endian machines.
+   - IcsWriteIcs() no longer overwrites data in the ByteOrder array.
 
 
 version 1.5.2

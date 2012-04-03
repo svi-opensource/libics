@@ -321,7 +321,7 @@ static Ics_Error WriteIcsLayout (Ics_Header* IcsStruct, FILE* fp)
 static Ics_Error WriteIcsRep (Ics_Header* IcsStruct, FILE* fp)
 {
    ICSDECL;
-   int problem, ii;
+   int problem, empty, ii;
    char line[ICS_LINE_LENGTH];
    Ics_Format Format;
    int Sign;
@@ -382,9 +382,15 @@ static Ics_Error WriteIcsRep (Ics_Header* IcsStruct, FILE* fp)
    ICSXR( IcsAddLine (line, fp) );
 
    /* Define the byteorder. This is supposed to resolve little/big
-    * endian problems. We will overwrite anything the calling function
-    * put in here. This must be the machine's byte order. */
-   IcsFillByteOrder (IcsGetDataTypeSize (IcsStruct->Imel.DataType), IcsStruct->ByteOrder);
+    * endian problems. If the calling function put something here,
+    * we'll keep it. Otherwise we fill in the machine's byte order. */
+   empty = 0;
+   for (ii = 0; ii < (int)IcsGetDataTypeSize (IcsStruct->Imel.DataType); ii++) {
+      empty |= !(IcsStruct->ByteOrder[ii]);
+   }
+   if (empty) {
+      IcsFillByteOrder (IcsGetDataTypeSize (IcsStruct->Imel.DataType), IcsStruct->ByteOrder);
+   }
    problem = IcsFirstToken (line, ICSTOK_REPRES);
    problem |= IcsAddToken (line, ICSTOK_BYTEO);
    for (ii = 0; ii < (int)IcsGetDataTypeSize (IcsStruct->Imel.DataType) - 1; ii++) {
@@ -608,7 +614,7 @@ static Ics_Error MarkEndOfFile (Ics_Header* IcsStruct, FILE* fp)
    ICSINIT;
    char line[ICS_LINE_LENGTH];
 
-   if ((IcsStruct->Version ~= 1) && (IcsStruct->SrcFile[0] == '\0')) {
+   if ((IcsStruct->Version != 1) && (IcsStruct->SrcFile[0] == '\0')) {
       error = IcsFirstToken (line, ICSTOK_END);
       ICSTR( error, IcsErr_FailWriteLine );
       IcsAppendChar (line, ICS_EOL);
