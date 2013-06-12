@@ -1,7 +1,7 @@
 #
 # libics: Image Cytometry Standard file reading and writing.
 #
-# Copyright (C) 2000-2010 Cris Luengo and others
+# Copyright (C) 2000-2013 Cris Luengo and others
 # email: clluengo@sourceforge.net
 #
 # Script for automake and autoconfig.

@@ -1,7 +1,7 @@
 dnl
 dnl libics: Image Cytometry Standard file reading and writing.
 dnl
-dnl Copyright (C) 2000-2010 Cris Luengo and others
+dnl Copyright (C) 2000-2013 Cris Luengo and others
 dnl email: clluengo@sourceforge.net
 dnl
 dnl Script for automake and autoconfig.

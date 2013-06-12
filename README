@@ -140,7 +140,8 @@ repository
    - Added a "links" page to the documentation.
    - Fixed tests 1 and 2a, which didn't work for big-endian machines.
    - IcsWriteIcs() no longer overwrites data in the ByteOrder array.
-
+   - Fixed a segmentation violation when trying to write an image with
+   more than 5 dimensions.
 
 version 1.5.2
    Added functionality:
