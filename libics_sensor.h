@@ -45,10 +45,11 @@ extern "C" {
 ICSEXPORT Ics_Error IcsEnableWriteSensor (ICS* ics, int enable);
 /* This function enables writing the sensor parameters to disk. */
 
-ICSEXPORT char const* IcsGetSensorType (ICS const* ics);
+ICSEXPORT char const* IcsGetSensorType (ICS const* ics, int channel);
 /* Get the sensor type string. */
 
-ICSEXPORT Ics_Error IcsSetSensorType (ICS* ics, char const* sensor_type);
+ICSEXPORT Ics_Error IcsSetSensorType (ICS* ics, int channel,
+                                          char const* sensor_type);
 /* Set the sensor type string. */
 
 ICSEXPORT char const* IcsGetSensorModel (ICS const* ics);
@@ -111,6 +112,40 @@ ICSEXPORT double IcsGetSensorPinholeSpacing (ICS const* ics);
 ICSEXPORT Ics_Error IcsSetSensorPinholeSpacing (ICS* ics, double spacing);
 /* Set the sensor Nipkow Disk pinhole spacing. */
 
+ICSEXPORT char const* IcsGetSensorSTEDDepletionMode (ICS const* ics, int channel);
+/* Get the STED depletion mode. */
+
+ICSEXPORT Ics_Error IcsSetSensorSTEDDepletionMode(ICS* ics, int channel,
+                                                  char const* sted_mode);
+/* Set the STED depletion mode */
+
+ICSEXPORT double IcsGetSensorSTEDLambda (ICS const* ics, int channel);
+/* Get the STED inhibition wavelength */
+    
+ICSEXPORT Ics_Error IcsSetSensorSTEDLambda(ICS* ics, int channel,
+                                           double lambda);
+/* Set the STED inhibition wavelength */
+
+ICSEXPORT double IcsGetSensorSTEDSatFactor(ICS const* ics, int channel);
+/* Get the STED saturation factor */
+
+ICSEXPORT Ics_Error IcsSetSensorSTEDSatFactor(ICS* ics, int channel,
+                                              double factor);
+/* Set the STED saturation factor */
+
+ICSEXPORT double IcsGetSensorSTEDImmFraction(ICS const* ics, int channel);
+/* Get the fraction that is not inhibited by STED */
+    
+ICSEXPORT Ics_Error IcsSetSensorSTEDImmFraction(ICS* ics, int channel,
+                                                double fraction);
+/* Set the fraction that is not inhibited by STED */
+
+ICSEXPORT double IcsGetSensorSTEDVPPM(ICS const* ics, int channel);
+/* Get the STED  vortex to phase plate mix fraction */
+    
+ICSEXPORT Ics_Error IcsSetSensorSTEDVPPM(ICS* ics, int channel, double vppm);
+/* Set the STED vortex to phase plate mix fraction */
+    
 #ifdef __cplusplus
 }
 #endif

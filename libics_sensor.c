@@ -42,6 +42,11 @@
  *   IcsSetSensorLensRI
  *   IcsSetSensorNumAperture
  *   IcsSetSensorPinholeSpacing
+ *   IcsSetSTEDMode
+ *   IcsSetSTEDLambda
+ *   IcsSetSTEDSaturationFactor
+ *   IcsSetSTEDImmunityFactor
+ *   IcsSetSTEDVortexToPhasePlateMix
  */
 
 #include <stdlib.h>
@@ -61,20 +66,21 @@ Ics_Error IcsEnableWriteSensor (ICS* ics, int enable)
 }
 
 /*
- * Get the sensor type string.
+ * Get the sensor type string of a sensor channel.
  */
-char const* IcsGetSensorType (ICS const* ics)
+char const* IcsGetSensorType (ICS const* ics, int channel)
 {
-    return ics->Type;
+    return ics->Type[channel];
 }
 
 /*
- * Set the sensor type string.
+ * Set the sensor type string for a sensor channel.
  */
-Ics_Error IcsSetSensorType (ICS* ics, char const* sensor_type)
+Ics_Error IcsSetSensorType (ICS* ics, int channel,
+                            char const* sensor_type)
 {
     ICS_FM_WMD( ics );
-    IcsStrCpy (ics->Type, sensor_type, sizeof(ics->Type));
+    IcsStrCpy (ics->Type[channel], sensor_type, sizeof(ics->Type[channel]));
     return IcsErr_Ok;
 }
 
@@ -272,5 +278,118 @@ Ics_Error IcsSetSensorPinholeSpacing (ICS* ics, double spacing)
 {
     ICS_FM_WMD( ics );
     ics->PinholeSpacing = spacing;
+    return IcsErr_Ok;
+}
+
+/*
+ * Get the STED mode per channel.
+ */
+char const*  IcsGetSensorSTEDDepletionMode(ICS const* ics, int channel)
+{
+    if (channel < 0 || channel >= ics->SensorChannels)
+        return 0;
+    else
+        return ics->StedDepletionMode[channel];
+}
+
+/*
+ * Set the STED depletion mode per channel.
+ */
+Ics_Error IcsSetSensorSTEDDepletionMode(ICS* ics, int channel,
+                         char const* depletion_mode)
+{
+    ICS_FM_WMD( ics );
+    ICSTR( channel < 0 || channel >= ics->SensorChannels, IcsErr_NotValidAction );
+    IcsStrCpy (ics->StedDepletionMode[channel], depletion_mode,
+               sizeof(ics->StedDepletionMode[channel]));
+    return IcsErr_Ok;
+}
+
+/*
+ * Get the STED inhibition wavelength per channel.
+ */
+double IcsGetSensorSTEDLambda (ICS const* ics, int channel)
+{
+    if (channel < 0 || channel >= ics->SensorChannels)
+        return 0;
+    else
+        return ics->StedLambda[channel];
+}
+
+    /*
+     * Set the STED inhibition wavelength per channel.
+     */
+Ics_Error IcsSetSensorSTEDLambda (ICS* ics, int channel, double lambda)
+{
+    ICS_FM_WMD( ics );
+    ICSTR( channel < 0 || channel >= ics->SensorChannels, IcsErr_NotValidAction );
+    ics->StedLambda[channel] = lambda;
+        return IcsErr_Ok;
+}
+
+/*
+ * Get the STED saturation factor per channel.
+ */
+double IcsGetSensorSTEDSatFactor (ICS const* ics, int channel)
+{
+    if (channel < 0 || channel >= ics->SensorChannels)
+        return 0;
+    else
+        return ics->StedSatFactor[channel];
+}
+
+/*
+ * Set the STED saturation factor per channel.
+ */
+Ics_Error IcsSetSensorSTEDSatFactor (ICS* ics, int channel, double factor)
+{
+    ICS_FM_WMD( ics );
+    ICSTR( channel < 0 || channel >= ics->SensorChannels, IcsErr_NotValidAction );
+    ics->StedSatFactor[channel] = factor;
+    return IcsErr_Ok;
+}
+
+    /*
+     * Get the STED immunity fraction per channel.
+     */
+double IcsGetSensorSTEDImmFraction (ICS const* ics, int channel)
+{
+    if (channel < 0 || channel >= ics->SensorChannels)
+        return 0;
+    else
+        return ics->StedImmFraction[channel];
+}
+
+    /*
+     * Set the STED immunity fraction per channel.
+     */
+Ics_Error IcsSetSensorSTEDImmFraction (ICS* ics, int channel, double fraction)
+{
+    ICS_FM_WMD( ics );
+    ICSTR( channel < 0 || channel >= ics->SensorChannels, IcsErr_NotValidAction );
+    ics->StedImmFraction[channel] = fraction;
+        return IcsErr_Ok;
+}
+
+    /*
+     * Get the STED vortex to phase plate mix per channel.
+     */
+double IcsGetSensorSTEDVPPM (ICS const* ics, int channel)
+{
+    if (channel < 0 || channel >= ics->SensorChannels)
+        return 0;
+    else
+        return ics->StedVPPM[channel];
+}
+
+    /*
+     * Set the STED vortex to phase plate mix per channel.
+     */
+Ics_Error IcsSetSensorSTEDVPPM (ICS* ics, int channel, double vppm)
+{
+    ICS_FM_WMD( ics );
+
+    ICSTR( channel < 0 || channel >= ics->SensorChannels, IcsErr_NotValidAction );
+    ics->StedVPPM[channel] = vppm;
     return IcsErr_Ok;
 }

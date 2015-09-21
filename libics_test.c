@@ -126,7 +126,10 @@ void IcsPrintIcs (ICS const* ics)
 #endif
    }
    printf ("Sensor data: \n");
-   printf ("   Sensor type: %s\n", ics->Type);
+   printf ("   Sensor type:");
+   for (ii=0; ii< ics->SensorChannels; ii++)
+       printf(" %s", ics->Type[ii]);
+   printf("\n");
    printf ("   Sensor model: %s\n", ics->Model);
    printf ("   SensorChannels: %d\n", ics->SensorChannels);
    printf ("   RefrInxMedium: %f\n", ics->RefrInxMedium);

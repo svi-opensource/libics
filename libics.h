@@ -138,42 +138,48 @@ typedef struct {
  *  the ICS file:
  */
 typedef struct _ICS {
-    int Version;                               /* ICS version: 1 for v.1.0, 2 for v.2.0 */
-    Ics_FileMode FileMode;                     /* How the ICS file was opened. Used by top-level only */
-    void const* Data;                          /* Pointer to the data to write */
-    size_t DataLength;                         /* Size of the data buffer */
-    size_t const* DataStrides;                 /* Distance in pixels to the neighbors (writing only) */
-    char Filename[ICS_MAXPATHLEN];             /* '.ics' filename (including path) */
-    int Dimensions;                            /* Number of elements in Dim */
-    Ics_DataRepresentation Dim[ICS_MAXDIM];    /* Image representaion */
-    Ics_ImelRepresentation Imel;               /* Imel representation */
-    char Coord[ICS_STRLEN_TOKEN];              /* Coordinate system used */
-    Ics_Compression Compression;               /* Compression technique used */
-    int CompLevel;                             /* Parameter for the compression */
-    int ByteOrder[ICS_MAX_IMEL_SIZE];          /* Byte storage order */
-    void* History;                             /* History strings */
+    int Version;                                              /* ICS version: 1 for v.1.0, 2 for v.2.0 */
+    Ics_FileMode FileMode;                                    /* How the ICS file was opened. Used by top-level only */
+    void const* Data;                                         /* Pointer to the data to write */
+    size_t DataLength;                                        /* Size of the data buffer */
+    size_t const* DataStrides;                                /* Distance in pixels to the neighbors (writing only) */
+    char Filename[ICS_MAXPATHLEN];                            /* '.ics' filename (including path) */
+    int Dimensions;                                           /* Number of elements in Dim */
+    Ics_DataRepresentation Dim[ICS_MAXDIM];                   /* Image representaion */
+    Ics_ImelRepresentation Imel;                              /* Imel representation */
+    char Coord[ICS_STRLEN_TOKEN];                             /* Coordinate system used */
+    Ics_Compression Compression;                              /* Compression technique used */
+    int CompLevel;                                            /* Parameter for the compression */
+    int ByteOrder[ICS_MAX_IMEL_SIZE];                         /* Byte storage order */
+    void* History;                                            /* History strings */
 
     /* To read the data in blocks we need this: */
-    void* BlockRead;                           /* Contains the status of the data file */
+    void* BlockRead;                                          /* Contains the status of the data file */
 
     /* New ICS v. 2.0 parameters: */
-    char SrcFile[ICS_MAXPATHLEN];              /* Source file name */
-    size_t SrcOffset;                          /* Offset into source file */
+    char SrcFile[ICS_MAXPATHLEN];                             /* Source file name */
+    size_t SrcOffset;                                         /* Offset into source file */
 
     /* Special microscopic parameters: */
-    int WriteSensor;                           /* Set to 1 if the next params are needed */
-    char Type[ICS_STRLEN_TOKEN];               /* sensor type */
-    char Model[ICS_STRLEN_OTHER];              /* model or make */
-    int SensorChannels;                        /* Number of channels */
-    double PinholeRadius[ICS_MAX_LAMBDA];      /* Backprojected microns */
-    double LambdaEx[ICS_MAX_LAMBDA];           /* Excitation wavelength in nanometers */
-    double LambdaEm[ICS_MAX_LAMBDA];           /* Emission wavelength in nm */
-    int ExPhotonCnt[ICS_MAX_LAMBDA];           /* # of excitation photons */
-    double RefrInxMedium;                      /* Refractive index of embedding medium */
-    double NumAperture;                        /* Numerical Aperture */
-    double RefrInxLensMedium;                  /* Refractive index of design medium */
-    double PinholeSpacing;                     /* Nipkow Disk pinhole spacing */
+    int WriteSensor;                                          /* Set to 1 if the next params are needed */
+    char Type[ICS_MAX_LAMBDA][ICS_STRLEN_TOKEN];              /* sensor type */
+    char Model[ICS_STRLEN_OTHER];                             /* model or make */
+    int SensorChannels;                                       /* Number of channels */
+    double PinholeRadius[ICS_MAX_LAMBDA];                     /* Backprojected microns */
+    double LambdaEx[ICS_MAX_LAMBDA];                          /* Excitation wavelength in nanometers */
+    double LambdaEm[ICS_MAX_LAMBDA];                          /* Emission wavelength in nm */
+    int ExPhotonCnt[ICS_MAX_LAMBDA];                          /* # of excitation photons */
+    double RefrInxMedium;                                     /* Refractive index of embedding medium */
+    double NumAperture;                                       /* Numerical Aperture */
+    double RefrInxLensMedium;                                 /* Refractive index of design medium */
+    double PinholeSpacing;                                    /* Nipkow Disk pinhole spacing */
 
+    char StedDepletionMode[ICS_MAX_LAMBDA][ICS_STRLEN_TOKEN]; /* STED depletion mode */
+    double StedLambda[ICS_MAX_LAMBDA];                        /* STED wavelength */
+    double StedSatFactor[ICS_MAX_LAMBDA];                     /* STED saturation factor */
+    double StedImmFraction[ICS_MAX_LAMBDA];                   /* STED immunity fraction */
+    double StedVPPM[ICS_MAX_LAMBDA];                          /* STED vortex to phase plate mix */
+    
     /* SCIL_Image compatibility parameter */
     char ScilType[ICS_STRLEN_TOKEN];           /* SCIL_TYPE string */
 } ICS;

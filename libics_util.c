@@ -329,7 +329,6 @@ void IcsInit (Ics_Header* IcsStruct)
       IcsStruct->ByteOrder[ii] = 0;
    }
    IcsStruct->WriteSensor = 0;
-   IcsStruct->Type[0] = '\0';
    IcsStruct->Model[0]= '\0';
    IcsStruct->RefrInxMedium = 0.0;
    IcsStruct->NumAperture = 0.0;
@@ -337,10 +336,16 @@ void IcsInit (Ics_Header* IcsStruct)
    IcsStruct->PinholeSpacing = 0.0;
    IcsStruct->SensorChannels = 0;
    for (ii = 0; ii < ICS_MAX_LAMBDA; ii++) {
+      IcsStruct->Type[ii][0] = '\0';
       IcsStruct->PinholeRadius[ii] = 0.0;
       IcsStruct->LambdaEx[ii] = 0.0;
       IcsStruct->LambdaEm[ii] = 0.0;
       IcsStruct->ExPhotonCnt[ii] = 1;
+      IcsStruct->StedDepletionMode[ii][0] = '\0';
+      IcsStruct->StedLambda[ii] = 0.0;
+      IcsStruct->StedSatFactor[ii] = 0.0;
+      IcsStruct->StedImmFraction[ii] = 0.0;
+      IcsStruct->StedVPPM[ii] = 0.0;
    }
    IcsStruct->ScilType[0] = '\0';
 }

@@ -497,7 +497,10 @@ static Ics_Error WriteIcsSensorData (Ics_Header* IcsStruct, FILE* fp)
 
       problem = IcsFirstToken (line, ICSTOK_SENSOR);
       problem |= IcsAddToken (line, ICSTOK_TYPE);
-      problem |= IcsAddLastText (line, IcsStruct->Type);
+      for (ii = 0; ii < chans-1; ii++) {
+         problem |= IcsAddText (line, IcsStruct->Type[ii]);
+      }
+      problem |= IcsAddLastText (line, IcsStruct->Type[chans-1]);
       if (!problem) {
          ICSXR( IcsAddLine (line, fp) );
       }
@@ -552,6 +555,17 @@ static Ics_Error WriteIcsSensorData (Ics_Header* IcsStruct, FILE* fp)
 
       problem = IcsFirstToken (line, ICSTOK_SENSOR);
       problem |= IcsAddToken (line, ICSTOK_SPARAMS);
+      problem |= IcsAddToken (line, ICSTOK_PHOTCNT);
+      for (ii = 0; ii < chans-1; ii++) {
+         problem |= IcsAddInt (line, IcsStruct->ExPhotonCnt[ii]);
+      }
+      problem |= IcsAddLastInt (line, IcsStruct->ExPhotonCnt[chans-1]);
+      if (!problem) {
+         ICSXR( IcsAddLine (line, fp) );
+      }
+      
+      problem = IcsFirstToken (line, ICSTOK_SENSOR);
+      problem |= IcsAddToken (line, ICSTOK_SPARAMS);
       problem |= IcsAddToken (line, ICSTOK_REFRIME);
       problem |= IcsAddLastDouble (line, IcsStruct->RefrInxMedium);
       if (!problem) {
@@ -580,6 +594,62 @@ static Ics_Error WriteIcsSensorData (Ics_Header* IcsStruct, FILE* fp)
       problem |= IcsAddLastDouble (line, IcsStruct->PinholeSpacing);
       if (!problem) {
          ICSXR( IcsAddLine (line, fp) );
+      }
+
+          /* Add STED parameters */
+      problem = IcsFirstToken (line, ICSTOK_SENSOR);
+      problem |= IcsAddToken (line, ICSTOK_SPARAMS);
+      problem |= IcsAddToken (line, ICSTOK_STEDDEPLMODE);
+      for (ii = 0; ii < chans-1; ii++) {
+          problem |= IcsAddText (line, IcsStruct->StedDepletionMode[ii]);
+      }
+      problem |= IcsAddLastText (line, IcsStruct->StedDepletionMode[ii]);
+      if (!problem) {
+          ICSXR( IcsAddLine (line, fp) );
+      }
+
+      problem = IcsFirstToken (line, ICSTOK_SENSOR);
+      problem |= IcsAddToken (line, ICSTOK_SPARAMS);
+      problem |= IcsAddToken (line, ICSTOK_STEDLAMBDA);
+      for (ii = 0; ii < chans-1; ii++) {
+          problem |= IcsAddDouble (line, IcsStruct->StedLambda[ii]);
+      }
+      problem |= IcsAddLastDouble (line, IcsStruct->StedLambda[chans-1]);
+      if (!problem) {
+          ICSXR( IcsAddLine (line, fp) );
+      }
+      
+      problem = IcsFirstToken (line, ICSTOK_SENSOR);
+      problem |= IcsAddToken (line, ICSTOK_SPARAMS);
+      problem |= IcsAddToken (line, ICSTOK_STEDSATFACTOR);
+      for (ii = 0; ii < chans-1; ii++) {
+          problem |= IcsAddDouble (line, IcsStruct->StedSatFactor[ii]);
+      }
+      problem |= IcsAddLastDouble (line, IcsStruct->StedSatFactor[chans-1]);
+      if (!problem) {
+          ICSXR( IcsAddLine (line, fp) );
+      }
+
+      problem = IcsFirstToken (line, ICSTOK_SENSOR);
+      problem |= IcsAddToken (line, ICSTOK_SPARAMS);
+      problem |= IcsAddToken (line, ICSTOK_STEDIMMFRACTION);
+      for (ii = 0; ii < chans-1; ii++) {
+          problem |= IcsAddDouble (line, IcsStruct->StedImmFraction[ii]);
+      }
+      problem |= IcsAddLastDouble (line, IcsStruct->StedImmFraction[chans-1]);
+      if (!problem) {
+          ICSXR( IcsAddLine (line, fp) );
+      }
+
+      problem = IcsFirstToken (line, ICSTOK_SENSOR);
+      problem |= IcsAddToken (line, ICSTOK_SPARAMS);
+      problem |= IcsAddToken (line, ICSTOK_STEDVPPM);
+      for (ii = 0; ii < chans-1; ii++) {
+          problem |= IcsAddDouble (line, IcsStruct->StedVPPM[ii]);
+      }
+      problem |= IcsAddLastDouble (line, IcsStruct->StedVPPM[chans-1]);
+      if (!problem) {
+          ICSXR( IcsAddLine (line, fp) );
       }
 
    }

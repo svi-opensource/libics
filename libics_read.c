@@ -459,10 +459,11 @@ Ics_Error IcsReadIcs (Ics_Header* IcsStruct, char const* filename, int forcename
             break;
          case ICSTOK_SENSOR:
             switch (subCat) {
-               case ICSTOK_TYPE:
-                  if (ptr != NULL) {
-                     IcsStrCpy (IcsStruct->Type, ptr, ICS_STRLEN_TOKEN);
-                  }
+                case ICSTOK_TYPE:
+                    while (ptr != NULL && ii < ICS_MAX_LAMBDA) {
+                        IcsStrCpy (IcsStruct->Type[ii++], ptr, ICS_STRLEN_TOKEN);
+                        ptr = strtok(NULL, seps);
+                    }
                   break;
                case ICSTOK_MODEL:
                   if (ptr != NULL) {
@@ -499,8 +500,8 @@ Ics_Error IcsReadIcs (Ics_Header* IcsStruct, char const* filename, int forcename
                         break;
                      case ICSTOK_PHOTCNT:
                         while (ptr != NULL && ii < ICS_MAX_LAMBDA) {
-                           IcsStruct->ExPhotonCnt[ii++] = atoi (ptr);
-                           ptr = strtok(NULL, seps);
+                            IcsStruct->ExPhotonCnt[ii++] = atoi (ptr);
+                            ptr = strtok(NULL, seps);
                         }
                         break;
                      case ICSTOK_REFRIME:
@@ -523,8 +524,39 @@ Ics_Error IcsReadIcs (Ics_Header* IcsStruct, char const* filename, int forcename
                            IcsStruct->PinholeSpacing = atof (ptr);
                         }
                         break;
-                     default:
-                        error = IcsErr_MissSensorSubSubCat;
+                      case ICSTOK_STEDDEPLMODE:
+                          while (ptr != NULL && ii < ICS_MAX_LAMBDA) {
+                              IcsStrCpy (IcsStruct->StedDepletionMode[ii++], ptr,
+                                         ICS_STRLEN_TOKEN);
+                              ptr = strtok(NULL, seps);
+                          }
+                          break;
+                      case ICSTOK_STEDLAMBDA:
+                          while (ptr != NULL && ii < ICS_MAX_LAMBDA) {
+                              IcsStruct->StedLambda[ii++] = atof (ptr);
+                                ptr = strtok(NULL, seps);
+                          }
+                          break;
+                      case ICSTOK_STEDSATFACTOR:
+                          while (ptr != NULL && ii < ICS_MAX_LAMBDA) {
+                              IcsStruct->StedSatFactor[ii++] = atof (ptr);
+                              ptr = strtok(NULL, seps);
+                          }
+                          break;
+                      case ICSTOK_STEDIMMFRACTION:
+                          while (ptr != NULL && ii < ICS_MAX_LAMBDA) {
+                              IcsStruct->StedImmFraction[ii++] = atof (ptr);
+                              ptr = strtok(NULL, seps);
+                          }
+                          break;
+                      case ICSTOK_STEDVPPM:
+                          while (ptr != NULL && ii < ICS_MAX_LAMBDA) {
+                              IcsStruct->StedVPPM[ii++] = atof (ptr);
+                              ptr = strtok(NULL, seps);
+                          }
+                          break;
+                      default:
+                          error = IcsErr_MissSensorSubSubCat;
                   }
                   break;
                default:
@@ -536,6 +568,19 @@ Ics_Error IcsReadIcs (Ics_Header* IcsStruct, char const* filename, int forcename
       }
    }
 
+   /* In newer libics versions (> 1.5.2) a microscope type is specified per
+      sensor channel. For files from previous libics versions a single
+      microscope type is stored. To allow compatibility. when reading older
+      files in which a single microscope type is defined and multiple sensor
+      channels, the microscope type will be duplicated to all sensor channels.
+   */ 
+   for (jj = 1; jj < IcsStruct->SensorChannels; jj++) {
+       if (strlen(IcsStruct->Type[jj]) == 0) {
+           IcsStrCpy (IcsStruct->Type[jj], IcsStruct->Type[0],
+                      ICS_STRLEN_TOKEN);
+       }
+   } 
+    
    if (!error) {
       bits = IcsGetBitsParam (Order, Parameters);
       if (bits < 0) {

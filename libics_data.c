@@ -77,7 +77,12 @@ Ics_Symbol G_SubSubCatSymbols[] =
    {"RefrInxMedium",     ICSTOK_REFRIME },
    {"NumAperture",       ICSTOK_NUMAPER },
    {"RefrInxLensMedium", ICSTOK_REFRILM },
-   {"PinholeSpacing",    ICSTOK_PINHSPA }
+   {"PinholeSpacing",    ICSTOK_PINHSPA },
+   {"STEDDeplMode",      ICSTOK_STEDDEPLMODE },
+   {"STEDLambda",        ICSTOK_STEDLAMBDA },
+   {"STEDSatFactor",     ICSTOK_STEDSATFACTOR },
+   {"STEDImmFraction",   ICSTOK_STEDIMMFRACTION },
+   {"STEDVPPM",          ICSTOK_STEDVPPM }
 };
 
 Ics_Symbol G_ValueSymbols[] =

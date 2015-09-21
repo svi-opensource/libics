@@ -1215,6 +1215,90 @@
 
     <p>Return the Nipkow Disk pinhole spacing.</p>
 
+  <h3 class="ident"><a name="IcsGetSensorSTEDDepletionMode"></a>IcsGetSensorSTEDDepletionMode</h3>
+
+    <p class="synopsis">
+    <span class="keyword">char&nbsp;const</span>*
+    <span class="funcident">IcsGetSensorSTEDDepletionMode</span>
+    (<span class="typeident"><a href="Ics_Header.html">ICS</a></span>
+    <span class="keyword">const</span>*
+    <span class="varident">ics</span>,
+    <span class="keyword">int</span>
+    <span class="varident">channel</span>);
+    </p>
+
+    <p>Return a pointer to the STED depletion mode string for a given channel.</p>
+
+  <h3 class="ident"><a name="IcsGetSensorSTEDImmFraction"></a>IcsGetSensorSTEDImmFraction</h3>
+
+    <p class="synopsis">
+    <span class="keyword">double</span>
+    <span class="funcident">IcsGetSensorSTEDImmFraction</span>
+    (<span class="typeident"><a href="Ics_Header.html">ICS</a></span>
+    <span class="keyword">const</span>*
+    <span class="varident">ics</span>,
+    <span class="keyword">int</span>
+    <span class="varident">channel</span>);
+    </p>
+
+    <p>Return the STED immunity fraction for a given channel.</p>
+    
+  <h3 class="ident"><a name="IcsGetSensorSTEDLambda"></a>IcsGetSensorSTEDLambda</h3>
+
+    <p class="synopsis">
+    <span class="keyword">double</span>
+    <span class="funcident">IcsGetSensorSTEDLambda</span>
+    (<span class="typeident"><a href="Ics_Header.html">ICS</a></span>
+    <span class="keyword">const</span>*
+    <span class="varident">ics</span>,
+    <span class="keyword">int</span>
+    <span class="varident">channel</span>);
+    </p>
+
+    <p>Return the STED wavelength for a given channel.</p>
+
+  <h3 class="ident"><a name="IcsGetSensorSTEDPPMode"></a>IcsGetSensorSTEDPPMode</h3>
+
+    <p class="synopsis">
+    <span class="keyword">char&nbsp;const</span>*
+    <span class="funcident">IcsGetSensorSTEDPPMode</span>
+    (<span class="typeident"><a href="Ics_Header.html">ICS</a></span>
+    <span class="keyword">const</span>*
+    <span class="varident">ics</span>,
+    <span class="keyword">int</span>
+    <span class="varident">channel</span>);
+    </p>
+
+    <p>Return a pointer to the STED phase plate mode string for a given channel.</p>
+    
+  <h3 class="ident"><a name="IcsGetSensorSTEDSatFactor"></a>IcsGetSensorSTEDSatFactor</h3>
+
+    <p class="synopsis">
+    <span class="keyword">double</span>
+    <span class="funcident">IcsGetSensorSTEDSatFactor</span>
+    (<span class="typeident"><a href="Ics_Header.html">ICS</a></span>
+    <span class="keyword">const</span>*
+    <span class="varident">ics</span>,
+    <span class="keyword">int</span>
+    <span class="varident">channel</span>);
+    </p>
+
+    <p>Return the STED saturation factor for a given channel.</p>
+
+  <h3 class="ident"><a name="IcsGetSensorSTEDVPPM"></a>IcsGetSensorSTEDVPPM</h3>
+
+    <p class="synopsis">
+    <span class="keyword">double</span>
+    <span class="funcident">IcsGetSensorSTEDVPPM</span>
+    (<span class="typeident"><a href="Ics_Header.html">ICS</a></span>
+    <span class="keyword">const</span>*
+    <span class="varident">ics</span>,
+    <span class="keyword">int</span>
+    <span class="varident">channel</span>);
+    </p>
+
+    <p>Return the STED vortex to phase plate mix for a given channel.</p>
+    
   <h3 class="ident"><a name="IcsGetSensorType"></a>IcsGetSensorType</h3>
 
     <p class="synopsis">
@@ -1222,10 +1306,12 @@
     <span class="funcident">IcsGetSensorType</span>
     (<span class="typeident"><a href="Ics_Header.html">ICS</a></span>
     <span class="keyword">const</span>*
-    <span class="varident">ics</span>);
+    <span class="varident">ics</span>,
+    <span class="keyword">int</span>
+    <span class="varident">channel</span>);
     </p>
 
-    <p>Return a pointer to the sensor type string.</p>
+    <p>Return a pointer to the sensor type string for a given channel.</p>
 
   <h3 class="ident"><a name="IcsSetSensorChannels"></a>IcsSetSensorChannels</h3>
 
@@ -1370,6 +1456,96 @@
 
     <p>Set the Nipkow Disk pinhole spacing.</p>
 
+  <h3 class="ident"><a name="IcsSetSensorSTEDDepletionMode"></a>IcsSetSensorSTEDDepletionMode</h3>
+
+    <p class="synopsis">
+    <span class="typeident"><a href="Ics_Error.html">Ics_Error</a></span>
+    <span class="funcident">IcsSetSensorSTEDDepletionMode</span>
+    (<span class="typeident"><a href="Ics_Header.html">ICS</a></span>*
+    <span class="varident">ics</span>,
+    <span class="keyword">int</span>
+    <span class="varident">channel</span>,
+    <span class="keyword">char&nbsp;const</span>*
+    <span class="varident">depletion_mode</span>);
+    </p>
+
+    <p>Set the STED depletion mode for a given channel.</p>
+
+  <h3 class="ident"><a name="IcsSetSensorSTEDImmFraction"></a>IcsSetSensorSTEDImmFraction</h3>
+
+    <p class="synopsis">
+    <span class="typeident"><a href="Ics_Error.html">Ics_Error</a></span>
+    <span class="funcident">IcsSetSensorSTEDImmFraction</span>
+    (<span class="typeident"><a href="Ics_Header.html">ICS</a></span>*
+    <span class="varident">ics</span>,
+    <span class="keyword">int</span>
+    <span class="varident">channel</span>,
+    <span class="keyword">double</span>
+    <span class="varident">fraction</span>);
+    </p>
+
+    <p>Set the STED immunity fraction for a given channel.</p>
+
+  <h3 class="ident"><a name="IcsSetSensorSTEDLambda"></a>IcsSetSensorSTEDLambda</h3>
+
+    <p class="synopsis">
+    <span class="typeident"><a href="Ics_Error.html">Ics_Error</a></span>
+    <span class="funcident">IcsSetSensorSTEDLambda</span>
+    (<span class="typeident"><a href="Ics_Header.html">ICS</a></span>*
+    <span class="varident">ics</span>,
+    <span class="keyword">int</span>
+    <span class="varident">channel</span>,
+    <span class="keyword">double</span>
+    <span class="varident">lambda</span>);
+    </p>
+
+    <p>Set the STED wavelength for a given channel.</p>
+
+  <h3 class="ident"><a name="IcsSetSensorSTEDPPMode"></a>IcsSetSensorSTEDPPMode</h3>
+
+    <p class="synopsis">
+    <span class="typeident"><a href="Ics_Error.html">Ics_Error</a></span>
+    <span class="funcident">IcsSetSensorSTEDPPMode</span>
+    (<span class="typeident"><a href="Ics_Header.html">ICS</a></span>*
+    <span class="varident">ics</span>,
+    <span class="keyword">int</span>
+    <span class="varident">channel</span>,
+    <span class="keyword">char&nbsp;const</span>*
+    <span class="varident">pp_mode</span>);
+    </p>
+
+    <p>Set the STED phase plate mode for a given channel.</p>
+    
+  <h3 class="ident"><a name="IcsSetSensorSTEDSatFactor"></a>IcsSetSensorSTEDSatFactor</h3>
+
+    <p class="synopsis">
+    <span class="typeident"><a href="Ics_Error.html">Ics_Error</a></span>
+    <span class="funcident">IcsSetSensorSTEDSatFactor</span>
+    (<span class="typeident"><a href="Ics_Header.html">ICS</a></span>*
+    <span class="varident">ics</span>,
+    <span class="keyword">int</span>
+    <span class="varident">channel</span>,
+    <span class="keyword">double</span>
+    <span class="varident">factor</span>);
+    </p>
+
+    <p>Set the STED saturation factor for a given channel.</p>
+    
+  <h3 class="ident"><a name="IcsSetSensorSTEDVPPM"></a>IcsSetSensorSTEDVPPM</h3>
+
+    <p class="synopsis">
+    <span class="typeident"><a href="Ics_Error.html">Ics_Error</a></span>
+    <span class="funcident">IcsSetSensorSTEDVPPM</span>
+    (<span class="typeident"><a href="Ics_Header.html">ICS</a></span>*
+    <span class="varident">ics</span>,
+    <span class="keyword">int</span>
+    <span class="varident">channel</span>,
+    <span class="keyword">double</span>
+    <span class="varident">vppm</span>);
+    </p>
+
+    <p>Set the STED vortex to phase plate mix for a given channel.</p>
+
   <h3 class="ident"><a name="IcsSetSensorType"></a>IcsSetSensorType</h3>
 
     <p class="synopsis">
@@ -1377,11 +1553,13 @@
     <span class="funcident">IcsSetSensorType</span>
     (<span class="typeident"><a href="Ics_Header.html">ICS</a></span>*
     <span class="varident">ics</span>,
+    <span class="keyword">int</span>
+    <span class="varident">channel</span>,
     <span class="keyword">char&nbsp;const</span>*
     <span class="varident">sensor_type</span>);
     </p>
 
-    <p>Set the sensor type string.</p>
+    <p>Set the sensor type string for a given channel.</p>
 
 <h2><a name="testing"></a>Testing functions</h2>
 

@@ -12086,7 +12086,7 @@ $as_echo "$ac_cv_lib_z_inflateEnd" >&6; }
 if test "x$ac_cv_lib_z_inflateEnd" = xyes; then :
   zlib_lib=yes
 else
-  zlib_lib=no
+  zlib_lib=yes
 fi
 
   if test "$zlib_lib" = "no" -a "x$with_zlib_lib_dir" != "x"; then
