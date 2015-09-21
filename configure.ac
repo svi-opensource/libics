@@ -8,13 +8,12 @@ dnl Script for automake and autoconfig.
 dnl Written by Peter Verveer, Cris Luengo
 dnl
 
-AC_INIT
+dnl Library version number (make sure to also change it in 'libics.h'):
+AC_INIT([libics], [1.5.2])
 AC_CONFIG_SRCDIR([libics.h])
 AC_CONFIG_HEADERS([config.h libics_conf.h])
 AC_CONFIG_MACRO_DIR([m4])
-
-dnl Library version number (make sure to also change it in 'libics.h'):
-AM_INIT_AUTOMAKE(libics, 1.5.2)
+AM_INIT_AUTOMAKE
 
 AM_MAINTAINER_MODE
 
