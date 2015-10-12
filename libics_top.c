@@ -247,8 +247,9 @@ Ics_Error IcsSetLayout (ICS* ics, Ics_DataType dt, int ndims, size_t const* dims
          strcpy (ics->Dim[ii].Label, ICSKEY_LABEL[ii]);
       }
       else {
-         snprintf (ics->Dim[ii].Order, ICS_STRLEN_TOKEN, "dim_%d", ii);
-         snprintf (ics->Dim[ii].Label, ICS_STRLEN_TOKEN, "dim_%d", ii);
+         /* Could overflow: */
+         sprintf (ics->Dim[ii].Order, ICS_STRLEN_TOKEN, "dim_%d", ii);
+         sprintf (ics->Dim[ii].Label, ICS_STRLEN_TOKEN, "dim_%d", ii);
       }
    }
    ics->Dimensions = ndims;
