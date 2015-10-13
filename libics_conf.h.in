@@ -59,6 +59,12 @@
  */
 #define ICS_BUF_SIZE 16384
 
+/*********************************************************************
+ *** If we are not using the configure script:                     ***
+ *** (currently configured for 32-bit Windows - edit as necessary) ***
+ *********************************************************************/
+#undef ICS_USING_CONFIGURE
+#if !defined(ICS_USING_CONFIGURE)
 
 /*
  * If ICS_FORCE_C_LOCALE is set, the locale is set to "C" before each read
@@ -72,13 +78,6 @@
  * The ICS standard calls for the locale to be set to "C".
  */
 #define ICS_FORCE_C_LOCALE
-
-/*********************************************************************
- *** If we are not using the configure script:                     ***
- *** (currently configured for 32-bit Windows - edit as necessary) ***
- *********************************************************************/
-#undef ICS_USING_CONFIGURE
-#if !defined(ICS_USING_CONFIGURE)
 
 /*
  * If ICS_DO_GZEXT is defined, the code will search for IDS files
@@ -118,6 +117,9 @@ typedef double ics_t_real64;
 #undef HAVE_STRINGS_STRCASECMP
 /* Define if your system has strcasecmp() in string.h */
 #undef HAVE_STRING_STRCASECMP
+
+/* If we should force the c locale. */
+#undef ICS_FORCE_C_LOCALE
 
 /* Location of the . */
 #undef ICS_DO_GZEXT

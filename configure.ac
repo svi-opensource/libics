@@ -59,6 +59,9 @@ fi
 dnl Check if you want to use .ids.gz and .ids.Z extensions
 AC_ARG_ENABLE(gzext, AS_HELP_STRING([--disable-gz-extensions], [disable .ids.gz and .ids.Z extensions (enabled by default)]),,)
 
+dnl Check if we should force the C locale
+AC_ARG_ENABLE(c_locale, AS_HELP_STRING([--disable-c-locale], [disable force c locale (enabled by default)]),,)
+
 dnl ---------------------------------------------------------------------------
 dnl Check for ZLIB (copied from libtiff, with some additions)
 dnl ---------------------------------------------------------------------------
@@ -99,6 +102,10 @@ if test "$HAVE_ZLIB" = "yes" ; then
   if test "x$enable_gzext" != "xno" ; then
     AC_DEFINE(ICS_DO_GZEXT, 1, [Whether to search for files with .ids.gz or .ids.Z extension.])
   fi
+fi
+
+if test "x$enable_c_locale" != "xno" ; then
+  AC_DEFINE(ICS_FORCE_C_LOCALE, 1, [Whether to force the c locale for reading and writing.])
 fi
 
 dnl ---------------------------------------------------------------------------

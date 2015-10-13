@@ -763,6 +763,7 @@ with_gnu_ld
 with_sysroot
 enable_libtool_lock
 enable_gzext
+enable_c_locale
 enable_zlib
 with_zlib_include_dir
 with_zlib_lib_dir
@@ -1410,6 +1411,7 @@ Optional Features:
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --disable-gz-extensions disable .ids.gz and .ids.Z extensions (enabled by
                           default)
+  --disable-c-locale      disable force c locale (enabled by default)
   --disable-zlib          disable Zlib usage (required for zip compression,
                           enabled by default)
 
@@ -3062,7 +3064,6 @@ END
     as_fn_error $? "Your 'rm' program is bad, sorry." "$LINENO" 5
   fi
 fi
-
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable maintainer-specific portions of Makefiles" >&5
@@ -12021,6 +12022,12 @@ if test "${enable_gzext+set}" = set; then :
 fi
 
 
+# Check whether --enable-c_locale was given.
+if test "${enable_c_locale+set}" = set; then :
+  enableval=$enable_c_locale;
+fi
+
+
 
 HAVE_ZLIB=no
 
@@ -12086,7 +12093,7 @@ $as_echo "$ac_cv_lib_z_inflateEnd" >&6; }
 if test "x$ac_cv_lib_z_inflateEnd" = xyes; then :
   zlib_lib=yes
 else
-  zlib_lib=yes
+  zlib_lib=no
 fi
 
   if test "$zlib_lib" = "no" -a "x$with_zlib_lib_dir" != "x"; then
@@ -12124,6 +12131,12 @@ $as_echo "#define ICS_ZLIB 1" >>confdefs.h
 $as_echo "#define ICS_DO_GZEXT 1" >>confdefs.h
 
   fi
+fi
+
+if test "x$enable_c_locale" != "xno" ; then
+
+$as_echo "#define ICS_FORCE_C_LOCALE 1" >>confdefs.h
+
 fi
 
 
