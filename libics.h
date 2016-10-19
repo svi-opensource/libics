@@ -38,7 +38,7 @@
 extern "C" {
 #endif
 
-#define ICSLIB_VERSION "1.5.2" /* also defined in configure.in */
+#define ICSLIB_VERSION "1.5.3" /* also defined in configure.in */
 
 #if defined(__WIN32__) && !defined(WIN32)
 #define WIN32

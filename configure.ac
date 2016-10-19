@@ -9,7 +9,7 @@ dnl Written by Peter Verveer, Cris Luengo
 dnl
 
 dnl Library version number (make sure to also change it in 'libics.h'):
-AC_INIT([libics], [1.5.2])
+AC_INIT([libics], [1.5.3])
 AC_CONFIG_SRCDIR([libics.h])
 AC_CONFIG_HEADERS([config.h libics_conf.h])
 AC_CONFIG_MACRO_DIR([m4])
@@ -21,7 +21,7 @@ dnl Library versioning (CURRENT:REVISION:AGE)
 dnl See the libtool manual for an explanation of the numbers
 dnl
 dnl Version history:
-dnl ics-1.5.2  libics 0:0:0
+dnl ics-1.5.3  libics 0:0:0
 dnl
 dnl How to update library version number
 dnl ====================================

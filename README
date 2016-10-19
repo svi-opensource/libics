@@ -1,5 +1,5 @@
 
-                             libics v.1.5.2
+                             libics v.1.5.3
           Image Cytometry Standard file reading and writing.
 
 This is the reference library for ICS (Image Cytometry Standard), an
@@ -99,7 +99,7 @@ from the file Makefile.vc.
    CREDITS
 =============
 
-This library is written and maintained by
+This was originally written and maintained by
    Cris Luengo
    Centre for Image Analysis
    Swedish University of Agricultural Sciences & Uppsala University
@@ -129,11 +129,13 @@ Which ultimately is based upon stuff written by:
    Damir Sudar, Geert van Kempen, Jan Jitze Krol,
    Chiel Baarslag, Fons Laan and Hans van der Voort.
 
+The library is now maintained by Scientific Volume Imaging.
+
 
    HISTORY
 =============
 
-repository
+version 1.5.3
    Changes / improvements / fixes:
    - Fixed documentation and made explicit the current default to version
    2.0 files.
@@ -142,6 +144,9 @@ repository
    - IcsWriteIcs() no longer overwrites data in the ByteOrder array.
    - Fixed a segmentation violation when trying to write an image with
    more than 5 dimensions.
+   - Added STED and detector parameters
+   - Fixed a bug to read large compressed files.
+   - Moved distribution to to github
 
 version 1.5.2
    Added functionality:
