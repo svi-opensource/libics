@@ -10,6 +10,7 @@ people that use MATLAB and want to add ICS support.
 The code in this directory falls under the same licence
 terms as libics itself.
 
+This code is currently not supported by Scientific Volume Imaging.
 
 USAGE
 =====

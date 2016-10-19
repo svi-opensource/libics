@@ -35,14 +35,15 @@ preparation can be included in the file.
 This library is distributed under the GNU LESSER GENERAL PUBLIC
 LICENSE. See the file GNU_LICENSE for terms.
 
-Please mail comments to: clluengo@users.sourceforge.net
-
+The libics library is currently maintained by Scientific Volume Imaging
+(https://svi.nl).  Please mail comments, bugs and feature requests to:
+libics@svi.nl
 
    Installation Instructions
 ===============================
 
 Obtain the source distribution from
-   http://sourceforge.net/projects/libics .
+   https://github.com/svi-opensource/libics
 It is recommended you also install zlib (http://www.zlib.org).
 
  - Compilation under UNIX / Linux / Mac OS X / Cygwin
