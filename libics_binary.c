@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013 Cris Luengo and others
+ * Copyright (C) 2000-2013, 2016 Cris Luengo and others
  * email: clluengo@users.sourceforge.net
  *
  * Large chunks of this library written by
@@ -124,7 +124,7 @@ Ics_Error IcsWriteIds (Ics_Header const* IcsStruct)
    }
    ICSTR( (IcsStruct->Data == NULL) || (IcsStruct->DataLength == 0), IcsErr_MissingData );
 
-   fp = fopen (filename, mode);
+   fp = IcsFOpen (filename, mode);
    ICSTR( fp == NULL, IcsErr_FOpenIds );
 
    for (ii=0; ii<IcsStruct->Dimensions; ii++) {
@@ -137,9 +137,25 @@ Ics_Error IcsWriteIds (Ics_Header const* IcsStruct)
                        IcsStruct->Dimensions, IcsGetDataTypeSize (IcsStruct->Imel.DataType), fp);
          }
          else {
-            if (fwrite (IcsStruct->Data, 1, IcsStruct->DataLength, fp) != IcsStruct->DataLength) {
-               error = IcsErr_FWriteIds;
-            }
+                 /* We do the writing in blocks if the data is very large, this
+                    avoids a bug in some c library implementations on windows. */
+             size_t n = IcsStruct->DataLength;
+             const size_t nwrite = 1024 * 1024 * 1024;
+             char *p = (char*)IcsStruct->Data;
+             while (error == IcsErr_Ok && n > 0) {
+                 if (n >= nwrite) {
+                     if (fwrite (p, 1, nwrite, fp) != nwrite) {
+                         error = IcsErr_FWriteIds;
+                     }
+                     n -= nwrite;
+                     p += nwrite;
+                 } else {
+                     if (fwrite (p, 1, n, fp) != n) {
+                         error = IcsErr_FWriteIds;
+                     }
+                     n = 0;
+                 }
+             }
          }
          break;
 #ifdef ICS_ZLIB
@@ -177,7 +193,7 @@ Ics_Error IcsCopyIds (char const* infilename, size_t inoffset, char const* outfi
    int done = 0, n;
 
    /* Open files */
-   in = fopen (infilename, "rb");
+   in = IcsFOpen (infilename, "rb");
    if (in == NULL) {
       error = IcsErr_FCopyIds;
       goto quitcopy;
@@ -186,7 +202,7 @@ Ics_Error IcsCopyIds (char const* infilename, size_t inoffset, char const* outfi
       error = IcsErr_FCopyIds;
       goto quitcopy;
    }
-   out = fopen (outfilename, "ab");
+   out = IcsFOpen (outfilename, "ab");
    if (out == NULL) {
       error = IcsErr_FCopyIds;
       goto quitcopy;
@@ -226,7 +242,7 @@ static int IcsExistFile (char const* filename)
 {
    FILE* fp;
 
-   if ((fp = fopen (filename, "rb")) != NULL) {
+   if ((fp = IcsFOpen (filename, "rb")) != NULL) {
       fclose (fp);
       return 1;
    }
@@ -362,7 +378,7 @@ Ics_Error IcsOpenIds (Ics_Header* IcsStruct)
    br = (Ics_BlockRead*)malloc (sizeof (Ics_BlockRead));
    ICSTR( br == NULL, IcsErr_Alloc );
 
-   br->DataFilePtr = fopen (filename, "rb");
+   br->DataFilePtr = IcsFOpen (filename, "rb");
    ICSTR( br->DataFilePtr == NULL, IcsErr_FOpenIds );
    if (fseek (br->DataFilePtr, offset, SEEK_SET) != 0) {
       fclose (br->DataFilePtr);

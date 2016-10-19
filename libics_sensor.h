@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013 Cris Luengo and others
+ * Copyright (C) 2000-2013, 2016 Cris Luengo and others
  * email: clluengo@users.sourceforge.net
  *
  * Large chunks of this library written by
@@ -146,6 +146,24 @@ ICSEXPORT double IcsGetSensorSTEDVPPM(ICS const* ics, int channel);
 ICSEXPORT Ics_Error IcsSetSensorSTEDVPPM(ICS* ics, int channel, double vppm);
 /* Set the STED vortex to phase plate mix fraction */
     
+/* Get the Detector ppu per channel. */
+double IcsGetSensorDetectorPPU (ICS const* ics, int channel);
+
+/* Set the Detector ppu per channel. */
+Ics_Error IcsSetSensorDetectorPPU (ICS* ics, int channel, double ppu);
+
+/* Get the Detector baseline per channel. */
+double IcsGetSensorDetectorBaseline (ICS const* ics, int channel);
+
+/* Set the Detector baseline per channel. */
+Ics_Error IcsSetSensorDetectorBaseline (ICS* ics, int channel, double baseline);
+
+/* Get the Detector lineAvgCnt per channel. */
+double IcsGetSensorDetectorLineAvgCnt (ICS const* ics, int channel);
+
+/* Set the Detector lineAvgCnt per channel. */
+Ics_Error IcsSetSensorDetectorLineAvgCnt (ICS* ics, int channel, double lineAvgCnt);
+
 #ifdef __cplusplus
 }
 #endif

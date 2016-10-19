@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013 Cris Luengo and others
+ * Copyright (C) 2000-2013, 2016 Cris Luengo and others
  * email: clluengo@users.sourceforge.net
  *
  * Large chunks of this library written by
@@ -552,6 +552,24 @@ Ics_Error IcsReadIcs (Ics_Header* IcsStruct, char const* filename, int forcename
                       case ICSTOK_STEDVPPM:
                           while (ptr != NULL && ii < ICS_MAX_LAMBDA) {
                               IcsStruct->StedVPPM[ii++] = atof (ptr);
+                              ptr = strtok(NULL, seps);
+                          }
+                          break;
+                      case ICSTOK_DETPPU:
+                          while (ptr != NULL && ii < ICS_MAX_LAMBDA) {
+                              IcsStruct->DetectorPPU[ii++] = atof (ptr);
+                              ptr = strtok(NULL, seps);
+                          }
+                          break;
+                      case ICSTOK_DETBASELINE:
+                          while (ptr != NULL && ii < ICS_MAX_LAMBDA) {
+                              IcsStruct->DetectorBaseline[ii++] = atof (ptr);
+                              ptr = strtok(NULL, seps);
+                          }
+                          break;
+                      case ICSTOK_DETLNAVGCNT:
+                          while (ptr != NULL && ii < ICS_MAX_LAMBDA) {
+                              IcsStruct->DetectorLineAvgCnt[ii++] = atof (ptr);
                               ptr = strtok(NULL, seps);
                           }
                           break;

@@ -113,11 +113,12 @@ Ics_Error IcsWriteZip (void const* inbuf, size_t len, FILE* file, int level)
 {
 #ifdef ICS_ZLIB
    z_stream stream;
-   Byte* outbuf;    /* output buffer */
-   int err, done;
-   size_t count;
-
-   /* Create an output buffer */
+   Byte* outbuf;    /* output buffer */ int err, done, flush;
+   size_t total_count;
+   unsigned int have;
+   uLong crc;
+ 
+  /* Create an output buffer */
    outbuf = (Byte*)malloc (ICS_BUF_SIZE);
    ICSTR( outbuf == Z_NULL, IcsErr_Alloc );
 
@@ -125,10 +126,13 @@ Ics_Error IcsWriteZip (void const* inbuf, size_t len, FILE* file, int level)
    stream.zalloc = (alloc_func)0;
    stream.zfree = (free_func)0;
    stream.opaque = (voidpf)0;
-   stream.next_in = (Bytef*)inbuf;
-   stream.avail_in = len;
+   stream.avail_in = 0;
+   stream.next_in = NULL;
    stream.next_out = Z_NULL;
    stream.avail_out = 0;
+
+   crc = crc32(0L, Z_NULL, 0);
+   
    err = deflateInit2 (&stream, level, Z_DEFLATED, -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY);
          /* windowBits is passed < 0 to suppress zlib header */
    if (err != Z_OK) {
@@ -141,57 +145,38 @@ Ics_Error IcsWriteZip (void const* inbuf, size_t len, FILE* file, int level)
             0,0,0,0,0,0, OS_CODE);
 
    /* Write the compressed data */
-   stream.next_out = outbuf;
-   stream.avail_out = ICS_BUF_SIZE;
-   while (stream.avail_in != 0) {
-      if (stream.avail_out == 0) {
-         if (fwrite (outbuf, 1, ICS_BUF_SIZE, file) != ICS_BUF_SIZE) {
-            deflateEnd (&stream);
-            free (outbuf);
-            return IcsErr_FWriteIds;
-         }
-         stream.next_out = outbuf;
-         stream.avail_out = ICS_BUF_SIZE;
-      }
-      err = deflate (&stream, Z_NO_FLUSH);
-      if (err != Z_OK) {
-         break;
-      }
-   }
+   total_count = 0;
+   do {
+       stream.avail_in = len - total_count < ICS_BUF_SIZE ? len - total_count : ICS_BUF_SIZE;
+       stream.next_in = (Bytef*)inbuf + total_count;
+       crc = crc32(crc, stream.next_in, stream.avail_in);
+       total_count += stream.avail_in;
+       flush = total_count >= len ? Z_FINISH : Z_NO_FLUSH;
+       do {
+           stream.avail_out = ICS_BUF_SIZE;
+           stream.next_out = outbuf;
+           err = deflate(&stream, flush);
+           have = ICS_BUF_SIZE - stream.avail_out;
+           if (fwrite(outbuf, 1, have, file) != have || ferror(file)) {
+               deflateEnd (&stream);
+               free (outbuf);
+               return IcsErr_FWriteIds;
+           }
+       } while (stream.avail_out == 0);
+   } while (flush != Z_FINISH);
+
    /* Was all the input processed? */
    if (stream.avail_in != 0) {
       deflateEnd (&stream);
       free (outbuf);
       return IcsErr_CompressionProblem;
-   }
-
-   /* Flush the stream */
-   done = 0;
-   for (;;) {
-      count = ICS_BUF_SIZE - stream.avail_out;
-      if (count != 0) {
-         if ((size_t)fwrite (outbuf, 1, count, file) != count) {
-            deflateEnd (&stream);
-            free (outbuf);
-            return IcsErr_FWriteIds;
-         }
-         stream.next_out = outbuf;
-         stream.avail_out = ICS_BUF_SIZE;
-      }
-      if (done) {
-         break;
-      }
-      err = deflate (&stream, Z_FINISH);
-      if ((err != Z_OK) && (err != Z_STREAM_END)) {
-         deflateEnd (&stream);
-         free (outbuf);
-         return IcsErr_CompressionProblem;
-      }
-      done = (stream.avail_out != 0 || err == Z_STREAM_END);
-   }
-   /* Write the CRC and original data length */
-   _IcsPutLong (file, crc32 (0L, (Bytef *)inbuf, len));
-   _IcsPutLong (file, stream.total_in);
+   
+}
+    /* Write the CRC and original data length */
+   _IcsPutLong (file, crc);
+   /* Data length is written as a 32 bit value, for compatibility we keep it
+      like that, even if total_count is 64 bit. */
+   _IcsPutLong (file, total_count & 0xFFFFFFFF);
    /* Deallocate stuff */
    err = deflateEnd (&stream);
    free (outbuf);
@@ -218,7 +203,7 @@ Ics_Error IcsWriteZipWithStrides (void const* src,  size_t const* dim,
    size_t curpos[ICS_MAXDIM];
    char const* data;
    int ii, err, done;
-   size_t count;
+   size_t count, total_count = 0;
    uLong crc;
    int const contiguous_line = stride[0]==1;
 
@@ -281,6 +266,7 @@ Ics_Error IcsWriteZipWithStrides (void const* src,  size_t const* dim,
       /* Write the compressed data */
       stream.next_in = (Bytef*)inbuf;
       stream.avail_in = dim[0]*nbytes;
+      total_count += stream.avail_in;
       while (stream.avail_in != 0) {
          if (stream.avail_out == 0) {
             if (fwrite (outbuf, 1, ICS_BUF_SIZE, file) != ICS_BUF_SIZE) {
@@ -338,7 +324,7 @@ Ics_Error IcsWriteZipWithStrides (void const* src,  size_t const* dim,
    }
    /* Write the CRC and original data length */
    _IcsPutLong (file, crc);
-   _IcsPutLong (file, stream.total_in);
+   _IcsPutLong (file, total_count & 0xFFFFFFFF);
 
 error_exit:
    /* Deallocate stuff */
@@ -477,48 +463,55 @@ Ics_Error IcsReadZipBlock (Ics_Header* IcsStruct, void* outbuf, size_t len)
    FILE* file = br->DataFilePtr;
    z_stream* stream = (z_stream*)br->ZlibStream;
    void* inbuf = br->ZlibInputBuffer;
-   int err = Z_STREAM_ERROR;
-   size_t prevout = stream->total_out;
+   int err;
+   size_t prevout = stream->total_out, todo = len;
+   unsigned int bufsize, done;
+   Bytef *prevbuf;
 
    /* Read the compressed data */
-   stream->next_out = (Bytef*)outbuf;
-   stream->avail_out = len;
-   while (stream->avail_out != 0) {
-      if (stream->avail_in == 0) {
-         stream->next_in = (Byte*)inbuf;
-         stream->avail_in = fread (inbuf, 1, ICS_BUF_SIZE, file);
-         if (stream->avail_in == 0) {
-            if (ferror (file)) {
+   do {
+       stream->avail_in = fread(inbuf, 1, ICS_BUF_SIZE, file);
+       if (ferror(file)) {
+           return IcsErr_FReadIds;           
+       }
+       if (stream->avail_in == 0 && todo > 0) {
+           err = Z_STREAM_ERROR;
+           break;
+       }
+       stream->next_in = inbuf;
+       do {
+           if (todo == 0) {
+               err = Z_OK;
+               break;
+           }
+           bufsize = todo < ICS_BUF_SIZE ? todo : ICS_BUF_SIZE;
+           stream->avail_out = bufsize;
+           prevbuf = stream->next_out = (Bytef*)outbuf + len - todo;;
+           err = inflate(stream, Z_NO_FLUSH);
+           if (!(err == Z_OK || err == Z_STREAM_END || err == Z_BUF_ERROR)) {
                return IcsErr_FReadIds;
-            } /* else eof! */
-            break;
-         }
-      }
-      err = inflate (stream, Z_NO_FLUSH);
-      if (err == Z_STREAM_END) {
-         /* All the data has been decompressed: Check CRC and original data size */
-         br->ZlibCRC = crc32 (br->ZlibCRC, (Bytef*)outbuf, len);
-         /* Set the file pointer back so that _IcsGetLong can read the
-            numbers just behind the compressed data */
-         fseek (file, -(int)stream->avail_in, SEEK_CUR);
-         if (_IcsGetLong (file) != br->ZlibCRC) {
-            err = Z_STREAM_ERROR;
-         }
-         else {
-            if (_IcsGetLong(file) != stream->total_out) {
-               err = Z_STREAM_ERROR;
-            }
-         }
-      }
-      if (err != Z_OK) {
-         break;
-      }
-   }
-   /* Update CRC */
-   if (err == Z_OK) {
-      br->ZlibCRC = crc32 (br->ZlibCRC, (Bytef*)outbuf, len);
-   }
+           }
+           done = bufsize - stream->avail_out;
+           todo -= done;
+           br->ZlibCRC = crc32 (br->ZlibCRC, prevbuf, done);
+       } while (stream->avail_out == 0);
+   } while (err != Z_STREAM_END && todo > 0);
+   
+   /* Set the file pointer back so that unused input can be read again. */
+   fseek (file, -(int)stream->avail_in, SEEK_CUR);
 
+   if (err == Z_STREAM_END) {
+       /* All the data has been decompressed: Check CRC and original data size */
+       /* br->ZlibCRC = crc32 (br->ZlibCRC, (Bytef*)outbuf, len); */
+       if (_IcsGetLong (file) != br->ZlibCRC) {
+           err = Z_STREAM_ERROR;
+       } else {
+           if (_IcsGetLong(file) != stream->total_out) {
+               err = Z_STREAM_ERROR;
+           }
+       }
+   }
+   
    /* Report errors */
    ICSTR( err == Z_STREAM_ERROR, IcsErr_CorruptedStream );
    if (err == Z_STREAM_END) {

@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013 Cris Luengo and others
+ * Copyright (C) 2000-2013, 2016 Cris Luengo and others
  * email: clluengo@users.sourceforge.net
  *
  * Large chunks of this library written by
@@ -47,6 +47,9 @@
  *   IcsSetSTEDSaturationFactor
  *   IcsSetSTEDImmunityFactor
  *   IcsSetSTEDVortexToPhasePlateMix
+ *   IcsSetDetectorPPU
+ *   IcsSetDetectorBaseline
+ *   IcsSetDetectorLineAvgCnt 
  */
 
 #include <stdlib.h>
@@ -391,5 +394,75 @@ Ics_Error IcsSetSensorSTEDVPPM (ICS* ics, int channel, double vppm)
 
     ICSTR( channel < 0 || channel >= ics->SensorChannels, IcsErr_NotValidAction );
     ics->StedVPPM[channel] = vppm;
+    return IcsErr_Ok;
+}
+
+
+    /*
+     * Get the Detector ppu per channel.
+     */
+double IcsGetSensorDetectorPPU (ICS const* ics, int channel)
+{
+    if (channel < 0 || channel >= ics->SensorChannels)
+        return 0;
+    else
+        return ics->DetectorPPU[channel];
+}
+
+    /*
+     * Set the Detector ppu per channel.
+     */
+Ics_Error IcsSetSensorDetectorPPU (ICS* ics, int channel, double ppu)
+{
+    ICS_FM_WMD( ics );
+
+    ICSTR( channel < 0 || channel >= ics->SensorChannels, IcsErr_NotValidAction );
+    ics->DetectorPPU[channel] = ppu;
+    return IcsErr_Ok;
+}
+
+    /*
+     * Get the Detector baseline per channel.
+     */
+double IcsGetSensorDetectorBaseline (ICS const* ics, int channel)
+{
+    if (channel < 0 || channel >= ics->SensorChannels)
+        return 0;
+    else
+        return ics->DetectorBaseline[channel];
+}
+
+    /*
+     * Set the Detector baseline per channel.
+     */
+Ics_Error IcsSetSensorDetectorBaseline (ICS* ics, int channel, double baseline)
+{
+    ICS_FM_WMD( ics );
+
+    ICSTR( channel < 0 || channel >= ics->SensorChannels, IcsErr_NotValidAction );
+    ics->DetectorBaseline [channel] = baseline;
+    return IcsErr_Ok;
+}
+
+    /*
+     * Get the Detector lineAvgCnt per channel.
+     */
+double IcsGetSensorDetectorLineAvgCnt (ICS const* ics, int channel)
+{
+    if (channel < 0 || channel >= ics->SensorChannels)
+        return 0;
+    else
+        return ics->DetectorLineAvgCnt[channel];
+}
+
+    /*
+     * Set the Detector lineAvgCnt per channel.
+     */
+Ics_Error IcsSetSensorDetectorLineAvgCnt (ICS* ics, int channel, double lineAvgCnt)
+{
+    ICS_FM_WMD( ics );
+
+    ICSTR( channel < 0 || channel >= ics->SensorChannels, IcsErr_NotValidAction );
+    ics->DetectorLineAvgCnt[channel] = lineAvgCnt;
     return IcsErr_Ok;
 }

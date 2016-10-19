@@ -1299,6 +1299,48 @@
 
     <p>Return the STED vortex to phase plate mix for a given channel.</p>
     
+  <h3 class="ident"><a name="IcsGetSensorDetectorPPU"></a>IcsGetSensorDetectorPPU</h3>
+
+    <p class="synopsis">
+    <span class="keyword">double</span>
+    <span class="funcident">IcsGetSensorDetectorPPU</span>
+    (<span class="typeident"><a href="Ics_Header.html">ICS</a></span>
+    <span class="keyword">const</span>*
+    <span class="varident">ics</span>,
+    <span class="keyword">int</span>
+    <span class="varident">channel</span>);
+    </p>
+
+    <p>Return photons per unit for a given channel.</p>
+
+  <h3 class="ident"><a name="IcsGetSensorDetectorBaseline"></a>IcsGetSensorDetectorBaseline</h3>
+
+    <p class="synopsis">
+    <span class="keyword">double</span>
+    <span class="funcident">IcsGetSensorDetectorBaseline</span>
+    (<span class="typeident"><a href="Ics_Header.html">ICS</a></span>
+    <span class="keyword">const</span>*
+    <span class="varident">ics</span>,
+    <span class="keyword">int</span>
+    <span class="varident">channel</span>);
+    </p>
+
+    <p>Return the baseline for a given channel.</p>
+
+  <h3 class="ident"><a name="IcsGetSensorDetectorLineAvgCnt"></a>IcsGetSensorDetectorLineAvgCnt</h3>
+
+    <p class="synopsis">
+    <span class="keyword">double</span>
+    <span class="funcident">IcsGetSensorDetectorLineAvgCnt</span>
+    (<span class="typeident"><a href="Ics_Header.html">ICS</a></span>
+    <span class="keyword">const</span>*
+    <span class="varident">ics</span>,
+    <span class="keyword">int</span>
+    <span class="varident">channel</span>);
+    </p>
+
+    <p>Return the amount of line averaging for a given channel.</p>
+
   <h3 class="ident"><a name="IcsGetSensorType"></a>IcsGetSensorType</h3>
 
     <p class="synopsis">
@@ -1546,6 +1588,51 @@
 
     <p>Set the STED vortex to phase plate mix for a given channel.</p>
 
+  <h3 class="ident"><a name="IcsSetSensorDetectorPPU"></a>IcsSetSensorDetectorPPU</h3>
+
+    <p class="synopsis">
+    <span class="typeident"><a href="Ics_Error.html">Ics_Error</a></span>
+    <span class="funcident">IcsSetSensorDetectorPPU</span>
+    (<span class="typeident"><a href="Ics_Header.html">ICS</a></span>*
+    <span class="varident">ics</span>,
+    <span class="keyword">int</span>
+    <span class="varident">channel</span>,
+    <span class="keyword">double</span>
+    <span class="varident">ppu</span>);
+    </p>
+
+    <p>Set the photons per unit for a given channel.</p>
+    
+  <h3 class="ident"><a name="IcsSetSensorDetectorBaseline"></a>IcsSetSensorDetectorBaseline</h3>
+
+    <p class="synopsis">
+    <span class="typeident"><a href="Ics_Error.html">Ics_Error</a></span>
+    <span class="funcident">IcsSetSensorDetectorBaseline</span>
+    (<span class="typeident"><a href="Ics_Header.html">ICS</a></span>*
+    <span class="varident">ics</span>,
+    <span class="keyword">int</span>
+    <span class="varident">channel</span>,
+    <span class="keyword">double</span>
+    <span class="varident">baseline</span>);
+    </p>
+
+    <p>Set the baseline for a given channel.</p>
+    
+  <h3 class="ident"><a name="IcsSetSensorDetectorLineAvgCnt"></a>IcsSetSensorDetectorLineAvgCnt</h3>
+
+    <p class="synopsis">
+    <span class="typeident"><a href="Ics_Error.html">Ics_Error</a></span>
+    <span class="funcident">IcsSetSensorDetectorLineAvgCnt</span>
+    (<span class="typeident"><a href="Ics_Header.html">ICS</a></span>*
+    <span class="varident">ics</span>,
+    <span class="keyword">int</span>
+    <span class="varident">channel</span>,
+    <span class="keyword">double</span>
+    <span class="varident">lineAvgCnt</span>);
+    </p>
+
+    <p>Set the amount of line averaging for a given channel.</p>
+    
   <h3 class="ident"><a name="IcsSetSensorType"></a>IcsSetSensorType</h3>
 
     <p class="synopsis">

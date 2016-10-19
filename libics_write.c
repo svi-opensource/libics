@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013 Cris Luengo and others
+ * Copyright (C) 2000-2013, 2016 Cris Luengo and others
  * email: clluengo@users.sourceforge.net
  *
  * Large chunks of this library written by
@@ -652,6 +652,41 @@ static Ics_Error WriteIcsSensorData (Ics_Header* IcsStruct, FILE* fp)
           ICSXR( IcsAddLine (line, fp) );
       }
 
+          /* Add detector parameters. */
+      problem = IcsFirstToken (line, ICSTOK_SENSOR);
+      problem |= IcsAddToken (line, ICSTOK_SPARAMS);
+      problem |= IcsAddToken (line, ICSTOK_DETPPU);
+      for (ii = 0; ii < chans-1; ii++) {
+          problem |= IcsAddDouble (line, IcsStruct->DetectorPPU[ii]);
+      }
+      problem |= IcsAddLastDouble (line, IcsStruct->DetectorPPU[chans-1]);
+      if (!problem) {
+          ICSXR( IcsAddLine (line, fp) );
+      }
+      
+      problem = IcsFirstToken (line, ICSTOK_SENSOR);
+      problem |= IcsAddToken (line, ICSTOK_SPARAMS);
+      problem |= IcsAddToken (line, ICSTOK_DETBASELINE);
+      for (ii = 0; ii < chans-1; ii++) {
+          problem |= IcsAddDouble (line, IcsStruct->DetectorBaseline[ii]);
+      }
+      problem |= IcsAddLastDouble (line, IcsStruct->DetectorBaseline[chans-1]);
+      if (!problem) {
+          ICSXR( IcsAddLine (line, fp) );
+      }
+      
+      problem = IcsFirstToken (line, ICSTOK_SENSOR);
+      problem |= IcsAddToken (line, ICSTOK_SPARAMS);
+      problem |= IcsAddToken (line, ICSTOK_DETLNAVGCNT);
+      for (ii = 0; ii < chans-1; ii++) {
+          problem |= IcsAddDouble (line, IcsStruct->DetectorLineAvgCnt[ii]);
+      }
+      problem |= IcsAddLastDouble (line, IcsStruct->DetectorLineAvgCnt[chans-1]);
+      if (!problem) {
+          ICSXR( IcsAddLine (line, fp) );
+      }
+      
+      
    }
 
    return error;
@@ -713,7 +748,7 @@ Ics_Error IcsWriteIcs (Ics_Header* IcsStruct, char const* filename)
       return IcsErr_FOpenIcs;
    }
 
-   fp = fopen (IcsStruct->Filename, "wb");
+   fp = IcsFOpen (IcsStruct->Filename, "wb");
    ICSTR( fp == NULL, IcsErr_FOpenIcs );
 
    ICS_SET_LOCALE;

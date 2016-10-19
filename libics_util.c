@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013 Cris Luengo and others
+ * Copyright (C) 2000-2013, 2016 Cris Luengo and others
  * email: clluengo@users.sourceforge.net
  *
  * Large chunks of this library written by
@@ -51,6 +51,10 @@
 #include <string.h>
 #include "libics_intern.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #ifdef HAVE_STRINGS_STRCASECMP
    #include <strings.h>   /* For strcasecmp() */
 #endif
@@ -64,6 +68,36 @@ char const ICSEXT[] = ".ics";
 char const IDSEXT[] = ".ids";
 char const IDSEXT_Z[] = ".ids.Z";
 char const IDSEXT_GZ[] = ".ids.gz";
+
+/*
+ * This is a wrapper for the fopen function, on UNIX it calls fopen, on Windows
+ * it uses _wfopen to support UTF-8 filenames.
+ */
+FILE* IcsFOpen(const char* path, const char* mode)
+{
+#ifdef _WIN32
+    wchar_t *wpath = NULL, wmode[8];
+    int n = MultiByteToWideChar(CP_UTF8, 0, path, -1, wpath, 0);
+    FILE *result = NULL;
+	
+    wpath = (wchar_t*)malloc(n * sizeof(wchar_t));
+    if (!wpath) return NULL;
+
+    if (!MultiByteToWideChar(CP_UTF8, 0, path, -1, wpath, n)) goto exit;
+    if (!MultiByteToWideChar(CP_UTF8, 0, mode, -1, wmode, 8)) goto exit;
+
+    result = _wfopen(wpath, wmode);
+
+  exit:
+    if (wpath) {
+        free(wpath);
+    }
+    return result;
+#else
+    return fopen(path, mode);    
+#endif
+}
+
 
 /*
  * This function can be used to check for the correct library version:
@@ -281,7 +315,7 @@ Ics_Error IcsOpenIcs (FILE** fpp, char* filename, int forcename)
    char FileName[ICS_MAXPATHLEN];
 
    IcsGetIcsName (FileName, filename, forcename);
-   fp = fopen (FileName, "rb");
+   fp = IcsFOpen (FileName, "rb");
    ICSTR( fp == NULL, IcsErr_FOpenIcs );
 
    *fpp = fp;
@@ -346,6 +380,9 @@ void IcsInit (Ics_Header* IcsStruct)
       IcsStruct->StedSatFactor[ii] = 0.0;
       IcsStruct->StedImmFraction[ii] = 0.0;
       IcsStruct->StedVPPM[ii] = 0.0;
+      IcsStruct->DetectorPPU[ii] = 1.0;
+      IcsStruct->DetectorBaseline[ii] = 0.0;
+      IcsStruct->DetectorLineAvgCnt[ii] = 1.0;
    }
    IcsStruct->ScilType[0] = '\0';
 }

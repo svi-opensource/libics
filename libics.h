@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013 Cris Luengo and others
+ * Copyright (C) 2000-2013, 2016 Cris Luengo and others
  * email: clluengo@users.sourceforge.net
  *
  * Large chunks of this library written by
@@ -69,7 +69,7 @@ extern "C" {
 
 /* These determine the sizes of static arrays and strings: */
 #define ICS_MAXDIM 10        /* number of allowed dimensions in the image */
-#define ICS_MAX_LAMBDA 16    /* number of allowed sensor channels */
+#define ICS_MAX_LAMBDA 32    /* number of allowed sensor channels */
 #define ICS_STRLEN_TOKEN 20  /* length of a token string */
 #define ICS_STRLEN_OTHER 128 /* length of other strings */
 #define ICS_LINE_LENGTH 256  /* the maximum length of each of the lines in the .ics file. */
@@ -179,6 +179,10 @@ typedef struct _ICS {
     double StedSatFactor[ICS_MAX_LAMBDA];                     /* STED saturation factor */
     double StedImmFraction[ICS_MAX_LAMBDA];                   /* STED immunity fraction */
     double StedVPPM[ICS_MAX_LAMBDA];                          /* STED vortex to phase plate mix */
+
+    double DetectorPPU[ICS_MAX_LAMBDA];                       /* Detector photons per unit */
+    double DetectorBaseline[ICS_MAX_LAMBDA];                  /* Detector Baseline */
+    double DetectorLineAvgCnt[ICS_MAX_LAMBDA];                /* Averaging line count */
     
     /* SCIL_Image compatibility parameter */
     char ScilType[ICS_STRLEN_TOKEN];           /* SCIL_TYPE string */

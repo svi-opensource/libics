@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013 Cris Luengo and others
+ * Copyright (C) 2000-2013, 2016 Cris Luengo and others
  * email: clluengo@users.sourceforge.net
  *
  * Large chunks of this library written by
@@ -69,20 +69,23 @@ Ics_Symbol G_SubCatSymbols[] =
 
 Ics_Symbol G_SubSubCatSymbols[] =
 {
-   {"Channels",          ICSTOK_CHANS },
-   {"PinholeRadius",     ICSTOK_PINHRAD },
-   {"LambdaEx",          ICSTOK_LAMBDEX },
-   {"LambdaEm",          ICSTOK_LAMBDEM },
-   {"ExPhotonCnt",       ICSTOK_PHOTCNT },
-   {"RefrInxMedium",     ICSTOK_REFRIME },
-   {"NumAperture",       ICSTOK_NUMAPER },
-   {"RefrInxLensMedium", ICSTOK_REFRILM },
-   {"PinholeSpacing",    ICSTOK_PINHSPA },
-   {"STEDDeplMode",      ICSTOK_STEDDEPLMODE },
-   {"STEDLambda",        ICSTOK_STEDLAMBDA },
-   {"STEDSatFactor",     ICSTOK_STEDSATFACTOR },
-   {"STEDImmFraction",   ICSTOK_STEDIMMFRACTION },
-   {"STEDVPPM",          ICSTOK_STEDVPPM }
+   {"Channels",           ICSTOK_CHANS },
+   {"PinholeRadius",      ICSTOK_PINHRAD },
+   {"LambdaEx",           ICSTOK_LAMBDEX },
+   {"LambdaEm",           ICSTOK_LAMBDEM },
+   {"ExPhotonCnt",        ICSTOK_PHOTCNT },
+   {"RefrInxMedium",      ICSTOK_REFRIME },
+   {"NumAperture",        ICSTOK_NUMAPER },
+   {"RefrInxLensMedium",  ICSTOK_REFRILM },
+   {"PinholeSpacing",     ICSTOK_PINHSPA },
+   {"STEDDeplMode",       ICSTOK_STEDDEPLMODE },
+   {"STEDLambda",         ICSTOK_STEDLAMBDA },
+   {"STEDSatFactor",      ICSTOK_STEDSATFACTOR },
+   {"STEDImmFraction",    ICSTOK_STEDIMMFRACTION },
+   {"STEDVPPM",           ICSTOK_STEDVPPM },
+   {"DetectorPPU",        ICSTOK_DETPPU },
+   {"DetectorBaseline",   ICSTOK_DETBASELINE },
+   {"DetectorLineAvgCnt", ICSTOK_DETLNAVGCNT }
 };
 
 Ics_Symbol G_ValueSymbols[] =

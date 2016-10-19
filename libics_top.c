@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013 Cris Luengo and others
+ * Copyright (C) 2000-2013, 2016 Cris Luengo and others
  * email: clluengo@users.sourceforge.net
  *
  * Large chunks of this library written by
@@ -71,7 +71,7 @@
 char const* ICSKEY_ORDER[] = {"x", "y", "z", "t", "probe"};
 char const* ICSKEY_LABEL[] = {"x-position", "y-position", "z-position",
                               "time", "probe"};
-ICSKEY_ORDER_LENGTH = 5; /* Number of elements in ICSKEY_ORDER and ICSKEY_LABEL arrays. */
+#define ICSKEY_ORDER_LENGTH 5 /* Number of elements in ICSKEY_ORDER and ICSKEY_LABEL arrays. */
 
 /*
  * Create an ICS structure, and read the stuff from file if reading.
@@ -248,8 +248,8 @@ Ics_Error IcsSetLayout (ICS* ics, Ics_DataType dt, int ndims, size_t const* dims
       }
       else {
          /* Could overflow: */
-         sprintf (ics->Dim[ii].Order, ICS_STRLEN_TOKEN, "dim_%d", ii);
-         sprintf (ics->Dim[ii].Label, ICS_STRLEN_TOKEN, "dim_%d", ii);
+         snprintf (ics->Dim[ii].Order, ICS_STRLEN_TOKEN, "dim_%d", ii);
+         snprintf (ics->Dim[ii].Label, ICS_STRLEN_TOKEN, "dim_%d", ii);
       }
    }
    ics->Dimensions = ndims;
