@@ -1,14 +1,18 @@
 .deps/
 .libs/
-Makefile
 *.la
 *.lo
 *.o
+*.tar.gz
+config.h
+config.log
+config.status
 libics_conf.h
 libtool
+Makefile
 stamp-*
 stamp-h2
-*.tar.gz
+
 
 # aclocal.m4
 # autom4te.cache/
