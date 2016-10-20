@@ -1,23 +1,26 @@
 .deps/
 .libs/
 Makefile
-Makefile.in
-aclocal.m4
-autom4te.cache/
-compile
-config.*
-configure
-depcomp
-install-sh
 *.la
 *.lo
 *.o
 libics_conf.h
 libtool
-ltmain.sh
-m4/
-missing
 stamp-*
 stamp-h2
-test-driver
 *.tar.gz
+
+# aclocal.m4
+# autom4te.cache/
+# compile
+# config.guess
+# config.h.in
+# config.sub
+# configure
+# depcomp
+# install-sh
+# ltmain.sh
+# m4/
+# Makefile.in
+# missing
+# test-driver
