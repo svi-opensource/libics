@@ -3,9 +3,9 @@ dnl libics: Image Cytometry Standard file reading and writing.
 dnl
 dnl Copyright (C) 2000-2013, 2016 Cris Luengo and others
 dnl Copyright 2015, 2016:
-dnl   Scientific Volume Imaging Holding B.V. Laapersveld 63,
-dnl   1213 VB Hilversum
-dnl   [Scientific Volume Imaging Holding BV](http://www.svi.nl)
+dnl   Scientific Volume Imaging Holding B.V.
+dnl   Laapersveld 63, 1213 VB Hilversum, The Netherlands
+dnl   https://www.svi.nl
 dnl
 dnl Script for automake and autoconfig.
 dnl Written by Peter Verveer, Cris Luengo
