@@ -4,6 +4,7 @@
 *.lo
 *.o
 *.tar.gz
+*~
 config.h
 config.log
 config.status
