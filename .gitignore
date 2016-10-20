@@ -20,3 +20,4 @@ missing
 stamp-*
 stamp-h2
 test-driver
+*.tar.gz

@@ -88,19 +88,19 @@ EXTRA_DIST = INSTALL \
              Makefile.bcc \
              Makefile.vc6 \
              Makefile.vc9 \
-             Documentation/index.html \
-             Documentation/Credits.html \
-             Documentation/Documentation.html \
-             Documentation/Enums.html \
-             Documentation/Ics_DataRepresentation.html \
-             Documentation/Ics_Error.html \
-             Documentation/Ics_Header.html \
-             Documentation/Ics_ImelRepresentation.html \
-             Documentation/LowLevelFunctions.html \
-             Documentation/TopLevelFunctions.html \
-             Documentation/Usage.html \
-             Documentation/libics.css \
-             Documentation/iexplorefix.css \
+             docs/index.html \
+             docs/Credits.html \
+             docs/Documentation.html \
+             docs/Enums.html \
+             docs/Ics_DataRepresentation.html \
+             docs/Ics_Error.html \
+             docs/Ics_Header.html \
+             docs/Ics_ImelRepresentation.html \
+             docs/LowLevelFunctions.html \
+             docs/TopLevelFunctions.html \
+             docs/Usage.html \
+             docs/libics.css \
+             docs/iexplorefix.css \
              support/icsviewer/README \
              support/icsviewer/icsviewer.dsp \
              support/icsviewer/icsviewer.dsw \
