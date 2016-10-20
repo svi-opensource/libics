@@ -135,7 +135,7 @@ Ics_Error IcsInternAddHistory (Ics_Header* ics, char const* key, char const* val
       hist = (Ics_History*)ics->History;
    }
    /* Reallocate if array is not large enough */
-   if (hist->NStr >= hist->Length) {
+   if ((size_t)hist->NStr >= hist->Length) {
       char** tmp = (char**)realloc (hist->Strings, (hist->Length+ICS_HISTARRAY_INCREMENT)*sizeof (char*));
       ICSTR( tmp == NULL, IcsErr_Alloc );
       hist->Strings = tmp;

@@ -82,7 +82,8 @@ char const* ICSKEY_LABEL[] = {"x-position", "y-position", "z-position",
 Ics_Error IcsOpen (ICS* *ics, char const* filename, char const* mode)
 {
    ICSINIT;
-   int ii, version = 0, forcename = 0, forcelocale = 1, reading = 0, writing = 0;
+   int version = 0, forcename = 0, forcelocale = 1, reading = 0, writing = 0;
+   size_t ii;
 
    /* the mode string is one of: "r", "w", "rw", with "f" and/or "l" appended for
       reading and "1" or "2" appended for writing */
@@ -359,6 +360,7 @@ Ics_Error IcsGetROIData (ICS* ics, size_t const* p_offset, size_t const* p_size,
 {
    ICSDECL;
    int ii, sizeconflict = 0, p;
+   size_t jj;
    size_t imelsize, roisize, cur_loc, new_loc, bufsize;
    size_t curpos[ICS_MAXDIM];
    size_t stride[ICS_MAXDIM];
@@ -443,7 +445,7 @@ Ics_Error IcsGetROIData (ICS* ics, size_t const* p_offset, size_t const* p_size,
             break; /* stop reading on error */
          }
          cur_loc += bufsize;
-         for (ii=0; ii<size[0]; ii+=sampling[0]) {
+         for (jj=0; jj<size[0]; jj+=sampling[0]) {
             memcpy (dest, buf+ii*imelsize, imelsize);
             dest += imelsize;
          }
@@ -509,6 +511,7 @@ Ics_Error IcsGetDataWithStrides (ICS* ics, void* p_dest, size_t n, size_t const*
 {
    ICSDECL;
    int ii, p;
+   size_t jj;
    size_t imelsize, lastpixel, bufsize;
    size_t curpos[ICS_MAXDIM];
    size_t b_stride[ICS_MAXDIM];
@@ -556,8 +559,8 @@ Ics_Error IcsGetDataWithStrides (ICS* ics, void* p_dest, size_t n, size_t const*
          if (error != IcsErr_Ok) {
             break; /* stop reading on error */
          }
-         for (ii = 0; ii < ics->Dim[0].Size; ii++) {
-            memcpy (out, buf+ii*imelsize, imelsize);
+         for (jj = 0; jj < ics->Dim[0].Size; jj++) {
+            memcpy (out, buf+jj*imelsize, imelsize);
             out += stride[0]*imelsize;
          }
          for (ii = 1; ii < p; ii++) {

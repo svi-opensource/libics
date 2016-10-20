@@ -107,8 +107,8 @@ Ics_Error IcsReadCompress (Ics_Header* IcsStruct, void* outbuf, size_t len)
    size_t rsize;
    int block_mode;
    int maxbits;
-   int ii;
-   int offset;
+   size_t ii;
+   size_t offset;
    unsigned char *inbuf = NULL;
    unsigned char *htab = NULL;
    unsigned short *codetab = NULL;

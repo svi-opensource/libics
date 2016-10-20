@@ -118,7 +118,7 @@ Ics_Error IcsWriteZip (void const* inbuf, size_t len, FILE* file, int level)
 {
 #ifdef ICS_ZLIB
    z_stream stream;
-   Byte* outbuf;    /* output buffer */ int err, done, flush;
+   Byte* outbuf;    /* output buffer */ int err, flush;
    size_t total_count;
    unsigned int have;
    uLong crc;
@@ -208,6 +208,7 @@ Ics_Error IcsWriteZipWithStrides (void const* src,  size_t const* dim,
    size_t curpos[ICS_MAXDIM];
    char const* data;
    int ii, err, done;
+   size_t jj;
    size_t count, total_count = 0;
    uLong crc;
    int const contiguous_line = stride[0]==1;
@@ -262,7 +263,7 @@ Ics_Error IcsWriteZipWithStrides (void const* src,  size_t const* dim,
       }
       else {
          inbuf_ptr = inbuf;
-         for (ii = 0; ii < dim[0]; ii++) {
+         for (jj = 0; jj < dim[0]; jj++) {
             memcpy (inbuf_ptr, data, nbytes);
             data += stride[0]*nbytes;
             inbuf_ptr += nbytes;

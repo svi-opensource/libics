@@ -69,6 +69,7 @@ Ics_Error IcsWritePlainWithStrides (void const* src, size_t const* dim,
    size_t curpos[ICS_MAXDIM];
    char const* data;
    int ii;
+   size_t jj;
 
    for (ii = 0; ii < ndims; ii++) {
       curpos[ii] = 0;
@@ -84,7 +85,7 @@ Ics_Error IcsWritePlainWithStrides (void const* src, size_t const* dim,
          }
       }
       else {
-         for (ii = 0; ii < dim[0]; ii++) {
+         for (jj = 0; jj < dim[0]; jj++) {
             if (fwrite (data, nbytes, 1, file) != 1) {
                return IcsErr_FWriteIds;
             }
@@ -195,7 +196,8 @@ Ics_Error IcsCopyIds (char const* infilename, size_t inoffset, char const* outfi
    FILE* in = 0;
    FILE* out = 0;
    char* buffer = 0;
-   int done = 0, n;
+   int done = 0;
+   size_t n;
 
    /* Open files */
    in = IcsFOpen (infilename, "rb");
