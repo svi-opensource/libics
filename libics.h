@@ -69,6 +69,13 @@ extern "C" {
 
 #endif
 
+/*** For older visual studio versions */
+#ifdef _MSC_VER
+#if(_MSC_VER < 1900)
+#define snprintf _snprintf
+#endif
+#endif
+    
 /* For the moment the largest imel is a double complex of 16 bytes: */
 #define ICS_MAX_IMEL_SIZE 16
 
