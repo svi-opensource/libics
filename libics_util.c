@@ -1,8 +1,8 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013, 2016 Cris Luengo and others
- * Copyright 2015, 2016:
+ * Copyright (C) 2000-2013 Cris Luengo and others
+ * Copyright 2015-2017:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
@@ -27,6 +27,7 @@
  * License along with this library; if not, write to the Free
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+
 /*
  * FILE : libics_util.c
  *
@@ -67,23 +68,23 @@
 #endif
 #endif
 
-char const ICSEXT[] = ".ics";
-char const IDSEXT[] = ".ids";
-char const IDSEXT_Z[] = ".ids.Z";
-char const IDSEXT_GZ[] = ".ids.gz";
+const char ICSEXT[] = ".ics";
+const char IDSEXT[] = ".ids";
+const char IDSEXT_Z[] = ".ids.Z";
+const char IDSEXT_GZ[] = ".ids.gz";
 
-/*
- * This is a wrapper for the fopen function, on UNIX it calls fopen, on Windows
- * it uses _wfopen to support UTF-8 filenames.
- */
-FILE* IcsFOpen(const char* path, const char* mode)
+
+/* This is a wrapper for the fopen function, on UNIX it calls fopen, on Windows
+   it uses _wfopen to support UTF-8 filenames. */
+FILE* IcsFOpen(const char *path,
+               const char *mode)
 {
 #ifdef _WIN32
-    wchar_t *wpath = NULL, wmode[8];
-    int n = MultiByteToWideChar(CP_UTF8, 0, path, -1, wpath, 0);
-    FILE *result = NULL;
-	
-    wpath = (wchar_t*)malloc(n * sizeof(wchar_t));
+    wchar_t *wpath  = NULL, wmode[8];
+    int      n      = MultiByteToWideChar(CP_UTF8, 0, path, -1, wpath, 0);
+    FILE    *result = NULL;
+
+    wpath =(wchar_t*)malloc(n * sizeof(wchar_t));
     if (!wpath) return NULL;
 
     if (!MultiByteToWideChar(CP_UTF8, 0, path, -1, wpath, n)) goto exit;
@@ -97,418 +98,414 @@ FILE* IcsFOpen(const char* path, const char* mode)
     }
     return result;
 #else
-    return fopen(path, mode);    
+    return fopen(path, mode);
 #endif
 }
 
 
-/*
- * This function can be used to check for the correct library version:
- * if (strcmp (ICSLIB_VERSION, IcsGetLibVersion ()) != 0) return ERRORCODE;
- */
-char const* IcsGetLibVersion (void)
+/* This function can be used to check for the correct library version: if
+  (strcmp (ICSLIB_VERSION, IcsGetLibVersion ()) != 0) return ERRORCODE; */
+const char *IcsGetLibVersion(void)
 {
-   return ICSLIB_VERSION;
+    return ICSLIB_VERSION;
 }
 
-/*
- * Parse a number string and return the value in a size_t.
- */
-size_t IcsStrToSize (char const* str)
+
+/* Parse a number string and return the value in a size_t. */
+size_t IcsStrToSize(const char *str)
 {
-   unsigned long ulsize;
-   size_t size;
+    unsigned long ulsize;
+    size_t        size;
 
-   ulsize = strtoul (str, NULL, 10);
-   size = (size_t) ulsize;
 
-   return size;
+    ulsize = strtoul(str, NULL, 10);
+    size =(size_t) ulsize;
+
+    return size;
 }
 
-/*
- * A safe strcpy. len is the number of characters in dest. Up to len-1 characters copied.
- */
-void IcsStrCpy (char* dest, char const* src, int len)
+
+/* A safe strcpy. len is the number of characters in dest. Up to len-1
+   characters copied. */
+void IcsStrCpy(char       *dest,
+               const char *src,
+               int         len)
 {
-   if (dest != src) {
-      int nchar = strlen(src);
-      nchar = (nchar > len-1) ? len-1 : nchar;
-      memcpy (dest, src, nchar);
-      dest[nchar] = 0;
-   }
+    if (dest != src) {
+        int nchar = strlen(src);
+        nchar =(nchar > len-1) ? len-1 : nchar;
+        memcpy(dest, src, nchar);
+        dest[nchar] = 0;
+    }
 }
 
-/*
- * Append a character to a string
- */
-void IcsAppendChar (char* Line, char ch)
+
+/* Append a character to a string */
+void IcsAppendChar(char *Line,
+
+                   char  ch)
 {
-   int len = strlen (Line);
-   Line[len] = ch;
-   Line[len+1] = '\0';
+    int len = strlen(Line);
+    Line[len] = ch;
+    Line[len+1] = '\0';
 }
 
-/*
- * Find the start of the filename
- */
-static char* IcsFileNameFind (char const* str) {
-   char const* begin;
+
+/* Find the start of the filename */
+static char *IcsFileNameFind(const char *str)
+{
+    const char *begin;
 
 #ifdef WIN32
-   /* For Windows we check both kinds of path separators */
-   begin = strrchr (str, '\\');
-   if (begin == NULL) {
-      begin = strrchr (str, '/');
-   }
+        /* For Windows we check both kinds of path separators */
+    begin = strrchr(str, '\\');
+    if (begin == NULL) {
+        begin = strrchr(str, '/');
+    }
 #else
-   begin = strrchr (str, '/');
+    begin = strrchr(str, '/');
 #endif
-   if (begin == NULL) {
-      begin = str;
-   }
-   else {
-      begin++;
-   }
+    if (begin == NULL) {
+        begin = str;
+    }
+    else {
+        begin++;
+    }
 
-   return (char*)begin;
+    return (char *)begin;
 }
 
-/*
- * Find the start of the '.ics' or '.ids' extension.
- * Also handle filenames ending in '.ids.Z' or '.ids.gz'.
- * All character comparisons must be case insensitive.
- * Return a pointer to the start of the extension
- * or NULL if no extension could be found.
- */
-char* IcsExtensionFind (char const* str)
+
+/* Find the start of the '.ics' or '.ids' extension.  Also handle filenames
+ ending in '.ids.Z' or '.ids.gz'.  All character comparisons must be case
+ insensitive.  Return a pointer to the start of the extension or NULL if no
+ extension could be found. */
+char *IcsExtensionFind(const char *str)
 {
-   int len;
-   char const* ext;
+    int         len;
+    const char *ext;
 
-   len = strlen (str);
 
-   ext = str + len - (sizeof(ICSEXT) - 1);
-   if (ext >= str && strcasecmp (ext, ICSEXT) == 0) {
-      return (char*)ext;
-   }
+    len = strlen(str);
 
-   ext = str + len - (sizeof(IDSEXT) - 1);
-   if (ext >= str && strcasecmp (ext, IDSEXT) == 0) {
-      return (char*)ext;
-   }
+    ext = str + len - (sizeof(ICSEXT) - 1);
+    if (ext >= str && strcasecmp(ext, ICSEXT) == 0) {
+        return (char *)ext;
+    }
 
-   ext = str + len - (sizeof(IDSEXT_Z) - 1);
-   if (ext >= str && strcasecmp (ext, IDSEXT_Z) == 0) {
-      return (char*)ext;
-   }
+    ext = str + len - (sizeof(IDSEXT) - 1);
+    if (ext >= str && strcasecmp(ext, IDSEXT) == 0) {
+        return (char *)ext;
+    }
 
-   ext = str + len - (sizeof(IDSEXT_GZ) - 1);
-   if (ext >= str && strcasecmp (ext, IDSEXT_GZ) == 0) {
-      return (char*)ext;
-   }
+    ext = str + len - (sizeof(IDSEXT_Z) - 1);
+    if (ext >= str && strcasecmp(ext, IDSEXT_Z) == 0) {
+        return (char *)ext;
+    }
 
-   return NULL;
+    ext = str + len - (sizeof(IDSEXT_GZ) - 1);
+    if (ext >= str && strcasecmp(ext, IDSEXT_GZ) == 0) {
+        return (char *)ext;
+    }
+
+    return NULL;
 }
 
-/*
- * Strip the path from everything but the file name
- * (including extension).
- */
-void IcsGetFileName (char* dest, char const* src)
-{
-   char const* begin;
-   char* end;
 
-   begin = IcsFileNameFind (src);
-   IcsStrCpy (dest, begin, ICS_MAXPATHLEN);
-   end = IcsExtensionFind (dest);
-   if (end != NULL) {
-      *end = '\0';
-   }
+/* Strip the path from everything but the file name(including extension). */
+void IcsGetFileName(char       *dest,
+                    const char *src)
+{
+    const char *begin;
+    char       *end;
+
+
+    begin = IcsFileNameFind(src);
+    IcsStrCpy(dest, begin, ICS_MAXPATHLEN);
+    end = IcsExtensionFind(dest);
+    if (end != NULL) {
+        *end = '\0';
+    }
 }
 
-/*
- * Make a filename ending in '.ics' from the given filename.
- * If the filename ends in '.IDS' then make this '.ICS'.
- * Also accept filenames ending in '.ids.Z' and '.ids.gz',
- * but strip the compression extension.
- */
-char* IcsGetIcsName (char* dest, char const* src, int forcename)
-{
-   char* end;
 
-   IcsStrCpy (dest, src, ICS_MAXPATHLEN);
-   end = IcsExtensionFind (dest);
-   if (end != NULL) {
-      if (strcasecmp (end, ICSEXT) == 0) {
-         return dest;
-      }
-      else {
-         /* Keep same case. */
-         if (end[2] == 'd') {
-            end[2] = 'c';
-            end[4] = '\0';
+/* Make a filename ending in '.ics' from the given filename.  If the filename
+  ends in '.IDS' then make this '.ICS'.  Also accept filenames ending in
+  '.ids.Z' and '.ids.gz', but strip the compression extension. */
+char *IcsGetIcsName(char       *dest,
+                    const char *src,
+                    int         forcename)
+{
+    char *end;
+
+
+    IcsStrCpy(dest, src, ICS_MAXPATHLEN);
+    end = IcsExtensionFind(dest);
+    if (end != NULL) {
+        if (strcasecmp(end, ICSEXT) == 0) {
             return dest;
-         }
-         else if (end[2] == 'D') {
-            end[2] = 'C';
-            end[4] = '\0';
-            return dest;
-         }
-         else { /* does not happen! */
-            if (!forcename) {
-               *end = '\0';
+        } else {
+                /* Keep same case. */
+            if (end[2] == 'd') {
+                end[2] = 'c';
+                end[4] = '\0';
+                return dest;
+            } else if (end[2] == 'D') {
+                end[2] = 'C';
+                end[4] = '\0';
+                return dest;
+            } else { /* does not happen! */
+                if (!forcename) {
+                    *end = '\0';
+                }
             }
-         }
-      }
-   }
-   if (!forcename && strlen(dest) + strlen(ICSEXT) + 1 < ICS_MAXPATHLEN) {
-      strcat (dest, ICSEXT);
-   }
+        }
+    }
+    if (!forcename && strlen(dest) + strlen(ICSEXT) + 1 < ICS_MAXPATHLEN) {
+        strcat(dest, ICSEXT);
+    }
 
-   return dest;
+    return dest;
 }
 
-/*
- * Make a filename ending in '.ids' from the given filename.
- * If the filename ends in '.ICS' then make this '.IDS'.
- * Also accept filenames ending in '.ids.Z' and '.ids.gz',
- * but strip the compression extension.
- */
-char* IcsGetIdsName (char* dest, char const* src)
-{
-   char* end;
 
-   IcsStrCpy (dest, src, ICS_MAXPATHLEN);
-   end = IcsExtensionFind (dest);
-   if (end != NULL) {
-      if (strcasecmp (end, ICSEXT) == 0) {
-         /* Keep same case. */
-         if (end[2] == 'c') {
-            end[2] = 'd';
+/* Make a filename ending in '.ids' from the given filename.  If the filename
+  ends in '.ICS' then make this '.IDS'.  Also accept filenames ending in
+  '.ids.Z' and '.ids.gz', but strip the compression extension. */
+char *IcsGetIdsName(char       *dest,
+                    const char *src)
+{
+    char *end;
+
+    IcsStrCpy(dest, src, ICS_MAXPATHLEN);
+    end = IcsExtensionFind(dest);
+    if (end != NULL) {
+        if (strcasecmp(end, ICSEXT) == 0) {
+                /* Keep same case. */
+            if (end[2] == 'c') {
+                end[2] = 'd';
+                return dest;
+            } else if (end[2] == 'C') {
+                end[2] = 'D';
+                return dest;
+            } else {
+                *end = '\0';
+            }
+        } else {
+            end[4] = '\0';
             return dest;
-         }
-         else if (end[2] == 'C') {
-            end[2] = 'D';
-            return dest;
-         }
-         else {
-            *end = '\0';
-         }
-      }
-      else {
-         end[4] = '\0';
-         return dest;
-      }
-   }
-   if (strlen(dest) + strlen(IDSEXT) + 1 < ICS_MAXPATHLEN) {
-      strcat (dest, IDSEXT);
-   }
+        }
+    }
+    if (strlen(dest) + strlen(IDSEXT) + 1 < ICS_MAXPATHLEN) {
+        strcat(dest, IDSEXT);
+    }
 
-   return dest;
+    return dest;
 }
 
-/*
- * Open an .ics file, even if the name given end in .ids.
- */
-Ics_Error IcsOpenIcs (FILE** fpp, char* filename, int forcename)
+
+/* Open an .ics file, even if the name given end in .ids. */
+Ics_Error IcsOpenIcs(FILE **fpp,
+                     char  *filename,
+                     int    forcename)
 {
-   ICSINIT;
-   FILE* fp;
-   char FileName[ICS_MAXPATHLEN];
+    ICSINIT;
+    FILE* fp;
+    char FileName[ICS_MAXPATHLEN];
 
-   IcsGetIcsName (FileName, filename, forcename);
-   fp = IcsFOpen (FileName, "rb");
-   ICSTR( fp == NULL, IcsErr_FOpenIcs );
+    IcsGetIcsName(FileName, filename, forcename);
+    fp = IcsFOpen(FileName, "rb");
+    ICSTR(fp == NULL, IcsErr_FOpenIcs);
 
-   *fpp = fp;
-   strcpy (filename, FileName);
+    *fpp = fp;
+    strcpy(filename, FileName);
 
-   return error;
+    return error;
 }
 
-/*
- * Initialize the Ics_Header structure.
- */
-void IcsInit (Ics_Header* IcsStruct)
-{
-   int ii;
 
-   IcsStruct->Version = 2; /* We write an ICS v.2.0 as default */
-   IcsStruct->FileMode = IcsFileMode_write;
-   IcsStruct->Data = NULL;
-   IcsStruct->DataLength = 0;
-   IcsStruct->DataStrides = NULL;
-   IcsStruct->Filename[0] = '\0';
-   IcsStruct->Dimensions = 0;
-   for (ii = 0; ii < ICS_MAXDIM; ii++)
-   {
-      IcsStruct->Dim[ii].Size = 0;
-      IcsStruct->Dim[ii].Origin = 0.0;
-      IcsStruct->Dim[ii].Scale = 1.0;
-      IcsStruct->Dim[ii].Order[0] = '\0';
-      IcsStruct->Dim[ii].Label[0] = '\0';
-      IcsStruct->Dim[ii].Unit[0] = '\0';
-   }
-   IcsStruct->Imel.DataType = Ics_unknown;
-   IcsStruct->Imel.SigBits = 0;
-   IcsStruct->Imel.Origin = 0.0;
-   IcsStruct->Imel.Scale = 1.0;
-   IcsStruct->Imel.Unit[0] = '\0';
-   IcsStruct->Coord[0] = '\0';
-   IcsStruct->Compression = IcsCompr_uncompressed;
-   IcsStruct->CompLevel = 0;
-   IcsStruct->History = NULL;
-   IcsStruct->BlockRead = NULL;
-   IcsStruct->SrcFile[0] = '\0';
-   IcsStruct->SrcOffset = 0;
-   for (ii = 0; ii < ICS_MAX_IMEL_SIZE; ii++) {
-      IcsStruct->ByteOrder[ii] = 0;
-   }
-   IcsStruct->WriteSensor = 0;
-   IcsStruct->Model[0]= '\0';
-   IcsStruct->RefrInxMedium = 0.0;
-   IcsStruct->NumAperture = 0.0;
-   IcsStruct->RefrInxLensMedium = 0.0;
-   IcsStruct->PinholeSpacing = 0.0;
-   IcsStruct->SensorChannels = 0;
-   for (ii = 0; ii < ICS_MAX_LAMBDA; ii++) {
-      IcsStruct->Type[ii][0] = '\0';
-      IcsStruct->PinholeRadius[ii] = 0.0;
-      IcsStruct->LambdaEx[ii] = 0.0;
-      IcsStruct->LambdaEm[ii] = 0.0;
-      IcsStruct->ExPhotonCnt[ii] = 1;
-      IcsStruct->StedDepletionMode[ii][0] = '\0';
-      IcsStruct->StedLambda[ii] = 0.0;
-      IcsStruct->StedSatFactor[ii] = 0.0;
-      IcsStruct->StedImmFraction[ii] = 0.0;
-      IcsStruct->StedVPPM[ii] = 0.0;
-      IcsStruct->DetectorPPU[ii] = 1.0;
-      IcsStruct->DetectorBaseline[ii] = 0.0;
-      IcsStruct->DetectorLineAvgCnt[ii] = 1.0;
-   }
-   IcsStruct->ScilType[0] = '\0';
+/* Initialize the Ics_Header structure. */
+void IcsInit(Ics_Header* IcsStruct)
+{
+    int i;
+
+    IcsStruct->Version = 2; /* We write an ICS v.2.0 as default */
+    IcsStruct->FileMode = IcsFileMode_write;
+    IcsStruct->Data = NULL;
+    IcsStruct->DataLength = 0;
+    IcsStruct->DataStrides = NULL;
+    IcsStruct->Filename[0] = '\0';
+    IcsStruct->Dimensions = 0;
+    for (i = 0; i < ICS_MAXDIM; i++) {
+        IcsStruct->Dim[i].Size = 0;
+        IcsStruct->Dim[i].Origin = 0.0;
+        IcsStruct->Dim[i].Scale = 1.0;
+        IcsStruct->Dim[i].Order[0] = '\0';
+        IcsStruct->Dim[i].Label[0] = '\0';
+        IcsStruct->Dim[i].Unit[0] = '\0';
+    }
+    IcsStruct->Imel.DataType = Ics_unknown;
+    IcsStruct->Imel.SigBits = 0;
+    IcsStruct->Imel.Origin = 0.0;
+    IcsStruct->Imel.Scale = 1.0;
+    IcsStruct->Imel.Unit[0] = '\0';
+    IcsStruct->Coord[0] = '\0';
+    IcsStruct->Compression = IcsCompr_uncompressed;
+    IcsStruct->CompLevel = 0;
+    IcsStruct->History = NULL;
+    IcsStruct->BlockRead = NULL;
+    IcsStruct->SrcFile[0] = '\0';
+    IcsStruct->SrcOffset = 0;
+    for (i = 0; i < ICS_MAX_IMEL_SIZE; i++) {
+        IcsStruct->ByteOrder[i] = 0;
+    }
+    IcsStruct->WriteSensor = 0;
+    IcsStruct->Model[0]= '\0';
+    IcsStruct->RefrInxMedium = 0.0;
+    IcsStruct->NumAperture = 0.0;
+    IcsStruct->RefrInxLensMedium = 0.0;
+    IcsStruct->PinholeSpacing = 0.0;
+    IcsStruct->SensorChannels = 0;
+    for (i = 0; i < ICS_MAX_LAMBDA; i++) {
+        IcsStruct->Type[i][0] = '\0';
+        IcsStruct->PinholeRadius[i] = 0.0;
+        IcsStruct->LambdaEx[i] = 0.0;
+        IcsStruct->LambdaEm[i] = 0.0;
+        IcsStruct->ExPhotonCnt[i] = 1;
+        IcsStruct->StedDepletionMode[i][0] = '\0';
+        IcsStruct->StedLambda[i] = 0.0;
+        IcsStruct->StedSatFactor[i] = 0.0;
+        IcsStruct->StedImmFraction[i] = 0.0;
+        IcsStruct->StedVPPM[i] = 0.0;
+        IcsStruct->DetectorPPU[i] = 1.0;
+        IcsStruct->DetectorBaseline[i] = 0.0;
+        IcsStruct->DetectorLineAvgCnt[i] = 1.0;
+    }
+    IcsStruct->ScilType[0] = '\0';
 }
 
-/*
- * Find the number of bytes per sample.
- */
-int IcsGetBytesPerSample (Ics_Header const* IcsStruct)
+
+/* Find the number of bytes per sample. */
+int IcsGetBytesPerSample(const Ics_Header *IcsStruct)
 {
-   return IcsGetDataTypeSize (IcsStruct->Imel.DataType);
+    return IcsGetDataTypeSize(IcsStruct->Imel.DataType);
 }
 
-/*
- * Get the size of the Ics_DataType in bytes.
- */
-size_t IcsGetDataTypeSize (Ics_DataType DataType)
+
+/* Get the size of the Ics_DataType in bytes. */
+size_t IcsGetDataTypeSize(Ics_DataType DataType)
 {
-   size_t bytes;
+    size_t bytes;
 
-   switch (DataType) {
-      case Ics_uint8:
-      case Ics_sint8:
-         bytes = 1;
-         break;
-      case Ics_uint16:
-      case Ics_sint16:
-         bytes = 2;
-         break;
-      case Ics_uint32:
-      case Ics_sint32:
-      case Ics_real32:
-         bytes = 4;
-         break;
-      case Ics_real64:
-      case Ics_complex32:
-         bytes = 8;
-         break;
-      case Ics_complex64:
-         bytes = 16;
-         break;
-      default:
-         bytes = 0;
-   }
 
-   return bytes;
+    switch (DataType) {
+        case Ics_uint8:
+        case Ics_sint8:
+            bytes = 1;
+            break;
+        case Ics_uint16:
+        case Ics_sint16:
+            bytes = 2;
+            break;
+        case Ics_uint32:
+        case Ics_sint32:
+        case Ics_real32:
+            bytes = 4;
+            break;
+        case Ics_real64:
+        case Ics_complex32:
+            bytes = 8;
+            break;
+        case Ics_complex64:
+            bytes = 16;
+            break;
+        default:
+            bytes = 0;
+    }
+
+    return bytes;
 }
 
-/*
- * Get the properties of the Ics_DataType
- */
-void IcsGetPropsDataType (Ics_DataType DataType, Ics_Format* format, int* sign, size_t* bits)
+
+/* Get the properties of the Ics_DataType */
+void IcsGetPropsDataType(Ics_DataType  DataType,
+                         Ics_Format   *format,
+                         int          *sign,
+                         size_t       *bits)
 {
-   *bits = IcsGetDataTypeSize (DataType) * 8;
-   *sign = 1;
-   switch (DataType) {
-      case Ics_uint8:
-      case Ics_uint16:
-      case Ics_uint32:
-         *sign = 0;
-      case Ics_sint8:
-      case Ics_sint16:
-      case Ics_sint32:
-         *format = IcsForm_integer;
-         break;
-      case Ics_real32:
-      case Ics_real64:
-         *format = IcsForm_real;
-         break;
-      case Ics_complex32:
-      case Ics_complex64:
-         *format = IcsForm_complex;
-         break;
-      default:
-         *format = IcsForm_unknown;
-   }
+    *bits = IcsGetDataTypeSize(DataType) * 8;
+    *sign = 1;
+    switch (DataType) {
+        case Ics_uint8:
+        case Ics_uint16:
+        case Ics_uint32:
+            *sign = 0;
+        case Ics_sint8:
+        case Ics_sint16:
+        case Ics_sint32:
+            *format = IcsForm_integer;
+            break;
+        case Ics_real32:
+        case Ics_real64:
+            *format = IcsForm_real;
+            break;
+        case Ics_complex32:
+        case Ics_complex64:
+            *format = IcsForm_complex;
+            break;
+        default:
+            *format = IcsForm_unknown;
+    }
 }
 
-/*
- * Get the Ics_DataType belonging to the given properties
- */
-void IcsGetDataTypeProps (Ics_DataType* DataType, Ics_Format format, int sign, size_t bits)
+
+/* Get the Ics_DataType belonging to the given properties */
+void IcsGetDataTypeProps(Ics_DataType* DataType,
+                         Ics_Format    format,
+                         int           sign,
+                         size_t        bits)
 {
-   switch (format) {
-      case IcsForm_integer:
-         switch (bits) {
-            case 8:
-               *DataType = sign ? Ics_sint8 : Ics_uint8;
-               break;
-            case 16:
-               *DataType = sign ? Ics_sint16 : Ics_uint16;
-               break;
-            case 32:
-               *DataType = sign ? Ics_sint32 : Ics_uint32;
-               break;
-            default:
-               *DataType = Ics_unknown;
-         }
-         break;
-      case IcsForm_real:
-         switch (bits) {
-            case 32:
-               *DataType = Ics_real32;
-               break;
-            case 64:
-               *DataType = Ics_real64;
-               break;
-            default:
-               *DataType = Ics_unknown;
-         }
-         break;
-      case IcsForm_complex:
-         switch (bits) {
-            case 2*32:
-               *DataType = Ics_complex32;
-               break;
-            case 2*64:
-               *DataType = Ics_complex64;
-               break;
-            default:
-               *DataType = Ics_unknown;
-         }
-         break;
-      default:
-         *DataType = Ics_unknown;
-   }
+    switch (format) {
+        case IcsForm_integer:
+            switch (bits) {
+                case 8:
+                    *DataType = sign ? Ics_sint8 : Ics_uint8;
+                    break;
+                case 16:
+                    *DataType = sign ? Ics_sint16 : Ics_uint16;
+                    break;
+                case 32:
+                    *DataType = sign ? Ics_sint32 : Ics_uint32;
+                    break;
+                default:
+                    *DataType = Ics_unknown;
+            }
+            break;
+        case IcsForm_real:
+            switch (bits) {
+                case 32:
+                    *DataType = Ics_real32;
+                    break;
+                case 64:
+                    *DataType = Ics_real64;
+                    break;
+                default:
+                    *DataType = Ics_unknown;
+            }
+            break;
+        case IcsForm_complex:
+            switch (bits) {
+                case 2*32:
+                    *DataType = Ics_complex32;
+                    break;
+                case 2*64:
+                    *DataType = Ics_complex64;
+                    break;
+                default:
+                    *DataType = Ics_unknown;
+            }
+            break;
+        default:
+            *DataType = Ics_unknown;
+    }
 }

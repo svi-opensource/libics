@@ -1,8 +1,8 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013, 2016 Cris Luengo and others
- * Copyright 2015, 2016:
+ * Copyright (C) 2000-2013 Cris Luengo and others
+ * Copyright 2015-2017:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
@@ -29,6 +29,7 @@
  * License along with this library; if not, write to the Free
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+
 /*
  * FILE : libics_test.h
  *
@@ -38,27 +39,26 @@
 #ifndef LIBICS_TEST_H
 #define LIBICS_TEST_H
 
-#ifndef LIBICS_H
+
 #include "libics.h"
-#endif
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*
- * Function declarations and short explanation:
- */
 
-void IcsPrintIcs (ICS const* ics);
 /* Prints the contents of the ICS structure to stdout (using only printf). */
+void IcsPrintIcs (ICS const* ics);
 
+/* Prints a textual representation of the error message to stdout (using only
+  printf). */
 void IcsPrintError (Ics_Error error);
-/* Prints a textual representation of the error message to stdout (using
- * only printf). */
+
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* LIBICS_TEST_H */
+
+#endif

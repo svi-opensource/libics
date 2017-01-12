@@ -1,8 +1,8 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013, 2016 Cris Luengo and others
- * Copyright 2015, 2016:
+ * Copyright (C) 2000-2013 Cris Luengo and others
+ * Copyright 2015, 2017:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
@@ -29,6 +29,7 @@
  * License along with this library; if not, write to the Free
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+
 /*
  * FILE : libics_data.c
  *
@@ -36,96 +37,107 @@
  * writing the ICS headers.
  */
 
+
 #include "libics_intern.h"
+
 
 Ics_Symbol G_CatSymbols[] =
 {
-   { "source",           ICSTOK_SOURCE },
-   { "layout",           ICSTOK_LAYOUT },
-   { "representation",   ICSTOK_REPRES },
-   { "parameter",        ICSTOK_PARAM },
-   { ICS_HISTORY,        ICSTOK_HISTORY }, /* Don't want duplicate strings... */
-   { "sensor",           ICSTOK_SENSOR },
-   { "end",              ICSTOK_END }
+    { "source",           ICSTOK_SOURCE},
+    { "layout",           ICSTOK_LAYOUT},
+    { "representation",   ICSTOK_REPRES},
+    { "parameter",        ICSTOK_PARAM},
+    { ICS_HISTORY,        ICSTOK_HISTORY}, /* Don't want duplicate strings... */
+    { "sensor",           ICSTOK_SENSOR},
+    { "end",              ICSTOK_END }
 };
+
 
 Ics_Symbol G_SubCatSymbols[] =
 {
-   {"file",               ICSTOK_FILE },
-   {"offset",             ICSTOK_OFFSET },
-   {"parameters",         ICSTOK_PARAMS },
-   {"order",              ICSTOK_ORDER },
-   {"sizes",              ICSTOK_SIZES },
-   {"coordinates",        ICSTOK_COORD },
-   {"significant_bits",   ICSTOK_SIGBIT },
-   {"format",             ICSTOK_FORMAT },
-   {"sign",               ICSTOK_SIGN },
-   {"compression",        ICSTOK_COMPR },
-   {"byte_order",         ICSTOK_BYTEO },
-   {"origin",             ICSTOK_ORIGIN },
-   {"scale",              ICSTOK_SCALE },
-   {"units",              ICSTOK_UNITS },
-   {"labels",             ICSTOK_LABELS },
-   {"SCIL_TYPE",          ICSTOK_SCILT },
-   {"type",               ICSTOK_TYPE },
-   {"model",              ICSTOK_MODEL },
-   {"s_params",           ICSTOK_SPARAMS }
+    {"file",               ICSTOK_FILE},
+    {"offset",             ICSTOK_OFFSET},
+    {"parameters",         ICSTOK_PARAMS},
+    {"order",              ICSTOK_ORDER},
+    {"sizes",              ICSTOK_SIZES},
+    {"coordinates",        ICSTOK_COORD},
+    {"significant_bits",   ICSTOK_SIGBIT},
+    {"format",             ICSTOK_FORMAT},
+    {"sign",               ICSTOK_SIGN},
+    {"compression",        ICSTOK_COMPR},
+    {"byte_order",         ICSTOK_BYTEO},
+    {"origin",             ICSTOK_ORIGIN},
+    {"scale",              ICSTOK_SCALE},
+    {"units",              ICSTOK_UNITS},
+    {"labels",             ICSTOK_LABELS},
+    {"SCIL_TYPE",          ICSTOK_SCILT},
+    {"type",               ICSTOK_TYPE},
+    {"model",              ICSTOK_MODEL},
+    {"s_params",           ICSTOK_SPARAMS }
 };
+
 
 Ics_Symbol G_SubSubCatSymbols[] =
 {
-   {"Channels",           ICSTOK_CHANS },
-   {"PinholeRadius",      ICSTOK_PINHRAD },
-   {"LambdaEx",           ICSTOK_LAMBDEX },
-   {"LambdaEm",           ICSTOK_LAMBDEM },
-   {"ExPhotonCnt",        ICSTOK_PHOTCNT },
-   {"RefrInxMedium",      ICSTOK_REFRIME },
-   {"NumAperture",        ICSTOK_NUMAPER },
-   {"RefrInxLensMedium",  ICSTOK_REFRILM },
-   {"PinholeSpacing",     ICSTOK_PINHSPA },
-   {"STEDDeplMode",       ICSTOK_STEDDEPLMODE },
-   {"STEDLambda",         ICSTOK_STEDLAMBDA },
-   {"STEDSatFactor",      ICSTOK_STEDSATFACTOR },
-   {"STEDImmFraction",    ICSTOK_STEDIMMFRACTION },
-   {"STEDVPPM",           ICSTOK_STEDVPPM },
-   {"DetectorPPU",        ICSTOK_DETPPU },
-   {"DetectorBaseline",   ICSTOK_DETBASELINE },
-   {"DetectorLineAvgCnt", ICSTOK_DETLNAVGCNT }
+    {"Channels",           ICSTOK_CHANS},
+    {"PinholeRadius",      ICSTOK_PINHRAD},
+    {"LambdaEx",           ICSTOK_LAMBDEX},
+    {"LambdaEm",           ICSTOK_LAMBDEM},
+    {"ExPhotonCnt",        ICSTOK_PHOTCNT},
+    {"RefrInxMedium",      ICSTOK_REFRIME},
+    {"NumAperture",        ICSTOK_NUMAPER},
+    {"RefrInxLensMedium",  ICSTOK_REFRILM},
+    {"PinholeSpacing",     ICSTOK_PINHSPA},
+    {"STEDDeplMode",       ICSTOK_STEDDEPLMODE},
+    {"STEDLambda",         ICSTOK_STEDLAMBDA},
+    {"STEDSatFactor",      ICSTOK_STEDSATFACTOR},
+    {"STEDImmFraction",    ICSTOK_STEDIMMFRACTION},
+    {"STEDVPPM",           ICSTOK_STEDVPPM},
+    {"DetectorPPU",        ICSTOK_DETPPU},
+    {"DetectorBaseline",   ICSTOK_DETBASELINE},
+    {"DetectorLineAvgCnt", ICSTOK_DETLNAVGCNT }
 };
+
 
 Ics_Symbol G_ValueSymbols[] =
 {
-   {"uncompressed",      ICSTOK_COMPR_UNCOMPRESSED },
-   {"compress",          ICSTOK_COMPR_COMPRESS },
-   {"gzip",              ICSTOK_COMPR_GZIP },
-   {"integer",           ICSTOK_FORMAT_INTEGER },
-   {"real",              ICSTOK_FORMAT_REAL },
-   {"float",             ICSTOK_FORMAT_REAL }, /* CAUTION: this makes this list one longer than you'd expect */
-   {"complex",           ICSTOK_FORMAT_COMPLEX },
-   {"signed",            ICSTOK_SIGN_SIGNED },
-   {"unsigned",          ICSTOK_SIGN_UNSIGNED }
+    {"uncompressed",      ICSTOK_COMPR_UNCOMPRESSED},
+    {"compress",          ICSTOK_COMPR_COMPRESS},
+    {"gzip",              ICSTOK_COMPR_GZIP},
+    {"integer",           ICSTOK_FORMAT_INTEGER},
+    {"real",              ICSTOK_FORMAT_REAL},
+    {"float",             ICSTOK_FORMAT_REAL}, /* CAUTION: this makes this list
+                                                  one longer than expected */
+    {"complex",           ICSTOK_FORMAT_COMPLEX},
+    {"signed",            ICSTOK_SIGN_SIGNED},
+    {"unsigned",          ICSTOK_SIGN_UNSIGNED }
 };
+
 
 Ics_SymbolList G_Categories =
 {
-   ICSTOK_LASTMAIN,
-   G_CatSymbols
+    ICSTOK_LASTMAIN,
+    G_CatSymbols
 };
+
 
 Ics_SymbolList G_SubCategories =
 {
-   ICSTOK_LASTSUB - ICSTOK_FIRSTSUB - 1,
-   G_SubCatSymbols
+    ICSTOK_LASTSUB - ICSTOK_FIRSTSUB - 1,
+    G_SubCatSymbols
 };
+
 
 Ics_SymbolList G_SubSubCategories =
 {
-   ICSTOK_LASTSUBSUB - ICSTOK_FIRSTSUBSUB - 1,
-   G_SubSubCatSymbols
+    ICSTOK_LASTSUBSUB - ICSTOK_FIRSTSUBSUB - 1,
+    G_SubSubCatSymbols
 };
+
 
 Ics_SymbolList G_Values =
 {
-   ICSTOK_LASTVALUE - ICSTOK_FIRSTVALUE - 1 + 1, /* See above: this list is one longer than expected. */
-   G_ValueSymbols
+    ICSTOK_LASTVALUE - ICSTOK_FIRSTVALUE - 1 + 1, /* See above: this list is one
+                                                     longer than expected. */
+    G_ValueSymbols
 };

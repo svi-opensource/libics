@@ -1,8 +1,8 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013, 2016 Cris Luengo and others
- * Copyright 2015, 2016:
+ * Copyright (C) 2000-2013 Cris Luengo and others
+ * Copyright 2015-2017:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
@@ -29,6 +29,7 @@
  * License along with this library; if not, write to the Free
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+
 /*
  * FILE : libics_ll.h
  *
@@ -36,22 +37,23 @@
  * source code only if that is the way you want to go.
  */
 
+
 #ifndef LIBICS_LL_H
 #define LIBICS_LL_H
 
-#ifndef LIBICS_H
+
 #include "libics.h"
-#endif
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+
 typedef ICS Ics_Header;
 
-/*
- * These are the known data formats for imels.
- */
+
+/* These are the known data formats for imels. */
 typedef enum {
    IcsForm_unknown = 0,
    IcsForm_integer,
@@ -62,69 +64,85 @@ typedef enum {
 
 /* Definitions of separators in the .ics file for writing: */
 #define ICS_FIELD_SEP '\t'
-#define ICS_EOL '\n'
+#define ICS_EOL       '\n'
 
-/*
- * Function declarations and short explanation:
- */
 
-ICSEXPORT Ics_Error IcsReadIcs (Ics_Header* IcsStruct, char const* filename,
-                                int forcename, int forcelocale);
 /* Reads a .ics file into an Ics_Header structure. */
+ICSEXPORT Ics_Error IcsReadIcs(Ics_Header *IcsStruct,
+                               const char *filename,
+                               int         forcename,
+                               int         forcelocale);
 
-ICSEXPORT Ics_Error IcsWriteIcs (Ics_Header* IcsStruct, char const* filename);
 /* Writes an Ics_Header structure into a .ics file. */
+ICSEXPORT Ics_Error IcsWriteIcs(Ics_Header *IcsStruct,
+                                const char *filename);
 
-ICSEXPORT Ics_Error IcsOpenIds (Ics_Header* IcsStruct);
 /* Initializes image data reading. */
+ICSEXPORT Ics_Error IcsOpenIds(Ics_Header *IcsStruct);
 
-ICSEXPORT Ics_Error IcsCloseIds (Ics_Header* IcsStruct);
 /* Ends image data reading. */
+ICSEXPORT Ics_Error IcsCloseIds(Ics_Header *IcsStruct);
 
-ICSEXPORT Ics_Error IcsReadIdsBlock (Ics_Header* IcsStruct, void* outbuf, size_t len);
 /* Reads image data block from disk. */
+ICSEXPORT Ics_Error IcsReadIdsBlock(Ics_Header *IcsStruct,
+                                    void       *outbuf,
+                                    size_t      len);
 
-ICSEXPORT Ics_Error IcsSkipIdsBlock (Ics_Header* IcsStruct, size_t len);
 /* Skips image data block from disk (fseek forward). */
+ICSEXPORT Ics_Error IcsSkipIdsBlock(Ics_Header *IcsStruct,
+                                    size_t      len);
 
-ICSEXPORT Ics_Error IcsSetIdsBlock (Ics_Header* IcsStruct, long offset, int whence);
 /* Sets the file pointer into the image data on disk (fseek anywhere). */
+ICSEXPORT Ics_Error IcsSetIdsBlock(Ics_Header *IcsStruct,
+                                   long        offset,
+                                   int         whence);
 
-ICSEXPORT Ics_Error IcsReadIds (Ics_Header* IcsStruct, void* dest, size_t n);
 /* Reads image data from disk. */
+ICSEXPORT Ics_Error IcsReadIds(Ics_Header *IcsStruct,
+                               void       *dest,
+                               size_t      n);
 
-ICSEXPORT Ics_Error IcsWriteIds (Ics_Header const* IcsStruct);
 /* Writes image data to disk. */
+ICSEXPORT Ics_Error IcsWriteIds(const Ics_Header *IcsStruct);
 
-ICSEXPORT void IcsInit (Ics_Header* IcsStruct);
 /* Initializes the Ics_Header structure to default values and zeros. */
+ICSEXPORT void IcsInit(Ics_Header *IcsStruct);
 
-ICSEXPORT char* IcsGetIcsName (char* dest, char const* src, int forcename);
-/* Appends ".ics" to the filename (removing ".ids" if present)
- * If (forcename) we do change ".ids" into ".ics", but do not add anything. */
+/* Appends ".ics" to the filename (removing ".ids" if present) If (forcename) we
+  do change ".ids" into ".ics", but do not add anything. */
+ICSEXPORT char *IcsGetIcsName(char       *dest,
+                              const char *src,
+                              int         forcename);
 
-ICSEXPORT char* IcsGetIdsName (char* dest, char const* src);
 /* Appends ".ids" to the filename (removing ".ics" if present). */
+ICSEXPORT char *IcsGetIdsName(char       *dest,
+                              const char *src);
 
-ICSEXPORT char* IcsExtensionFind (char const* str);
 /* Return pointer to .ics or .ids extension or NULL if not found. */
+ICSEXPORT char *IcsExtensionFind(const char *str);
 
-ICSEXPORT size_t IcsGetDataTypeSize (Ics_DataType DataType);
 /* Returns the size in bytes of the data type. */
+ICSEXPORT size_t IcsGetDataTypeSize(Ics_DataType DataType);
 
-ICSEXPORT void IcsGetPropsDataType (Ics_DataType DataType, Ics_Format* format,
-                                    int* sign, size_t* bits);
 /* Fills in format, sign and bits according to the data type. */
+ICSEXPORT void IcsGetPropsDataType(Ics_DataType  DataType,
+                                   Ics_Format   *format,
+                                   int          *sign,
+                                   size_t       *bits);
 
-ICSEXPORT void IcsGetDataTypeProps (Ics_DataType* DataType, Ics_Format format,
-                                    int sign, size_t bits);
 /* Sets the data type according to format, sign and bits. */
+ICSEXPORT void IcsGetDataTypeProps(Ics_DataType *DataType,
+                                   Ics_Format    format,
+                                   int           sign,
+                                   size_t        bits);
 
-ICSEXPORT void IcsFreeHistory (Ics_Header* ics);
 /* Free the memory allocated for history. */
+ICSEXPORT void IcsFreeHistory(Ics_Header *ics);
+
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* LIBICS_LL_H */
+
+#endif

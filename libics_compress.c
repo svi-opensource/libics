@@ -1,8 +1,8 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013, 2016 Cris Luengo and others
- * Copyright 2015, 2016:
+ * Copyright (C) 2000-2013 Cris Luengo and others
+ * Copyright 2015, 2017:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
@@ -29,6 +29,7 @@
  * License along with this library; if not, write to the Free
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+
 /*
  * FILE : libics_compress.c
  *
@@ -44,38 +45,45 @@
  *
  */
 
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "libics_intern.h"
 
-#define IBUFSIZ ICS_BUF_SIZE  /* Input buffer size */
+
+#define IBUFSIZ  ICS_BUF_SIZE  /* Input buffer size */
 #define IBUFXTRA 64
+
 
 /* Defines for third byte of header */
 #define MAGIC_1 (unsigned char)'\037'   /* First byte of compressed file */
 #define MAGIC_2 (unsigned char)'\235'   /* Second byte of compressed file */
 #define BIT_MASK 0x1f   /* Mask for 'number of compresssion bits' */
-                        /* Masks 0x20 and 0x40 are free. I think 0x20 should mean 
-                           that there is a fourth header byte (for expansion). */
+                        /* Masks 0x20 and 0x40 are free. I think 0x20 should
+                           mean that there is a fourth header byte (for
+                           expansion). */
 #define BLOCK_MODE 0x80 /* Block compresssion if table is full and compression
                            rate is dropping flush tables */
 
-/* The next two codes should not be changed lightly, as they must not
-   lie within the contiguous general code space. */
-#define FIRST 257    /* first free entry */
-#define CLEAR 256    /* table clear output code */
+/* The next two codes should not be changed lightly, as they must not lie within
+   the contiguous general code space. */
+#define FIRST 257 /* first free entry */
+#define CLEAR 256 /* table clear output code */
+
 
 #define INIT_BITS 9  /* initial number of bits/code */
 #define HBITS 17     /* 50% occupancy */
 #define HSIZE (1<<HBITS)
 #define BITS  16
 
+
 #define MAXCODE(n)   (1L << (n))
 
-#define input(b,o,c,n,m){ unsigned char *p = &(b)[(o)>>3]; \
-   (c) = ((((long)(p[0]))|((long)(p[1])<<8)|((long)(p[2])<<16))>>((o)&0x7))&(m); \
-   (o) += (n); \
+
+#define input(b, o, c, n, m) { unsigned char *p = &b[o>>3];                  \
+   c = ((((long)(p[0]))|((long)(p[1])<<8)|((long)(p[2])<<16))>>(o&0x7))&(m); \
+   o += n;                                                                   \
 }
 
 #define tab_prefixof(i)       codetab[i]
@@ -83,191 +91,206 @@
 #define de_stack              (&(htab[HSIZE-1]))
 #define clear_tab_prefixof()  memset(codetab, 0, 256)
 
-/*
- * Read the full COMPRESS-compressed data stream.
- */
-Ics_Error IcsReadCompress (Ics_Header* IcsStruct, void* outbuf, size_t len)
+
+/* Read the full COMPRESS-compressed data stream. */
+Ics_Error IcsReadCompress(Ics_Header *IcsStruct,
+                          void       *outbuf,
+                          size_t      len)
 {
-   ICSINIT;
-   Ics_BlockRead* br = (Ics_BlockRead*)IcsStruct->BlockRead;
-   unsigned char *stackp;
-   long int code;
-   int finchar;
-   long int oldcode;
-   long int incode;
-   int inbits;
-   int posbits;
-   size_t outpos = 0;
-   size_t insize;
-   int bitmask;
-   long int free_ent;
-   long int maxcode;
-   long int maxmaxcode;
-   int n_bits;
-   size_t rsize;
-   int block_mode;
-   int maxbits;
-   size_t ii;
-   size_t offset;
-   unsigned char *inbuf = NULL;
-   unsigned char *htab = NULL;
-   unsigned short *codetab = NULL;
+    ICSINIT;
+    Ics_BlockRead  *br      = (Ics_BlockRead*)IcsStruct->BlockRead;
+    unsigned char  *stackp;
+    long int        code;
+    int             finchar;
+    long int        oldcode;
+    long int        incode;
+    int             inbits;
+    int             posbits;
+    size_t          outpos  = 0;
+    size_t          insize;
+    int             bitmask;
+    long int        free_ent;
+    long int        maxcode;
+    long int        maxmaxcode;
+    int             n_bits;
+    size_t          rsize;
+    int             block_mode;
+    int             maxbits;
+    size_t          i;
+    size_t          offset;
+    unsigned char  *inbuf   = NULL;
+    unsigned char  *htab    = NULL;
+    unsigned short *codetab = NULL;
 
-   /* Dynamically allocate memory that's static in (N)compress. */
-   inbuf = (unsigned char*)malloc (IBUFSIZ+IBUFXTRA);
-   if (inbuf == NULL) {
-      error = IcsErr_Alloc;
-      goto error_exit;
-   }
-   htab = (unsigned char*)malloc (HSIZE*4); /* Not sure about the size of this thing, original code uses a long int array that's cast to char */
-   if (htab == NULL) {
-      error = IcsErr_Alloc;
-      goto error_exit;
-   }
-   codetab = (unsigned short*)malloc (HSIZE*sizeof(unsigned short));
-   if (codetab == NULL) {
-      error = IcsErr_Alloc;
-      goto error_exit;
-   }
 
-   if ((rsize = fread(inbuf, 1, IBUFSIZ, br->DataFilePtr)) <= 0) {
-      error = IcsErr_FReadIds;
-      goto error_exit;
-   }
-   insize = rsize;
-   if (insize < 3 || inbuf[0] != MAGIC_1 || inbuf[1] != MAGIC_2) {
-      printf("point 1!\n");
-      error = IcsErr_CorruptedStream;
-      goto error_exit;
-   }
+        /* Dynamically allocate memory that's static in (N)compress. */
+    inbuf = (unsigned char*)malloc(IBUFSIZ + IBUFXTRA);
+    if (inbuf == NULL) {
+        error = IcsErr_Alloc;
+        goto error_exit;
+    }
+        /* Not sure about the size of this thing, original code uses a long int
+           array that's cast to char: */
+    htab = (unsigned char*)malloc(HSIZE * 4);
+    if (htab == NULL) {
+        error = IcsErr_Alloc;
+        goto error_exit;
+    }
+    codetab = (unsigned short*)malloc(HSIZE * sizeof(unsigned short));
+    if (codetab == NULL) {
+        error = IcsErr_Alloc;
+        goto error_exit;
+    }
 
-   maxbits = inbuf[2] & BIT_MASK;
-   block_mode = inbuf[2] & BLOCK_MODE;
-   maxmaxcode = MAXCODE(maxbits);
-   if (maxbits > BITS) {
-      error = IcsErr_DecompressionProblem;
-      goto error_exit;
-   }
+    if ((rsize = fread(inbuf, 1, IBUFSIZ, br->DataFilePtr)) <= 0) {
+        error = IcsErr_FReadIds;
+        goto error_exit;
+    }
+    insize = rsize;
+    if (insize < 3 || inbuf[0] != MAGIC_1 || inbuf[1] != MAGIC_2) {
+        error = IcsErr_CorruptedStream;
+        goto error_exit;
+    }
 
-   maxcode = MAXCODE(n_bits = INIT_BITS)-1;
-   bitmask = (1<<n_bits)-1;
-   oldcode = -1;
-   finchar = 0;
-   posbits = 3<<3;
+    maxbits = inbuf[2] & BIT_MASK;
+    block_mode = inbuf[2] & BLOCK_MODE;
+    maxmaxcode = MAXCODE(maxbits);
+    if (maxbits > BITS) {
+        error = IcsErr_DecompressionProblem;
+        goto error_exit;
+    }
 
-   free_ent = ((block_mode) ? FIRST : 256);
+    maxcode = MAXCODE(n_bits = INIT_BITS) - 1;
+    bitmask = (1 << n_bits) - 1;
+    oldcode = -1;
+    finchar = 0;
+    posbits = 3 << 3;
 
-   clear_tab_prefixof();   /* As above, initialize the first 256 entries in the table. */
-   for (code = 255 ; code >= 0 ; --code) {
-      tab_suffixof(code) = (unsigned char)code;
-   }
+    free_ent = block_mode ? FIRST : 256;
 
-   do {
-resetbuf:
+        /* As above, initialize the first 256 entries in the table. */
+    clear_tab_prefixof();
+    for (code = 255; code >= 0; --code) {
+        tab_suffixof(code) = (unsigned char)code;
+    }
 
-      offset = posbits >> 3;
-      insize = offset <= insize ? insize - offset : 0;
-      for (ii = 0 ; ii < insize ; ++ii) {
-         inbuf[ii] = inbuf[ii+offset];
-      }
-      posbits = 0;
+    do {
 
-      if (insize < IBUFXTRA) {
-         rsize = fread(inbuf+insize, 1, IBUFSIZ, br->DataFilePtr);
-         if (rsize <= 0 && !feof(br->DataFilePtr)) {
-            error = IcsErr_FReadIds;
-            goto error_exit;
-         }
-         insize += rsize;
-      }
+      resetbuf:
 
-      inbits = ((rsize > 0) ? (insize - insize%n_bits)<<3 : (insize<<3)-(n_bits-1));
+        offset = posbits >> 3;
+        insize = offset <= insize ? insize - offset : 0;
+        for (i = 0 ; i < insize ; ++i) {
+            inbuf[i] = inbuf[i+offset];
+        }
+        posbits = 0;
 
-      while (inbits > posbits) {
-         if (free_ent > maxcode) {
-            posbits = ((posbits-1) + ((n_bits<<3) - (posbits-1+(n_bits<<3))%(n_bits<<3)));
-            ++n_bits;
-            if (n_bits == maxbits) {
-               maxcode = maxmaxcode;
+        if (insize < IBUFXTRA) {
+            rsize = fread(inbuf+insize, 1, IBUFSIZ, br->DataFilePtr);
+            if (rsize <= 0 && !feof(br->DataFilePtr)) {
+                error = IcsErr_FReadIds;
+                goto error_exit;
             }
-            else {
-               maxcode = MAXCODE(n_bits)-1;
+            insize += rsize;
+        }
+
+        if (rsize > 0) {
+            inbits = (insize - insize%n_bits) << 3;
+        } else {
+            inbits = (insize << 3) - (n_bits - 1);
+        }
+
+        while (inbits > posbits) {
+            if (free_ent > maxcode) {
+                posbits = ((posbits - 1)
+                           + ((n_bits << 3)
+                              - (posbits - 1
+                                 + (n_bits << 3)) % (n_bits << 3)));
+                ++n_bits;
+                if (n_bits == maxbits) {
+                    maxcode = maxmaxcode;
+                } else {
+                    maxcode = MAXCODE(n_bits) - 1;
+                }
+                bitmask = (1 << n_bits) - 1;
+                goto resetbuf;
             }
-            bitmask = (1<<n_bits)-1;
-            goto resetbuf;
-         }
 
-         input(inbuf,posbits,code,n_bits,bitmask);
+            input(inbuf, posbits, code, n_bits, bitmask);
 
-         if (oldcode == -1) {
-            if (code >= 256) {
-               printf("point 3!\n");
-               error = IcsErr_CorruptedStream;
-               goto error_exit;
+            if (oldcode == -1) {
+                if (code >= 256) {
+                    error = IcsErr_CorruptedStream;
+                    goto error_exit;
+                }
+                oldcode = code;
+                finchar = (int)oldcode;
+                ((unsigned char*)outbuf)[outpos++] = (unsigned char)finchar;
+                continue;
             }
-            ((unsigned char*)outbuf)[outpos++] = (unsigned char)(finchar = (int)(oldcode = code));
-            continue;
-         }
 
-         if (code == CLEAR && block_mode) {
-            clear_tab_prefixof();
-            free_ent = FIRST - 1;
-            posbits = ((posbits-1) + ((n_bits<<3) - (posbits-1+(n_bits<<3))%(n_bits<<3)));
-            maxcode = MAXCODE(n_bits = INIT_BITS)-1;
-            bitmask = (1<<n_bits)-1;
-            goto resetbuf;
-         }
-
-         incode = code;
-         stackp = de_stack;
-
-         if (code >= free_ent) { /* Special case for KwKwK string.   */
-            if (code > free_ent) {
-               printf("point 4!\n");
-               error = IcsErr_CorruptedStream;
-               goto error_exit;
+            if (code == CLEAR && block_mode) {
+                clear_tab_prefixof();
+                free_ent = FIRST - 1;
+                posbits = ((posbits - 1)
+                           + ((n_bits << 3)
+                              - (posbits - 1 + (n_bits << 3)) % (n_bits << 3)));
+                maxcode = MAXCODE(n_bits = INIT_BITS) - 1;
+                bitmask = (1 << n_bits) - 1;
+                goto resetbuf;
             }
+
+            incode = code;
+            stackp = de_stack;
+
+            if (code >= free_ent) { /* Special case for KwKwK string.   */
+                if (code > free_ent) {
+                    error = IcsErr_CorruptedStream;
+                    goto error_exit;
+                }
+                *--stackp = (unsigned char)finchar;
+                code = oldcode;
+            }
+
+                /* Generate output characters in reverse order */
+            while (code >= 256) {
+                *--stackp = tab_suffixof(code);
+                code = tab_prefixof(code);
+            }
+            finchar = tab_suffixof(code);
             *--stackp = (unsigned char)finchar;
-            code = oldcode;
-         }
 
-         /* Generate output characters in reverse order */
-         while (code >= 256) {
-            *--stackp = tab_suffixof(code);
-            code = tab_prefixof(code);
-         }
-         *--stackp = (unsigned char)(finchar = tab_suffixof(code));
+                /* And put them out in forward order */
+            i = de_stack-stackp;
+            if (outpos+i > len) {
+                i = len-outpos; /* do not write more in buffer than fits! */
+            }
+            memcpy(((unsigned char*)outbuf) + outpos, stackp, i);
+            outpos += i;
+            if (outpos == len) {
+                goto error_exit;
+            }
 
-         /* And put them out in forward order */
-         ii = de_stack-stackp;
-         if (outpos+ii > len) {
-            ii = len-outpos; /* do not write more in buffer than fits! */
-         }
-         memcpy(((unsigned char*)outbuf)+outpos, stackp, ii);
-         outpos += ii;
-         if (outpos == len) {
-            goto error_exit;
-         }
+            code = free_ent;
+            if (code < maxmaxcode) { /* Generate the new entry. */
+                tab_prefixof(code) = (unsigned short)oldcode;
+                tab_suffixof(code) = (unsigned char)finchar;
+                free_ent = code + 1;
+            }
 
-         if ((code = free_ent) < maxmaxcode) { /* Generate the new entry. */
-            tab_prefixof(code) = (unsigned short)oldcode;
-            tab_suffixof(code) = (unsigned char)finchar;
-            free_ent = code+1;
-         } 
+            oldcode = incode; /* Remember previous code. */
+        }
 
-         oldcode = incode; /* Remember previous code. */
-      }
+    } while (rsize > 0);
 
-   } while (rsize > 0);
-   
-   if (outpos != len) {
-      error = IcsErr_OutputNotFilled;
-   }
+    if (outpos != len) {
+        error = IcsErr_OutputNotFilled;
+    }
 
-error_exit:
-   /* Deallocate stuff */
-   if (inbuf) free(inbuf);
-   if (htab) free(htab);
-   if (codetab) free(codetab);
-   return error;
+  error_exit:
+        /* Deallocate stuff */
+    if (inbuf) free(inbuf);
+    if (htab) free(htab);
+    if (codetab) free(codetab);
+    return error;
 }
