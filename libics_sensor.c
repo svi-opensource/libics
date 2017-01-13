@@ -69,7 +69,7 @@ Ics_Error IcsEnableWriteSensor(ICS *ics,
                                int  enable)
 {
     ICS_FM_WMD(ics);
-    ics->WriteSensor = enable ? 1 : 0;
+    ics->writeSensor = enable ? 1 : 0;
     return IcsErr_Ok;
 }
 
@@ -78,7 +78,7 @@ Ics_Error IcsEnableWriteSensor(ICS *ics,
 char const* IcsGetSensorType(const ICS *ics,
                              int        channel)
 {
-    return ics->Type[channel];
+    return ics->type[channel];
 }
 
 
@@ -88,7 +88,7 @@ Ics_Error IcsSetSensorType(ICS        *ics,
                            const char *sensorType)
 {
     ICS_FM_WMD(ics);
-    IcsStrCpy(ics->Type[channel], sensorType, sizeof(ics->Type[channel]));
+    IcsStrCpy(ics->type[channel], sensorType, sizeof(ics->type[channel]));
     return IcsErr_Ok;
 }
 
@@ -96,7 +96,7 @@ Ics_Error IcsSetSensorType(ICS        *ics,
 /* Get the sensor model string. */
 const char *IcsGetSensorModel(const ICS *ics)
 {
-    return ics->Model;
+    return ics->model;
 }
 
 
@@ -105,7 +105,7 @@ Ics_Error IcsSetSensorModel(ICS        *ics,
                             const char *sensorModel)
 {
     ICS_FM_WMD(ics);
-    IcsStrCpy(ics->Model, sensorModel, sizeof(ics->Model));
+    IcsStrCpy(ics->model, sensorModel, sizeof(ics->model));
     return IcsErr_Ok;
 }
 
@@ -113,7 +113,7 @@ Ics_Error IcsSetSensorModel(ICS        *ics,
 /* Get the number of sensor channels. */
 int IcsGetSensorChannels(const ICS *ics)
 {
-    return ics->SensorChannels;
+    return ics->sensorChannels;
 }
 
 
@@ -123,7 +123,7 @@ Ics_Error IcsSetSensorChannels(ICS *ics,
 {
     ICS_FM_WMD(ics);
     ICSTR(channels < 0 || channels > ICS_MAX_LAMBDA, IcsErr_NotValidAction);
-    ics->SensorChannels = channels;
+    ics->sensorChannels = channels;
     return IcsErr_Ok;
 }
 
@@ -132,10 +132,10 @@ Ics_Error IcsSetSensorChannels(ICS *ics,
 double IcsGetSensorPinholeRadius(const ICS *ics,
                                  int        channel)
 {
-    if (channel < 0 || channel >= ics->SensorChannels)
+    if (channel < 0 || channel >= ics->sensorChannels)
         return 0;
     else
-        return ics->PinholeRadius[channel];
+        return ics->pinholeRadius[channel];
 }
 
 
@@ -145,8 +145,8 @@ Ics_Error IcsSetSensorPinholeRadius(ICS    *ics,
                                     double  radius)
 {
     ICS_FM_WMD(ics);
-    ICSTR(channel < 0 || channel >= ics->SensorChannels, IcsErr_NotValidAction);
-    ics->PinholeRadius[channel] = radius;
+    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    ics->pinholeRadius[channel] = radius;
     return IcsErr_Ok;
 }
 
@@ -155,10 +155,10 @@ Ics_Error IcsSetSensorPinholeRadius(ICS    *ics,
 double IcsGetSensorExcitationWavelength(const ICS *ics,
                                         int        channel)
 {
-    if (channel < 0 || channel >= ics->SensorChannels)
+    if (channel < 0 || channel >= ics->sensorChannels)
         return 0;
     else
-        return ics->LambdaEx[channel];
+        return ics->lambdaEx[channel];
 }
 
 
@@ -168,8 +168,8 @@ Ics_Error IcsSetSensorExcitationWavelength(ICS    *ics,
                                            double  wl)
 {
     ICS_FM_WMD(ics);
-    ICSTR(channel < 0 || channel >= ics->SensorChannels, IcsErr_NotValidAction);
-    ics->LambdaEx[channel] = wl;
+    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    ics->lambdaEx[channel] = wl;
     return IcsErr_Ok;
 }
 
@@ -178,10 +178,10 @@ Ics_Error IcsSetSensorExcitationWavelength(ICS    *ics,
 double IcsGetSensorEmissionWavelength(const ICS *ics,
                                       int        channel)
 {
-    if (channel < 0 || channel >= ics->SensorChannels)
+    if (channel < 0 || channel >= ics->sensorChannels)
         return 0;
     else
-        return ics->LambdaEm[channel];
+        return ics->lambdaEm[channel];
 }
 
 
@@ -191,8 +191,8 @@ Ics_Error IcsSetSensorEmissionWavelength(ICS    *ics,
                                          double  wl)
 {
     ICS_FM_WMD(ics);
-    ICSTR(channel < 0 || channel >= ics->SensorChannels, IcsErr_NotValidAction);
-    ics->LambdaEm[channel] = wl;
+    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    ics->lambdaEm[channel] = wl;
     return IcsErr_Ok;
 }
 
@@ -201,10 +201,10 @@ Ics_Error IcsSetSensorEmissionWavelength(ICS    *ics,
 int IcsGetSensorPhotonCount(const ICS *ics,
                             int        channel)
 {
-    if (channel < 0 || channel >= ics->SensorChannels)
+    if (channel < 0 || channel >= ics->sensorChannels)
         return 0;
     else
-        return ics->ExPhotonCnt[channel];
+        return ics->exPhotonCnt[channel];
 }
 
 
@@ -214,8 +214,8 @@ Ics_Error IcsSetSensorPhotonCount(ICS *ics,
                                   int  cnt)
 {
     ICS_FM_WMD(ics);
-    ICSTR(channel < 0 || channel >= ics->SensorChannels, IcsErr_NotValidAction);
-    ics->ExPhotonCnt[channel] = cnt;
+    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    ics->exPhotonCnt[channel] = cnt;
     return IcsErr_Ok;
 }
 
@@ -223,7 +223,7 @@ Ics_Error IcsSetSensorPhotonCount(ICS *ics,
 /* Get the sensor embedding medium refractive index. */
 double IcsGetSensorMediumRI(const ICS *ics)
 {
-    return ics->RefrInxMedium;
+    return ics->refrInxMedium;
 }
 
 
@@ -232,7 +232,7 @@ Ics_Error IcsSetSensorMediumRI(ICS    *ics,
                                double  ri)
 {
     ICS_FM_WMD(ics);
-    ics->RefrInxMedium = ri;
+    ics->refrInxMedium = ri;
     return IcsErr_Ok;
 }
 
@@ -240,7 +240,7 @@ Ics_Error IcsSetSensorMediumRI(ICS    *ics,
 /* Get the sensor design medium refractive index. */
 double IcsGetSensorLensRI(const ICS *ics)
 {
-    return ics->RefrInxLensMedium;
+    return ics->refrInxLensMedium;
 }
 
 
@@ -249,7 +249,7 @@ Ics_Error IcsSetSensorLensRI(ICS    *ics,
                              double  ri)
 {
     ICS_FM_WMD(ics);
-    ics->RefrInxLensMedium = ri;
+    ics->refrInxLensMedium = ri;
     return IcsErr_Ok;
 }
 
@@ -257,7 +257,7 @@ Ics_Error IcsSetSensorLensRI(ICS    *ics,
 /* Get the sensor numerical apperture */
 double IcsGetSensorNumAperture(const ICS *ics)
 {
-    return ics->NumAperture;
+    return ics->numAperture;
 }
 
 
@@ -266,7 +266,7 @@ Ics_Error IcsSetSensorNumAperture(ICS    *ics,
                                   double  na)
 {
     ICS_FM_WMD(ics);
-    ics->NumAperture = na;
+    ics->numAperture = na;
     return IcsErr_Ok;
 }
 
@@ -274,7 +274,7 @@ Ics_Error IcsSetSensorNumAperture(ICS    *ics,
 /* Get the sensor Nipkow Disk pinhole spacing. */
 double IcsGetSensorPinholeSpacing(const ICS *ics)
 {
-    return ics->PinholeSpacing;
+    return ics->pinholeSpacing;
 }
 
 
@@ -283,7 +283,7 @@ Ics_Error IcsSetSensorPinholeSpacing(ICS    *ics,
                                      double  spacing)
 {
     ICS_FM_WMD(ics);
-    ics->PinholeSpacing = spacing;
+    ics->pinholeSpacing = spacing;
     return IcsErr_Ok;
 }
 
@@ -292,10 +292,10 @@ Ics_Error IcsSetSensorPinholeSpacing(ICS    *ics,
 const char * IcsGetSensorSTEDDepletionMode(const ICS *ics,
                                            int        channel)
 {
-    if (channel < 0 || channel >= ics->SensorChannels)
+    if (channel < 0 || channel >= ics->sensorChannels)
         return 0;
     else
-        return ics->StedDepletionMode[channel];
+        return ics->stedDepletionMode[channel];
 }
 
 
@@ -305,9 +305,9 @@ Ics_Error IcsSetSensorSTEDDepletionMode(ICS        *ics,
                                         const char *depletionMode)
 {
     ICS_FM_WMD(ics);
-    ICSTR(channel < 0 || channel >= ics->SensorChannels, IcsErr_NotValidAction);
-    IcsStrCpy(ics->StedDepletionMode[channel], depletionMode,
-              sizeof(ics->StedDepletionMode[channel]));
+    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    IcsStrCpy(ics->stedDepletionMode[channel], depletionMode,
+              sizeof(ics->stedDepletionMode[channel]));
     return IcsErr_Ok;
 }
 
@@ -316,10 +316,10 @@ Ics_Error IcsSetSensorSTEDDepletionMode(ICS        *ics,
 double IcsGetSensorSTEDLambda(const ICS *ics,
                               int        channel)
 {
-    if (channel < 0 || channel >= ics->SensorChannels)
+    if (channel < 0 || channel >= ics->sensorChannels)
         return 0;
     else
-        return ics->StedLambda[channel];
+        return ics->stedLambda[channel];
 }
 
 
@@ -329,8 +329,8 @@ Ics_Error IcsSetSensorSTEDLambda(ICS    *ics,
                                  double  lambda)
 {
     ICS_FM_WMD(ics);
-    ICSTR(channel < 0 || channel >= ics->SensorChannels, IcsErr_NotValidAction);
-    ics->StedLambda[channel] = lambda;
+    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    ics->stedLambda[channel] = lambda;
     return IcsErr_Ok;
 }
 
@@ -339,10 +339,10 @@ Ics_Error IcsSetSensorSTEDLambda(ICS    *ics,
 double IcsGetSensorSTEDSatFactor(const ICS *ics,
                                  int        channel)
 {
-    if (channel < 0 || channel >= ics->SensorChannels)
+    if (channel < 0 || channel >= ics->sensorChannels)
         return 0;
     else
-        return ics->StedSatFactor[channel];
+        return ics->stedSatFactor[channel];
 }
 
 
@@ -352,8 +352,8 @@ Ics_Error IcsSetSensorSTEDSatFactor(ICS    *ics,
                                     double  factor)
 {
     ICS_FM_WMD(ics);
-    ICSTR(channel < 0 || channel >= ics->SensorChannels, IcsErr_NotValidAction);
-    ics->StedSatFactor[channel] = factor;
+    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    ics->stedSatFactor[channel] = factor;
     return IcsErr_Ok;
 }
 
@@ -362,10 +362,10 @@ Ics_Error IcsSetSensorSTEDSatFactor(ICS    *ics,
 double IcsGetSensorSTEDImmFraction(const ICS *ics,
                                    int        channel)
 {
-    if (channel < 0 || channel >= ics->SensorChannels)
+    if (channel < 0 || channel >= ics->sensorChannels)
         return 0;
     else
-        return ics->StedImmFraction[channel];
+        return ics->stedImmFraction[channel];
 }
 
 
@@ -375,8 +375,8 @@ Ics_Error IcsSetSensorSTEDImmFraction(ICS    *ics,
                                       double  fraction)
 {
     ICS_FM_WMD(ics);
-    ICSTR(channel < 0 || channel >= ics->SensorChannels, IcsErr_NotValidAction);
-    ics->StedImmFraction[channel] = fraction;
+    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    ics->stedImmFraction[channel] = fraction;
     return IcsErr_Ok;
 }
 
@@ -385,10 +385,10 @@ Ics_Error IcsSetSensorSTEDImmFraction(ICS    *ics,
 double IcsGetSensorSTEDVPPM(const ICS *ics,
                             int        channel)
 {
-    if (channel < 0 || channel >= ics->SensorChannels)
+    if (channel < 0 || channel >= ics->sensorChannels)
         return 0;
     else
-        return ics->StedVPPM[channel];
+        return ics->stedVPPM[channel];
 }
 
 
@@ -399,8 +399,8 @@ Ics_Error IcsSetSensorSTEDVPPM(ICS    *ics,
 {
     ICS_FM_WMD(ics);
 
-    ICSTR(channel < 0 || channel >= ics->SensorChannels, IcsErr_NotValidAction);
-    ics->StedVPPM[channel] = vppm;
+    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    ics->stedVPPM[channel] = vppm;
     return IcsErr_Ok;
 }
 
@@ -410,10 +410,10 @@ Ics_Error IcsSetSensorSTEDVPPM(ICS    *ics,
 double IcsGetSensorDetectorPPU(const ICS *ics,
                                int        channel)
 {
-    if (channel < 0 || channel >= ics->SensorChannels)
+    if (channel < 0 || channel >= ics->sensorChannels)
         return 0;
     else
-        return ics->DetectorPPU[channel];
+        return ics->detectorPPU[channel];
 }
 
 
@@ -424,8 +424,8 @@ Ics_Error IcsSetSensorDetectorPPU(ICS    *ics,
 {
     ICS_FM_WMD(ics);
 
-    ICSTR(channel < 0 || channel >= ics->SensorChannels, IcsErr_NotValidAction);
-    ics->DetectorPPU[channel] = ppu;
+    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    ics->detectorPPU[channel] = ppu;
     return IcsErr_Ok;
 }
 
@@ -434,10 +434,10 @@ Ics_Error IcsSetSensorDetectorPPU(ICS    *ics,
 double IcsGetSensorDetectorBaseline(const ICS *ics,
                                     int        channel)
 {
-    if (channel < 0 || channel >= ics->SensorChannels)
+    if (channel < 0 || channel >= ics->sensorChannels)
         return 0;
     else
-        return ics->DetectorBaseline[channel];
+        return ics->detectorBaseline[channel];
 }
 
 /* Set the Detector baseline per channel. */
@@ -447,8 +447,8 @@ Ics_Error IcsSetSensorDetectorBaseline(ICS    *ics,
 {
     ICS_FM_WMD(ics);
 
-    ICSTR(channel < 0 || channel >= ics->SensorChannels, IcsErr_NotValidAction);
-    ics->DetectorBaseline [channel] = baseline;
+    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    ics->detectorBaseline [channel] = baseline;
     return IcsErr_Ok;
 }
 
@@ -456,10 +456,10 @@ Ics_Error IcsSetSensorDetectorBaseline(ICS    *ics,
 double IcsGetSensorDetectorLineAvgCnt(const ICS *ics,
  int channel)
 {
-    if (channel < 0 || channel >= ics->SensorChannels)
+    if (channel < 0 || channel >= ics->sensorChannels)
         return 0;
     else
-        return ics->DetectorLineAvgCnt[channel];
+        return ics->detectorLineAvgCnt[channel];
 }
 
  /* Set the Detector lineAvgCnt per channel. */
@@ -469,7 +469,7 @@ Ics_Error IcsSetSensorDetectorLineAvgCnt(ICS    *ics,
 {
     ICS_FM_WMD(ics);
 
-    ICSTR(channel < 0 || channel >= ics->SensorChannels, IcsErr_NotValidAction);
-    ics->DetectorLineAvgCnt[channel] = lineAvgCnt;
+    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    ics->detectorLineAvgCnt[channel] = lineAvgCnt;
     return IcsErr_Ok;
 }

@@ -49,40 +49,40 @@ void IcsPrintIcs (ICS const* ics)
    size_t Bits;
    char* s;
 
-   IcsGetPropsDataType (ics->Imel.DataType, &Format, &Sign, &Bits);
-   p = ics->Dimensions;
-   printf ("Version: %d\n", ics->Version);
-   printf ("FileMode: %d\n", ics->FileMode);
-   printf ("Filename: %s\n", ics->Filename);
-   printf ("SrcFile: %s\n", ics->SrcFile);
-   printf ("SrcOffset: %ld\n", (long int)ics->SrcOffset);
-   printf ("Data: %p\n", ics->Data);
-   printf ("DataLength: %ld\n", (long int)ics->DataLength);
-   printf ("Parameters: %d\n", ics->Dimensions+1);
+   IcsGetPropsDataType (ics->imel.dataType, &Format, &Sign, &Bits);
+   p = ics->dimensions;
+   printf ("Version: %d\n", ics->version);
+   printf ("FileMode: %d\n", ics->fileMode);
+   printf ("Filename: %s\n", ics->filename);
+   printf ("SrcFile: %s\n", ics->srcFile);
+   printf ("SrcOffset: %ld\n", (long int)ics->srcOffset);
+   printf ("Data: %p\n", ics->data);
+   printf ("DataLength: %ld\n", (long int)ics->dataLength);
+   printf ("Parameters: %d\n", ics->dimensions+1);
    printf ("Order: bits ");
    for (ii=0; ii<p; ii++)
-      printf ("%s ", ics->Dim[ii].Order);
+      printf ("%s ", ics->dim[ii].order);
    printf ("\n");
    printf ("Sizes: %d ", (int)Bits);
    for (ii=0; ii<p; ii++)
-      printf ("%lu ", (unsigned long) ics->Dim[ii].Size);
+      printf ("%lu ", (unsigned long) ics->dim[ii].size);
    printf ("\n");
-   printf ("Sigbits: %d\n", (int)ics->Imel.SigBits);
-   printf ("Origin: %f ", ics->Imel.Origin);
+   printf ("Sigbits: %d\n", (int)ics->imel.sigBits);
+   printf ("Origin: %f ", ics->imel.origin);
    for (ii=0; ii<p; ii++)
-      printf ("%f ", ics->Dim[ii].Origin);
+      printf ("%f ", ics->dim[ii].origin);
    printf ("\n");
-   printf ("Scale: %f ", ics->Imel.Scale);
+   printf ("Scale: %f ", ics->imel.scale);
    for (ii=0; ii<p; ii++)
-      printf ("%f ", ics->Dim[ii].Scale);
+      printf ("%f ", ics->dim[ii].scale);
    printf ("\n");
    printf ("Labels: intensity ");
    for (ii=0; ii<p; ii++)
-      printf ("%s ", ics->Dim[ii].Label);
+      printf ("%s ", ics->dim[ii].label);
    printf ("\n");
-   printf ("Units: %s ", ics->Imel.Unit);
+   printf ("Units: %s ", ics->imel.unit);
    for (ii=0; ii<p; ii++)
-      printf ("%s ", ics->Dim[ii].Unit);
+      printf ("%s ", ics->dim[ii].unit);
    printf ("\n");
    switch (Format) {
       case IcsForm_real:
@@ -96,9 +96,9 @@ void IcsPrintIcs (ICS const* ics)
    }
    printf ("Format: %s\n", s);
    printf ("Sign: %s\n", Sign?"signed":"unsigned");
-   printf ("SCIL_TYPE: %s\n", ics->ScilType);
-   printf ("Coordinates: %s\n", ics->Coord);
-   switch (ics->Compression) {
+   printf ("SCIL_TYPE: %s\n", ics->scilType);
+   printf ("Coordinates: %s\n", ics->coord);
+   switch (ics->compression) {
       case IcsCompr_uncompressed:
          s = "uncompressed";
          break;
@@ -111,60 +111,60 @@ void IcsPrintIcs (ICS const* ics)
       default:
          s = "unknown";
    }
-   printf ("Compression: %s (level %d)\n", s, ics->CompLevel);
+   printf ("Compression: %s (level %d)\n", s, ics->compLevel);
    printf ("Byteorder: ");
    for (ii=0; ii<ICS_MAX_IMEL_SIZE; ii++)
-      if (ics->ByteOrder[ii] != 0)
-         printf ("%d ", ics->ByteOrder[ii]);
+      if (ics->byteOrder[ii] != 0)
+         printf ("%d ", ics->byteOrder[ii]);
       else
          break;
    printf ("\n");
-   printf ("BlockRead: %p\n", ics->BlockRead);
-   if (ics->BlockRead != NULL) {
-      Ics_BlockRead* br = (Ics_BlockRead*)ics->BlockRead;
-      printf ("   DataFilePtr: %p\n", (void*)br->DataFilePtr);
+   printf ("BlockRead: %p\n", ics->blockRead);
+   if (ics->blockRead != NULL) {
+      Ics_BlockRead* br = (Ics_BlockRead*)ics->blockRead;
+      printf ("   DataFilePtr: %p\n", (void*)br->dataFilePtr);
 #ifdef ICS_ZLIB
-      printf ("   ZlibStream: %p\n", br->ZlibStream);
-      printf ("   ZlibInputBuffer: %p\n", br->ZlibInputBuffer);
+      printf ("   ZlibStream: %p\n", br->zlibStream);
+      printf ("   ZlibInputBuffer: %p\n", br->zlibInputBuffer);
 #endif
    }
    printf ("Sensor data: \n");
    printf ("   Sensor type:");
-   for (ii=0; ii< ics->SensorChannels; ii++)
-       printf(" %s", ics->Type[ii]);
+   for (ii=0; ii< ics->sensorChannels; ii++)
+       printf(" %s", ics->type[ii]);
    printf("\n");
-   printf ("   Sensor model: %s\n", ics->Model);
-   printf ("   SensorChannels: %d\n", ics->SensorChannels);
-   printf ("   RefrInxMedium: %f\n", ics->RefrInxMedium);
-   printf ("   NumAperture: %f\n", ics->NumAperture);
-   printf ("   RefrInxLensMedium: %f\n", ics->RefrInxLensMedium);
-   printf ("   PinholeSpacing: %f\n", ics->PinholeSpacing);
+   printf ("   Sensor model: %s\n", ics->model);
+   printf ("   SensorChannels: %d\n", ics->sensorChannels);
+   printf ("   RefrInxMedium: %f\n", ics->refrInxMedium);
+   printf ("   NumAperture: %f\n", ics->numAperture);
+   printf ("   RefrInxLensMedium: %f\n", ics->refrInxLensMedium);
+   printf ("   PinholeSpacing: %f\n", ics->pinholeSpacing);
    printf ("   PinholeRadius: ");
-   for (ii = 0; ii < ICS_MAX_LAMBDA && ii < ics->SensorChannels; ++ii) {
-      printf ("%f ", ics->PinholeRadius[ii]);
+   for (ii = 0; ii < ICS_MAX_LAMBDA && ii < ics->sensorChannels; ++ii) {
+      printf ("%f ", ics->pinholeRadius[ii]);
    }
    printf ("\n");
    printf ("   LambdaEx: ");
-   for (ii = 0; ii < ICS_MAX_LAMBDA && ii < ics->SensorChannels; ++ii) {
-      printf ("%f ", ics->LambdaEx[ii]);
+   for (ii = 0; ii < ICS_MAX_LAMBDA && ii < ics->sensorChannels; ++ii) {
+      printf ("%f ", ics->lambdaEx[ii]);
    }
    printf ("\n");
    printf ("   LambdaEm: ");
-   for (ii = 0; ii < ICS_MAX_LAMBDA && ii < ics->SensorChannels; ++ii) {
-      printf ("%f ", ics->LambdaEm[ii]);
+   for (ii = 0; ii < ICS_MAX_LAMBDA && ii < ics->sensorChannels; ++ii) {
+      printf ("%f ", ics->lambdaEm[ii]);
    }
    printf ("\n");
    printf ("   ExPhotonCnt: ");
-   for (ii = 0; ii < ICS_MAX_LAMBDA && ii < ics->SensorChannels; ++ii) {
-      printf ("%d ", ics->ExPhotonCnt[ii]);
+   for (ii = 0; ii < ICS_MAX_LAMBDA && ii < ics->sensorChannels; ++ii) {
+      printf ("%d ", ics->exPhotonCnt[ii]);
    }
    printf ("\n");
    printf ("History Lines:\n");
-   if (ics->History != NULL) {
-      Ics_History* hist = (Ics_History*)ics->History;
-      for (ii = 0; ii < hist->NStr; ii++) {
-         if (hist->Strings[ii] != NULL) {
-            printf ("   %s\n", hist->Strings[ii]);
+   if (ics->history != NULL) {
+      Ics_History* hist = (Ics_History*)ics->history;
+      for (ii = 0; ii < hist->nStr; ii++) {
+         if (hist->strings[ii] != NULL) {
+            printf ("   %s\n", hist->strings[ii]);
          }
       }
    }

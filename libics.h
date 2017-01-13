@@ -129,26 +129,26 @@ typedef enum {
 /* Structures that define the image representation. They are only used inside
    the ICS data structure. */
 typedef struct {
-    size_t Size;                    /* Number of imels in this dimension */
-    double Origin;                  /* Position of first imel            */
-    double Scale;                   /* Distance between imels            */
-    char   Order[ICS_STRLEN_TOKEN]; /* Order of this dimension           */
-    char   Label[ICS_STRLEN_TOKEN]; /* Label for this dimension          */
-    char   Unit[ICS_STRLEN_TOKEN];  /* Units for Origin and Scale        */
+    size_t size;                    /* Number of imels in this dimension */
+    double origin;                  /* Position of first imel            */
+    double scale;                   /* Distance between imels            */
+    char   order[ICS_STRLEN_TOKEN]; /* Order of this dimension           */
+    char   label[ICS_STRLEN_TOKEN]; /* Label for this dimension          */
+    char   unit[ICS_STRLEN_TOKEN];  /* Units for Origin and Scale        */
 } Ics_DataRepresentation;
 
 
 typedef struct {
         /* Numeric representation for the pixels: */
-    Ics_DataType DataType;
+    Ics_DataType dataType;
         /* Number of significant bits: */
-    size_t       SigBits;
+    size_t       sigBits;
         /* Offset for imel values: */
-    double       Origin;
+    double       origin;
         /* Scaling for imel values: */
-    double       Scale;
+    double       scale;
         /* Units for Origin and Scale: */
-    char         Unit[ICS_STRLEN_TOKEN];
+    char         unit[ICS_STRLEN_TOKEN];
         /* Order is always "bits", Label is always "intensity" */
 } Ics_ImelRepresentation;
 
@@ -156,83 +156,83 @@ typedef struct {
 /* Thee data structure that holds all the information in the ICS file */
 typedef struct _ICS {
         /* ICS version: 1 or 2: */
-    int                     Version;
+    int                     version;
         /* How the ICS file was opened. Used by top-level only: */
-    Ics_FileMode            FileMode;
+    Ics_FileMode            fileMode;
         /* Pointer to the data to write: */
-    const void             *Data;
+    const void             *data;
         /* Size of the data buffer: */
-    size_t                  DataLength;
+    size_t                  dataLength;
         /* Pixel strides (writing only): */
-    const size_t           *DataStrides;
+    const size_t           *dataStrides;
         /* '.ics' path/filename: */
-    char                    Filename[ICS_MAXPATHLEN];
+    char                    filename[ICS_MAXPATHLEN];
         /* Number of elements in each dim: */
-    int                     Dimensions;
+    int                     dimensions;
         /* Image representaion: */
-    Ics_DataRepresentation  Dim[ICS_MAXDIM];
+    Ics_DataRepresentation  dim[ICS_MAXDIM];
         /* Pixel representation: */
-    Ics_ImelRepresentation  Imel;
+    Ics_ImelRepresentation  imel;
         /* Coordinate system used: */
-    char                    Coord[ICS_STRLEN_TOKEN];
+    char                    coord[ICS_STRLEN_TOKEN];
         /* Compression technique used: */
-    Ics_Compression         Compression;
+    Ics_Compression         compression;
         /* Compression level: */
-    int                     CompLevel;
+    int                     compLevel;
         /* Byte storage order: */
-    int                     ByteOrder[ICS_MAX_IMEL_SIZE];
+    int                     byteOrder[ICS_MAX_IMEL_SIZE];
         /* History strings: */
-    void*                   History;
+    void*                   history;
         /* Status of the data file: */
-    void*                   BlockRead;
+    void*                   blockRead;
         /* ICS2: Source file name: */
-    char                    SrcFile[ICS_MAXPATHLEN];
+    char                    srcFile[ICS_MAXPATHLEN];
         /* ICS2: Offset into source file: */
-    size_t                  SrcOffset;
+    size_t                  srcOffset;
         /* Set to 1 if the next params are needed: */
-    int                     WriteSensor;
+    int                     writeSensor;
         /* Sensor type: */
-    char                    Type[ICS_MAX_LAMBDA][ICS_STRLEN_TOKEN];
+    char                    type[ICS_MAX_LAMBDA][ICS_STRLEN_TOKEN];
         /* Model or make: */
-    char                    Model[ICS_STRLEN_OTHER];
+    char                    model[ICS_STRLEN_OTHER];
         /* Number of channels: */
-    int                     SensorChannels;
+    int                     sensorChannels;
         /* Backprojected microns: */
-    double                  PinholeRadius[ICS_MAX_LAMBDA];
+    double                  pinholeRadius[ICS_MAX_LAMBDA];
         /* Excitation wavelength in nanometers: */
-    double                  LambdaEx[ICS_MAX_LAMBDA];
+    double                  lambdaEx[ICS_MAX_LAMBDA];
         /* Emission wavelength in nm: */
-    double                  LambdaEm[ICS_MAX_LAMBDA];
+    double                  lambdaEm[ICS_MAX_LAMBDA];
         /* Number of excitation photons: */
-    int                     ExPhotonCnt[ICS_MAX_LAMBDA];
+    int                     exPhotonCnt[ICS_MAX_LAMBDA];
         /* Refractive index of embedding medium: */
-    double                  RefrInxMedium;
+    double                  refrInxMedium;
         /* Numerical Aperture: */
-    double                  NumAperture;
+    double                  numAperture;
         /* Refractive index of design medium: */
-    double                  RefrInxLensMedium;
+    double                  refrInxLensMedium;
         /* Nipkow Disk pinhole spacing: */
-    double                  PinholeSpacing;
+    double                  pinholeSpacing;
         /* STED depletion mode: */
-    char                    StedDepletionMode[ICS_MAX_LAMBDA][ICS_STRLEN_TOKEN];
+    char                    stedDepletionMode[ICS_MAX_LAMBDA][ICS_STRLEN_TOKEN];
         /* STED wavelength: */
-    double                  StedLambda[ICS_MAX_LAMBDA];
+    double                  stedLambda[ICS_MAX_LAMBDA];
         /* STED saturation factor: */
-    double                  StedSatFactor[ICS_MAX_LAMBDA];
+    double                  stedSatFactor[ICS_MAX_LAMBDA];
         /* STED immunity fraction: */
-    double                  StedImmFraction[ICS_MAX_LAMBDA];
+    double                  stedImmFraction[ICS_MAX_LAMBDA];
         /* STED vortex to phase plate mix: */
-    double                  StedVPPM[ICS_MAX_LAMBDA];
+    double                  stedVPPM[ICS_MAX_LAMBDA];
 
         /* Detector photons per unit: */
-    double                  DetectorPPU[ICS_MAX_LAMBDA];
+    double                  detectorPPU[ICS_MAX_LAMBDA];
         /* Detector Baseline: */
-    double                  DetectorBaseline[ICS_MAX_LAMBDA];
+    double                  detectorBaseline[ICS_MAX_LAMBDA];
         /* Averaging line count */
-    double                  DetectorLineAvgCnt[ICS_MAX_LAMBDA];
+    double                  detectorLineAvgCnt[ICS_MAX_LAMBDA];
 
         /* SCIL_Image compatibility parameter: */
-    char                    ScilType[ICS_STRLEN_TOKEN];
+    char                    scilType[ICS_STRLEN_TOKEN];
 } ICS;
 
 /* The  error codes. */

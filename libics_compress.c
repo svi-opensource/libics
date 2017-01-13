@@ -98,7 +98,7 @@ Ics_Error IcsReadCompress(Ics_Header *IcsStruct,
                           size_t      len)
 {
     ICSINIT;
-    Ics_BlockRead  *br      = (Ics_BlockRead*)IcsStruct->BlockRead;
+    Ics_BlockRead  *br      = (Ics_BlockRead*)IcsStruct->blockRead;
     unsigned char  *stackPtr;
     long int        code;
     int             fInChar;
@@ -142,7 +142,7 @@ Ics_Error IcsReadCompress(Ics_Header *IcsStruct,
         goto exit;
     }
 
-    if ((rSize = fread(inBuffer, 1, IBUFSIZ, br->DataFilePtr)) <= 0) {
+    if ((rSize = fread(inBuffer, 1, IBUFSIZ, br->dataFilePtr)) <= 0) {
         error = IcsErr_FReadIds;
         goto exit;
     }
@@ -186,8 +186,8 @@ Ics_Error IcsReadCompress(Ics_Header *IcsStruct,
         posBits = 0;
 
         if (inSize < IBUFXTRA) {
-            rSize = fread(inBuffer + inSize, 1, IBUFSIZ, br->DataFilePtr);
-            if (rSize <= 0 && !feof(br->DataFilePtr)) {
+            rSize = fread(inBuffer + inSize, 1, IBUFSIZ, br->dataFilePtr);
+            if (rSize <= 0 && !feof(br->dataFilePtr)) {
                 error = IcsErr_FReadIds;
                 goto exit;
             }

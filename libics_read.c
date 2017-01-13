@@ -208,9 +208,9 @@ static Ics_Token getIcsToken(char           *str,
 
 
     if (str != NULL) {
-        for (i = 0; i < listSpec->Entries; i++) {
-            if (strcmp(listSpec->List[i].Name, str) == 0) {
-                token = listSpec->List[i].Token;
+        for (i = 0; i < listSpec->entries; i++) {
+            if (strcmp(listSpec->list[i].name, str) == 0) {
+                token = listSpec->list[i].token;
             }
         }
     }
@@ -296,10 +296,10 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
     }
 
     IcsInit(icsStruct);
-    icsStruct->FileMode = IcsFileMode_read;
+    icsStruct->fileMode = IcsFileMode_read;
 
-    IcsStrCpy(icsStruct->Filename, filename, ICS_MAXPATHLEN);
-    ICSXR(IcsOpenIcs(&fp, icsStruct->Filename, forceName));
+    IcsStrCpy(icsStruct->filename, filename, ICS_MAXPATHLEN);
+    ICSXR(IcsOpenIcs(&fp, icsStruct->filename, forceName));
 
     if (forceLocale) {
         ICS_SET_LOCALE;
@@ -307,7 +307,7 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
 
     ICSCX(getIcsSeparators(fp, seps));
 
-    ICSCX(getIcsVersion(fp, seps, &(icsStruct->Version)));
+    ICSCX(getIcsVersion(fp, seps, &(icsStruct->version)));
     ICSCX(getIcsFileName(fp, seps));
 
     while (!end && !error
@@ -319,9 +319,9 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
         switch (cat) {
             case ICSTOK_END:
                 end = 1;
-                if (icsStruct->SrcFile[0] == '\0') {
-                    icsStruct->SrcOffset =(size_t) ftell(fp);
-                    IcsStrCpy(icsStruct->SrcFile, icsStruct->Filename,
+                if (icsStruct->srcFile[0] == '\0') {
+                    icsStruct->srcOffset =(size_t) ftell(fp);
+                    IcsStrCpy(icsStruct->srcFile, icsStruct->filename,
                               ICS_MAXPATHLEN);
                 }
                 break;
@@ -329,12 +329,12 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                 switch (subCat) {
                     case ICSTOK_FILE:
                         if (ptr != NULL) {
-                            IcsStrCpy(icsStruct->SrcFile, ptr, ICS_MAXPATHLEN);
+                            IcsStrCpy(icsStruct->srcFile, ptr, ICS_MAXPATHLEN);
                         }
                         break;
                     case ICSTOK_OFFSET:
                         if (ptr != NULL) {
-                            icsStruct->SrcOffset = IcsStrToSize(ptr);
+                            icsStruct->srcOffset = IcsStrToSize(ptr);
                         }
                         break;
                     default:
@@ -365,12 +365,12 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                         break;
                     case ICSTOK_COORD:
                         if (ptr != NULL) {
-                            IcsStrCpy(icsStruct->Coord, ptr, ICS_STRLEN_TOKEN);
+                            IcsStrCpy(icsStruct->coord, ptr, ICS_STRLEN_TOKEN);
                         }
                         break;
                     case ICSTOK_SIGBIT:
                         if (ptr != NULL) {
-                            icsStruct->Imel.SigBits = IcsStrToSize(ptr);
+                            icsStruct->imel.sigBits = IcsStrToSize(ptr);
                         }
                         break;
                     default:
@@ -406,25 +406,25 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                     }
                     case ICSTOK_SCILT:
                         if (ptr!= NULL) {
-                            IcsStrCpy(icsStruct->ScilType, ptr,
+                            IcsStrCpy(icsStruct->scilType, ptr,
                                       ICS_STRLEN_TOKEN);
                         }
                         break;
                     case ICSTOK_COMPR:
                         switch (getIcsToken(ptr, &G_Values)) {
                             case ICSTOK_COMPR_UNCOMPRESSED:
-                                icsStruct->Compression = IcsCompr_uncompressed;
+                                icsStruct->compression = IcsCompr_uncompressed;
                                 break;
                             case ICSTOK_COMPR_COMPRESS:
-                                if (icsStruct->Version==1) {
-                                    icsStruct->Compression = IcsCompr_compress;
+                                if (icsStruct->version == 1) {
+                                    icsStruct->compression = IcsCompr_compress;
                                 } else { /* A version 2.0 file never uses
                                             COMPRESS, maybe it means GZIP? */
-                                    icsStruct->Compression = IcsCompr_gzip;
+                                    icsStruct->compression = IcsCompr_gzip;
                                 }
                                 break;
                             case ICSTOK_COMPR_GZIP:
-                                icsStruct->Compression = IcsCompr_gzip;
+                                icsStruct->compression = IcsCompr_gzip;
                                 break;
                             default:
                                 error = IcsErr_UnknownCompression;
@@ -432,7 +432,7 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                         break;
                     case ICSTOK_BYTEO:
                         while (ptr!= NULL && i < ICS_MAX_IMEL_SIZE) {
-                            icsStruct->ByteOrder[i++] = atoi(ptr);
+                            icsStruct->byteOrder[i++] = atoi(ptr);
                             ptr = strtok(NULL, seps);
                         }
                         break;
@@ -498,14 +498,14 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                 switch (subCat) {
                     case ICSTOK_TYPE:
                         while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                            IcsStrCpy(icsStruct->Type[i++], ptr,
+                            IcsStrCpy(icsStruct->type[i++], ptr,
                                       ICS_STRLEN_TOKEN);
                             ptr = strtok(NULL, seps);
                         }
                         break;
                     case ICSTOK_MODEL:
                         if (ptr != NULL) {
-                            IcsStrCpy(icsStruct->Model, ptr, ICS_STRLEN_OTHER);
+                            IcsStrCpy(icsStruct->model, ptr, ICS_STRLEN_OTHER);
                         }
                         break;
                     case ICSTOK_SPARAMS:
@@ -513,7 +513,7 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                             case ICSTOK_CHANS:
                                 if (ptr != NULL) {
                                     int v = atoi(ptr);
-                                    icsStruct->SensorChannels = v;
+                                    icsStruct->sensorChannels = v;
                                     if (v > ICS_MAX_LAMBDA) {
                                         error = IcsErr_TooManyChans;
                                     }
@@ -521,96 +521,96 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                                 break;
                             case ICSTOK_PINHRAD:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    icsStruct->PinholeRadius[i++] = atof(ptr);
+                                    icsStruct->pinholeRadius[i++] = atof(ptr);
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_LAMBDEX:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    icsStruct->LambdaEx[i++] = atof(ptr);
+                                    icsStruct->lambdaEx[i++] = atof(ptr);
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_LAMBDEM:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    icsStruct->LambdaEm[i++] = atof(ptr);
+                                    icsStruct->lambdaEm[i++] = atof(ptr);
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_PHOTCNT:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    icsStruct->ExPhotonCnt[i++] = atoi(ptr);
+                                    icsStruct->exPhotonCnt[i++] = atoi(ptr);
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_REFRIME:
                                 if (ptr != NULL) {
-                                    icsStruct->RefrInxMedium = atof(ptr);
+                                    icsStruct->refrInxMedium = atof(ptr);
                                 }
                                 break;
                             case ICSTOK_NUMAPER:
                                 if (ptr != NULL) {
-                                    icsStruct->NumAperture = atof(ptr);
+                                    icsStruct->numAperture = atof(ptr);
                                 }
                                 break;
                             case ICSTOK_REFRILM:
                                 if (ptr != NULL) {
-                                    icsStruct->RefrInxLensMedium = atof(ptr);
+                                    icsStruct->refrInxLensMedium = atof(ptr);
                                 }
                                 break;
                             case ICSTOK_PINHSPA:
                                 if (ptr != NULL) {
-                                    icsStruct->PinholeSpacing = atof(ptr);
+                                    icsStruct->pinholeSpacing = atof(ptr);
                                 }
                                 break;
                             case ICSTOK_STEDDEPLMODE:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    IcsStrCpy(icsStruct->StedDepletionMode[i++],
+                                    IcsStrCpy(icsStruct->stedDepletionMode[i++],
                                               ptr, ICS_STRLEN_TOKEN);
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_STEDLAMBDA:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    icsStruct->StedLambda[i++] = atof(ptr);
+                                    icsStruct->stedLambda[i++] = atof(ptr);
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_STEDSATFACTOR:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    icsStruct->StedSatFactor[i++] = atof(ptr);
+                                    icsStruct->stedSatFactor[i++] = atof(ptr);
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_STEDIMMFRACTION:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    icsStruct->StedImmFraction[i++] = atof(ptr);
+                                    icsStruct->stedImmFraction[i++] = atof(ptr);
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_STEDVPPM:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    icsStruct->StedVPPM[i++] = atof(ptr);
+                                    icsStruct->stedVPPM[i++] = atof(ptr);
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_DETPPU:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    icsStruct->DetectorPPU[i++] = atof(ptr);
+                                    icsStruct->detectorPPU[i++] = atof(ptr);
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_DETBASELINE:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
                                     double v = atof(ptr);
-                                    icsStruct->DetectorBaseline[i++] = v;
+                                    icsStruct->detectorBaseline[i++] = v;
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_DETLNAVGCNT:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
                                     double v = atof(ptr);
-                                    icsStruct->DetectorLineAvgCnt[i++] = v;
+                                    icsStruct->detectorLineAvgCnt[i++] = v;
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
@@ -633,9 +633,9 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
            files in which a single microscope type is defined and multiple
            sensor channels, the microscope type will be duplicated to all sensor
            channels. */
-    for (j = 1; j < icsStruct->SensorChannels; j++) {
-        if (strlen(icsStruct->Type[j]) == 0) {
-            IcsStrCpy(icsStruct->Type[j], icsStruct->Type[0],
+    for (j = 1; j < icsStruct->sensorChannels; j++) {
+        if (strlen(icsStruct->type[j]) == 0) {
+            IcsStrCpy(icsStruct->type[j], icsStruct->type[0],
                        ICS_STRLEN_TOKEN);
         }
     }
@@ -645,24 +645,24 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
         if (bits < 0) {
             error = IcsErr_MissBits;
         } else {
-            IcsGetDataTypeProps(&(icsStruct->Imel.DataType), format, sign,
+            IcsGetDataTypeProps(&(icsStruct->imel.dataType), format, sign,
                                 sizes[bits]);
             for (j = 0, i = 0; i < parameters; i++) {
                 if (i == bits) {
-                    icsStruct->Imel.Origin = origin[i];
-                    icsStruct->Imel.Scale = scale[i];
-                    strcpy(icsStruct->Imel.Unit, unit[i]);
+                    icsStruct->imel.origin = origin[i];
+                    icsStruct->imel.scale = scale[i];
+                    strcpy(icsStruct->imel.unit, unit[i]);
                 } else {
-                    icsStruct->Dim[j].Size = sizes[i];
-                    icsStruct->Dim[j].Origin = origin[i];
-                    icsStruct->Dim[j].Scale = scale[i];
-                    strcpy(icsStruct->Dim[j].Order, order[i]);
-                    strcpy(icsStruct->Dim[j].Label, label[i]);
-                    strcpy(icsStruct->Dim[j].Unit, unit[i]);
+                    icsStruct->dim[j].size = sizes[i];
+                    icsStruct->dim[j].origin = origin[i];
+                    icsStruct->dim[j].scale = scale[i];
+                    strcpy(icsStruct->dim[j].order, order[i]);
+                    strcpy(icsStruct->dim[j].label, label[i]);
+                    strcpy(icsStruct->dim[j].unit, unit[i]);
                     j++;
                 }
             }
-            icsStruct->Dimensions = parameters - 1;
+            icsStruct->dimensions = parameters - 1;
         }
     }
 

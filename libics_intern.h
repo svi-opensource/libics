@@ -65,12 +65,12 @@
 
 /* Test to see if reading data is allowed */
 #define ICS_FM_RD(p)                                         \
-    if ((p == NULL) || ((p)->FileMode == IcsFileMode_write)) \
+    if ((p == NULL) || ((p)->fileMode == IcsFileMode_write)) \
         return IcsErr_NotValidAction
 
 /* Test to see if writing data is allowed */
 #define ICS_FM_WD(p)                                         \
-    if ((p == NULL) || ((p)->FileMode != IcsFileMode_write)) \
+    if ((p == NULL) || ((p)->fileMode != IcsFileMode_write)) \
         return IcsErr_NotValidAction
 
 /* Test to see if reading metadata is allowed */
@@ -80,7 +80,7 @@
 
 /* Test to see if writing metadata is allowed */
 #define ICS_FM_WMD(p)                                       \
-    if ((p == NULL) || ((p)->FileMode == IcsFileMode_read)) \
+    if ((p == NULL) || ((p)->fileMode == IcsFileMode_read)) \
         return IcsErr_NotValidAction
 
 
@@ -193,14 +193,14 @@ typedef enum {
 
 /* The following structure links names to (enumerated) tokens: */
 typedef struct {
-   const char *Name;
-   Ics_Token   Token;
+   const char *name;
+   Ics_Token   token;
 } Ics_Symbol;
 
 
 typedef struct {
-   int         Entries;
-   Ics_Symbol *List;
+   int         entries;
+   Ics_Symbol *list;
 } Ics_SymbolList;
 
 
@@ -216,22 +216,22 @@ extern Ics_SymbolList G_Values;
 
 /* This is the struct behind the "void* History" in the ICS structure: */
 typedef struct {
-    char   **Strings; /* History strings */
-    size_t   Length;  /* Size of the Strings array */
-    int      NStr;    /* Index past the last one in the array; sort of the
+    char   **strings; /* History strings */
+    size_t   length;  /* Size of the Strings array */
+    int      nStr;    /* Index past the last one in the array; sort of the
                          number of strings in the array, except that some array
                          elements might be NULL */
 } Ics_History;
 
 /* This is the struct behind the "void* BlockRead" in the ICS structure: */
 typedef struct {
-    FILE*          DataFilePtr;     /* Input data file */
+    FILE*          dataFilePtr;     /* Input data file */
 #ifdef ICS_ZLIB
-    void         *ZlibStream;       /* z_stream* (or gzFile) for zlib */
-    void         *ZlibInputBuffer;  /* Input buffer for compressed data */
-    unsigned long  ZlibCRC;         /* running CRC */
+    void          *zlibStream;      /* z_stream* (or gzFile) for zlib */
+    void          *zlibInputBuffer; /* Input buffer for compressed data */
+    unsigned long  zlibCRC;         /* running CRC */
 #endif
-    int            CompressRead;    /* set to non-zero when IcsReadCompress has
+    int            compressRead;    /* set to non-zero when IcsReadCompress has
                                       been called */
 } Ics_BlockRead;
 

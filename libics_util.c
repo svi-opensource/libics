@@ -329,66 +329,66 @@ void IcsInit(Ics_Header *icsStruct)
 {
     int i;
 
-    icsStruct->Version = 2; /* We write an ICS v.2.0 as default */
-    icsStruct->FileMode = IcsFileMode_write;
-    icsStruct->Data = NULL;
-    icsStruct->DataLength = 0;
-    icsStruct->DataStrides = NULL;
-    icsStruct->Filename[0] = '\0';
-    icsStruct->Dimensions = 0;
+    icsStruct->version = 2; /* We write an ICS v.2.0 as default */
+    icsStruct->fileMode = IcsFileMode_write;
+    icsStruct->data = NULL;
+    icsStruct->dataLength = 0;
+    icsStruct->dataStrides = NULL;
+    icsStruct->filename[0] = '\0';
+    icsStruct->dimensions = 0;
     for (i = 0; i < ICS_MAXDIM; i++) {
-        icsStruct->Dim[i].Size = 0;
-        icsStruct->Dim[i].Origin = 0.0;
-        icsStruct->Dim[i].Scale = 1.0;
-        icsStruct->Dim[i].Order[0] = '\0';
-        icsStruct->Dim[i].Label[0] = '\0';
-        icsStruct->Dim[i].Unit[0] = '\0';
+        icsStruct->dim[i].size = 0;
+        icsStruct->dim[i].origin = 0.0;
+        icsStruct->dim[i].scale = 1.0;
+        icsStruct->dim[i].order[0] = '\0';
+        icsStruct->dim[i].label[0] = '\0';
+        icsStruct->dim[i].unit[0] = '\0';
     }
-    icsStruct->Imel.DataType = Ics_unknown;
-    icsStruct->Imel.SigBits = 0;
-    icsStruct->Imel.Origin = 0.0;
-    icsStruct->Imel.Scale = 1.0;
-    icsStruct->Imel.Unit[0] = '\0';
-    icsStruct->Coord[0] = '\0';
-    icsStruct->Compression = IcsCompr_uncompressed;
-    icsStruct->CompLevel = 0;
-    icsStruct->History = NULL;
-    icsStruct->BlockRead = NULL;
-    icsStruct->SrcFile[0] = '\0';
-    icsStruct->SrcOffset = 0;
+    icsStruct->imel.dataType = Ics_unknown;
+    icsStruct->imel.sigBits = 0;
+    icsStruct->imel.origin = 0.0;
+    icsStruct->imel.scale = 1.0;
+    icsStruct->imel.unit[0] = '\0';
+    icsStruct->coord[0] = '\0';
+    icsStruct->compression = IcsCompr_uncompressed;
+    icsStruct->compLevel = 0;
+    icsStruct->history = NULL;
+    icsStruct->blockRead = NULL;
+    icsStruct->srcFile[0] = '\0';
+    icsStruct->srcOffset = 0;
     for (i = 0; i < ICS_MAX_IMEL_SIZE; i++) {
-        icsStruct->ByteOrder[i] = 0;
+        icsStruct->byteOrder[i] = 0;
     }
-    icsStruct->WriteSensor = 0;
-    icsStruct->Model[0]= '\0';
-    icsStruct->RefrInxMedium = 0.0;
-    icsStruct->NumAperture = 0.0;
-    icsStruct->RefrInxLensMedium = 0.0;
-    icsStruct->PinholeSpacing = 0.0;
-    icsStruct->SensorChannels = 0;
+    icsStruct->writeSensor = 0;
+    icsStruct->model[0]= '\0';
+    icsStruct->refrInxMedium = 0.0;
+    icsStruct->numAperture = 0.0;
+    icsStruct->refrInxLensMedium = 0.0;
+    icsStruct->pinholeSpacing = 0.0;
+    icsStruct->sensorChannels = 0;
     for (i = 0; i < ICS_MAX_LAMBDA; i++) {
-        icsStruct->Type[i][0] = '\0';
-        icsStruct->PinholeRadius[i] = 0.0;
-        icsStruct->LambdaEx[i] = 0.0;
-        icsStruct->LambdaEm[i] = 0.0;
-        icsStruct->ExPhotonCnt[i] = 1;
-        icsStruct->StedDepletionMode[i][0] = '\0';
-        icsStruct->StedLambda[i] = 0.0;
-        icsStruct->StedSatFactor[i] = 0.0;
-        icsStruct->StedImmFraction[i] = 0.0;
-        icsStruct->StedVPPM[i] = 0.0;
-        icsStruct->DetectorPPU[i] = 1.0;
-        icsStruct->DetectorBaseline[i] = 0.0;
-        icsStruct->DetectorLineAvgCnt[i] = 1.0;
+        icsStruct->type[i][0] = '\0';
+        icsStruct->pinholeRadius[i] = 0.0;
+        icsStruct->lambdaEx[i] = 0.0;
+        icsStruct->lambdaEm[i] = 0.0;
+        icsStruct->exPhotonCnt[i] = 1;
+        icsStruct->stedDepletionMode[i][0] = '\0';
+        icsStruct->stedLambda[i] = 0.0;
+        icsStruct->stedSatFactor[i] = 0.0;
+        icsStruct->stedImmFraction[i] = 0.0;
+        icsStruct->stedVPPM[i] = 0.0;
+        icsStruct->detectorPPU[i] = 1.0;
+        icsStruct->detectorBaseline[i] = 0.0;
+        icsStruct->detectorLineAvgCnt[i] = 1.0;
     }
-    icsStruct->ScilType[0] = '\0';
+    icsStruct->scilType[0] = '\0';
 }
 
 
 /* Find the number of bytes per sample. */
 int IcsGetBytesPerSample(const Ics_Header *icsStruct)
 {
-    return IcsGetDataTypeSize(icsStruct->Imel.DataType);
+    return IcsGetDataTypeSize(icsStruct->imel.dataType);
 }
 
 

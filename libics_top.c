@@ -133,20 +133,20 @@ Ics_Error IcsOpen(ICS        **ics,
         } else {
             if (writing) {
                     /* We're updating */
-                (*ics)->FileMode = IcsFileMode_update;
+                (*ics)->fileMode = IcsFileMode_update;
             } else {
                     /* We're just reading */
-                (*ics)->FileMode = IcsFileMode_read;
+                (*ics)->fileMode = IcsFileMode_read;
             }
         }
     } else if (writing) {
             /* We're writing */
         IcsInit(*ics);
-        (*ics)->FileMode = IcsFileMode_write;
+        (*ics)->fileMode = IcsFileMode_write;
         if (version) {
-            (*ics)->Version = version;
+            (*ics)->version = version;
         }
-        IcsStrCpy((*ics)->Filename, filename, ICS_MAXPATHLEN);
+        IcsStrCpy((*ics)->filename, filename, ICS_MAXPATHLEN);
     } else {
             /* Missing an "r" or "w" mode character */
         return IcsErr_IllParameter;
@@ -164,36 +164,36 @@ Ics_Error IcsClose(ICS *ics)
 
 
     ICSTR(ics == NULL, IcsErr_NotValidAction);
-    if (ics->FileMode == IcsFileMode_read) {
+    if (ics->fileMode == IcsFileMode_read) {
             /* We're reading */
-        if (ics->BlockRead != NULL) {
+        if (ics->blockRead != NULL) {
             error = IcsCloseIds(ics);
         }
-    } else if (ics->FileMode == IcsFileMode_write) {
+    } else if (ics->fileMode == IcsFileMode_write) {
             /* We're writing */
         error = IcsWriteIcs(ics, NULL);
         ICSCX(IcsWriteIds(ics));
     } else {
             /* We're updating */
         int needcopy = 0;
-        if (ics->BlockRead != NULL) {
+        if (ics->blockRead != NULL) {
             error = IcsCloseIds(ics);
         }
-        if (ics->Version == 2 && !strcmp(ics->SrcFile, ics->Filename)) {
+        if (ics->version == 2 && !strcmp(ics->srcFile, ics->filename)) {
                 /* The ICS file contains the data */
             needcopy = 1;
-            ics->SrcFile[0] = '\0'; /* needed to get the END keyword in the header */
+            ics->srcFile[0] = '\0'; /* needed to get the END keyword in the header */
                 /* Rename the original file */
-            strcpy(filename, ics->Filename);
+            strcpy(filename, ics->filename);
             strcat(filename, ".tmp");
-            if (rename(ics->Filename, filename)) {
+            if (rename(ics->filename, filename)) {
                 error = IcsErr_FTempMoveIcs;
             }
         }
         ICSCX(IcsWriteIcs(ics, NULL));
         if (!error && needcopy) {
                 /* Copy the data over from the original file */
-            error = IcsCopyIds(filename, ics->SrcOffset, ics->Filename);
+            error = IcsCopyIds(filename, ics->srcOffset, ics->filename);
                 /* Delete original file */
             if (!error) {
                 remove(filename);
@@ -201,8 +201,8 @@ Ics_Error IcsClose(ICS *ics)
         }
         if (error) {
                 /* Let's try copying the old file back */
-            remove(ics->Filename);
-            rename(filename, ics->Filename);
+            remove(ics->filename);
+            rename(filename, ics->filename);
         }
     }
     IcsFreeHistory(ics);
@@ -223,11 +223,11 @@ Ics_Error IcsGetLayout(const ICS    *ics,
 
 
     ICS_FM_RD(ics);
-    *nDims = ics->Dimensions;
-    *dt = ics->Imel.DataType;
+    *nDims = ics->dimensions;
+    *dt = ics->imel.dataType;
         /* Get the image sizes. Ignore the orders */
     for (i = 0; i < *nDims; i++) {
-        dims[i] = ics->Dim[i].Size;
+        dims[i] = ics->dim[i].size;
     }
 
     return error;
@@ -247,20 +247,20 @@ Ics_Error IcsSetLayout(ICS          *ics,
     ICS_FM_WD(ics);
     ICSTR(nDims > ICS_MAXDIM, IcsErr_TooManyDims);
         /* Set the pixel parameters */
-    ics->Imel.DataType = dt;
+    ics->imel.dataType = dt;
         /* Set the image sizes */
     for (i=0; i<nDims; i++) {
-        ics->Dim[i].Size = dims[i];
+        ics->dim[i].size = dims[i];
         if (i < ICSKEY_ORDER_LENGTH) {
-            strcpy(ics->Dim[i].Order, ICSKEY_ORDER[i]);
-            strcpy(ics->Dim[i].Label, ICSKEY_LABEL[i]);
+            strcpy(ics->dim[i].order, ICSKEY_ORDER[i]);
+            strcpy(ics->dim[i].label, ICSKEY_LABEL[i]);
         } else {
                 /* Could overflow: */
-            snprintf(ics->Dim[i].Order, ICS_STRLEN_TOKEN, "dim_%d", i);
-            snprintf(ics->Dim[i].Label, ICS_STRLEN_TOKEN, "dim_%d", i);
+            snprintf(ics->dim[i].order, ICS_STRLEN_TOKEN, "dim_%d", i);
+            snprintf(ics->dim[i].label, ICS_STRLEN_TOKEN, "dim_%d", i);
         }
     }
-    ics->Dimensions = nDims;
+    ics->dimensions = nDims;
 
     return error;
 }
@@ -270,7 +270,7 @@ Ics_Error IcsSetLayout(ICS          *ics,
 size_t IcsGetDataSize(const ICS *ics)
 {
     ICSTR(ics == NULL, 0);
-    ICSTR(ics->Dimensions == 0, 0);
+    ICSTR(ics->dimensions == 0, 0);
     return IcsGetImageSize(ics) * IcsGetBytesPerSample(ics);
 }
 
@@ -294,9 +294,9 @@ size_t IcsGetImageSize(const ICS *ics)
 
 
     ICSTR(ics == NULL, 0);
-    ICSTR(ics->Dimensions == 0, 0);
-    for (i = 0; i < ics->Dimensions; i++) {
-        size *= ics->Dim[i].Size;
+    ICSTR(ics->dimensions == 0, 0);
+    for (i = 0; i < ics->dimensions; i++) {
+        size *= ics->dim[i].size;
     }
 
     return size;
@@ -330,7 +330,7 @@ Ics_Error IcsGetDataBlock(ICS    *ics,
 
     ICS_FM_RD(ics);
     if ((n != 0) &&(dest != NULL)) {
-        if (ics->BlockRead == NULL) {
+        if (ics->blockRead == NULL) {
             error = IcsOpenIds(ics);
         }
         ICSCX(IcsReadIdsBlock(ics, dest, n));
@@ -349,7 +349,7 @@ Ics_Error IcsSkipDataBlock(ICS    *ics,
 
     ICS_FM_RD(ics);
     if (n != 0) {
-        if (ics->BlockRead == NULL) {
+        if (ics->blockRead == NULL) {
             error = IcsOpenIds(ics);
         }
         ICSCX(IcsSkipIdsBlock(ics, n));
@@ -383,7 +383,7 @@ Ics_Error IcsGetROIData(ICS          *ics,
 
     ICS_FM_RD(ics);
     ICSTR((n == 0) ||(dest == NULL), IcsErr_Ok);
-    p = ics->Dimensions;
+    p = ics->dimensions;
     if (offsetPtr != NULL) {
         offset = offsetPtr;
     } else {
@@ -396,7 +396,7 @@ Ics_Error IcsGetROIData(ICS          *ics,
         size = sizePtr;
     } else {
         for (i = 0; i < p; i++) {
-            bSize[i] = ics->Dim[i].Size - offset[i];
+            bSize[i] = ics->dim[i].size - offset[i];
         }
         size = bSize;
     }
@@ -409,7 +409,7 @@ Ics_Error IcsGetROIData(ICS          *ics,
         sampling = bSampling;
     }
     for (i = 0; i < p; i++) {
-        if (sampling[i] < 1 || offset[i] + size[i] > ics->Dim[i].Size)
+        if (sampling[i] < 1 || offset[i] + size[i] > ics->dim[i].size)
             return IcsErr_IllegalROI;
     }
     imelSize = IcsGetBytesPerSample(ics);
@@ -425,7 +425,7 @@ Ics_Error IcsGetROIData(ICS          *ics,
            in each dimension */
     stride[0] = 1;
     for (i = 1; i < p; i++) {
-        stride[i] = stride[i - 1] * ics->Dim[i - 1].Size;
+        stride[i] = stride[i - 1] * ics->dim[i - 1].size;
     }
     ICSXR(IcsOpenIds(ics));
     bufSize = imelSize*size[0];
@@ -533,26 +533,26 @@ Ics_Error IcsGetDataWithStrides(ICS          *ics,
 
    ICS_FM_RD(ics);
    ICSTR((n == 0) ||(dest == NULL), IcsErr_Ok);
-   p = ics->Dimensions;
+   p = ics->dimensions;
    ICSTR(nDims != p, IcsErr_IllParameter);
    if (stridePtr != NULL) {
       stride = stridePtr;
    } else {
       b_stride[0] = 1;
       for (i = 1; i < p; i++) {
-         b_stride[i] = b_stride[i - 1] * ics->Dim[i - 1].Size;
+         b_stride[i] = b_stride[i - 1] * ics->dim[i - 1].size;
       }
       stride = b_stride;
    }
    imelSize = IcsGetBytesPerSample(ics);
    lastpixel = 0;
    for (i = 0; i < p; i++) {
-      lastpixel +=(ics->Dim[i].Size - 1) * stride[i];
+      lastpixel +=(ics->dim[i].size - 1) * stride[i];
    }
    ICSTR(lastpixel * imelSize > n, IcsErr_IllParameter);
 
    ICSXR(IcsOpenIds(ics));
-   bufSize = imelSize*ics->Dim[0].Size;
+   bufSize = imelSize*ics->dim[0].size;
    if (stride[0] > 1) {
       /* We read a line in a buffer, and then copy the imels to dest */
       buf =(char*)malloc(bufSize);
@@ -569,13 +569,13 @@ Ics_Error IcsGetDataWithStrides(ICS          *ics,
          if (error != IcsErr_Ok) {
             break; /* stop reading on error */
          }
-         for (j = 0; j < ics->Dim[0].Size; j++) {
+         for (j = 0; j < ics->dim[0].size; j++) {
             memcpy(out, buf + j * imelSize, imelSize);
             out += stride[0]*imelSize;
          }
          for (i = 1; i < p; i++) {
             curPos[i]++;
-            if (curPos[i] < ics->Dim[i].Size) {
+            if (curPos[i] < ics->dim[i].size) {
                break;
             }
             curPos[i] = 0;
@@ -601,7 +601,7 @@ Ics_Error IcsGetDataWithStrides(ICS          *ics,
          }
          for (i = 1; i < p; i++) {
             curPos[i]++;
-            if (curPos[i] < ics->Dim[i].Size) {
+            if (curPos[i] < ics->dim[i].size) {
                break;
             }
             curPos[i] = 0;
@@ -626,15 +626,15 @@ Ics_Error IcsSetData(ICS        *ics,
 
 
    ICS_FM_WD(ics);
-   ICSTR(ics->SrcFile[0] != '\0', IcsErr_DuplicateData);
-   ICSTR(ics->Data != NULL, IcsErr_DuplicateData);
-   ICSTR(ics->Dimensions == 0, IcsErr_NoLayout);
+   ICSTR(ics->srcFile[0] != '\0', IcsErr_DuplicateData);
+   ICSTR(ics->data != NULL, IcsErr_DuplicateData);
+   ICSTR(ics->dimensions == 0, IcsErr_NoLayout);
    if (n != IcsGetDataSize(ics)) {
       error = IcsErr_FSizeConflict;
    }
-   ics->Data = src;
-   ics->DataLength = n;
-   ics->DataStrides = NULL;
+   ics->data = src;
+   ics->dataLength = n;
+   ics->dataStrides = NULL;
 
    return error;
 }
@@ -657,22 +657,22 @@ Ics_Error IcsSetDataWithStrides(ICS          *ics,
 
 
    ICS_FM_WD(ics);
-   ICSTR(ics->SrcFile[0] != '\0', IcsErr_DuplicateData);
-   ICSTR(ics->Data != NULL, IcsErr_DuplicateData);
-   ICSTR(ics->Dimensions == 0, IcsErr_NoLayout);
-   ICSTR(nDims != ics->Dimensions, IcsErr_IllParameter);
+   ICSTR(ics->srcFile[0] != '\0', IcsErr_DuplicateData);
+   ICSTR(ics->data != NULL, IcsErr_DuplicateData);
+   ICSTR(ics->dimensions == 0, IcsErr_NoLayout);
+   ICSTR(nDims != ics->dimensions, IcsErr_IllParameter);
    lastpixel = 0;
    for (i = 0; i < nDims; i++) {
-      lastpixel +=(ics->Dim[i].Size-1) * strides[i];
+      lastpixel +=(ics->dim[i].size-1) * strides[i];
    }
-   ICSTR(lastpixel*IcsGetDataTypeSize(ics->Imel.DataType) > n,
+   ICSTR(lastpixel*IcsGetDataTypeSize(ics->imel.dataType) > n,
          IcsErr_IllParameter);
    if (n != IcsGetDataSize(ics)) {
       error = IcsErr_FSizeConflict;
    }
-   ics->Data = src;
-   ics->DataLength = n;
-   ics->DataStrides = strides;
+   ics->data = src;
+   ics->dataLength = n;
+   ics->dataStrides = strides;
 
    return error;
 }
@@ -687,11 +687,11 @@ Ics_Error IcsSetSource(ICS        *ics,
 
 
    ICS_FM_WD(ics);
-   ICSTR(ics->Version == 1, IcsErr_NotValidAction);
-   ICSTR(ics->SrcFile[0] != '\0', IcsErr_DuplicateData);
-   ICSTR(ics->Data != NULL, IcsErr_DuplicateData);
-   IcsStrCpy(ics->SrcFile, fname, ICS_MAXPATHLEN);
-   ics->SrcOffset = offset;
+   ICSTR(ics->version == 1, IcsErr_NotValidAction);
+   ICSTR(ics->srcFile[0] != '\0', IcsErr_DuplicateData);
+   ICSTR(ics->data != NULL, IcsErr_DuplicateData);
+   IcsStrCpy(ics->srcFile, fname, ICS_MAXPATHLEN);
+   ics->srcOffset = offset;
 
    return error;
 }
@@ -709,8 +709,8 @@ Ics_Error IcsSetCompression(ICS             *ics,
     if (compression == IcsCompr_compress)
         compression = IcsCompr_gzip; /* don't try writing 'compress' compressed
                                         data. */
-    ics->Compression = compression;
-    ics->CompLevel = level;
+    ics->compression = compression;
+    ics->compLevel = level;
 
     return error;
 }
@@ -730,16 +730,16 @@ Ics_Error IcsGetPosition(const ICS *ics,
 
 
     ICS_FM_RMD(ics);
-    ICSTR(dimension >= ics->Dimensions, IcsErr_NotValidAction);
+    ICSTR(dimension >= ics->dimensions, IcsErr_NotValidAction);
     if (origin) {
-        *origin = ics->Dim[dimension].Origin;
+        *origin = ics->dim[dimension].origin;
     }
     if (scale) {
-        *scale = ics->Dim[dimension].Scale;
+        *scale = ics->dim[dimension].scale;
     }
     if (units) {
-        if (ics->Dim[dimension].Unit[0] != '\0') {
-            strcpy(units, ics->Dim[dimension].Unit);
+        if (ics->dim[dimension].unit[0] != '\0') {
+            strcpy(units, ics->dim[dimension].unit);
         } else {
             strcpy(units, ICS_UNITS_UNDEFINED);
         }
@@ -763,13 +763,13 @@ Ics_Error IcsSetPosition(ICS        *ics,
 
 
     ICS_FM_WMD(ics);
-    ICSTR(dimension >= ics->Dimensions, IcsErr_NotValidAction);
-    ics->Dim[dimension].Origin = origin;
-    ics->Dim[dimension].Scale = scale;
+    ICSTR(dimension >= ics->dimensions, IcsErr_NotValidAction);
+    ics->dim[dimension].origin = origin;
+    ics->dim[dimension].scale = scale;
     if (units &&(units[0] != '\0')) {
-        IcsStrCpy(ics->Dim[dimension].Unit, units, ICS_STRLEN_TOKEN);
+        IcsStrCpy(ics->dim[dimension].unit, units, ICS_STRLEN_TOKEN);
     } else {
-        strcpy(ics->Dim[dimension].Unit, ICS_UNITS_UNDEFINED);
+        strcpy(ics->dim[dimension].unit, ICS_UNITS_UNDEFINED);
     }
 
     return error;
@@ -788,12 +788,12 @@ Ics_Error IcsGetOrder(const ICS *ics,
 
 
     ICS_FM_RMD(ics);
-    ICSTR(dimension >= ics->Dimensions, IcsErr_NotValidAction);
+    ICSTR(dimension >= ics->dimensions, IcsErr_NotValidAction);
     if (order) {
-        strcpy(order, ics->Dim[dimension].Order);
+        strcpy(order, ics->dim[dimension].order);
     }
     if (label) {
-        strcpy(label, ics->Dim[dimension].Label);
+        strcpy(label, ics->dim[dimension].label);
     }
 
     return error;
@@ -812,17 +812,17 @@ Ics_Error IcsSetOrder(ICS        *ics,
 
 
     ICS_FM_WMD(ics);
-    ICSTR(dimension >= ics->Dimensions, IcsErr_NotValidAction);
+    ICSTR(dimension >= ics->dimensions, IcsErr_NotValidAction);
     if (order &&(order[0] != '\0')) {
-        IcsStrCpy(ics->Dim[dimension].Order, order, ICS_STRLEN_TOKEN);
+        IcsStrCpy(ics->dim[dimension].order, order, ICS_STRLEN_TOKEN);
         if (label &&(label[0] != '\0')) {
-            IcsStrCpy(ics->Dim[dimension].Label, label, ICS_STRLEN_TOKEN);
+            IcsStrCpy(ics->dim[dimension].label, label, ICS_STRLEN_TOKEN);
         } else {
-            IcsStrCpy(ics->Dim[dimension].Label, order, ICS_STRLEN_TOKEN);
+            IcsStrCpy(ics->dim[dimension].label, order, ICS_STRLEN_TOKEN);
         }
     } else {
         if (label &&(label[0] != '\0')) {
-            IcsStrCpy(ics->Dim[dimension].Label, label, ICS_STRLEN_TOKEN);
+            IcsStrCpy(ics->dim[dimension].label, label, ICS_STRLEN_TOKEN);
         } else {
             error = IcsErr_NotValidAction;
         }
@@ -842,8 +842,8 @@ Ics_Error IcsGetCoordinateSystem(const ICS *ics,
 
     ICS_FM_RMD(ics);
     ICSTR(coord == NULL, IcsErr_NotValidAction);
-    if (ics->Coord[0] != '\0') {
-        strcpy(coord, ics->Coord);
+    if (ics->coord[0] != '\0') {
+        strcpy(coord, ics->coord);
     } else {
         strcpy(coord, ICS_COORD_VIDEO);
     }
@@ -862,9 +862,9 @@ Ics_Error IcsSetCoordinateSystem(ICS        *ics,
 
     ICS_FM_WMD(ics);
     if (coord &&(coord[0] != '\0')) {
-        IcsStrCpy(ics->Coord, coord, ICS_STRLEN_TOKEN);
+        IcsStrCpy(ics->coord, coord, ICS_STRLEN_TOKEN);
     } else {
-        strcpy(ics->Coord, ICS_COORD_VIDEO);
+        strcpy(ics->coord, ICS_COORD_VIDEO);
     }
 
     return error;
@@ -880,7 +880,7 @@ Ics_Error IcsGetSignificantBits(const ICS *ics,
 
     ICS_FM_RD(ics);
     ICSTR(nbits == NULL, IcsErr_NotValidAction);
-    *nbits = ics->Imel.SigBits;
+    *nbits = ics->imel.sigBits;
 
     return error;
 }
@@ -891,15 +891,15 @@ Ics_Error IcsSetSignificantBits(ICS    *ics,
                                 size_t  nbits)
 {
     ICSINIT;
-    size_t maxbits = IcsGetDataTypeSize(ics->Imel.DataType) * 8;
+    size_t maxbits = IcsGetDataTypeSize(ics->imel.dataType) * 8;
 
 
     ICS_FM_WD(ics);
-    ICSTR(ics->Dimensions == 0, IcsErr_NoLayout);
+    ICSTR(ics->dimensions == 0, IcsErr_NoLayout);
     if (nbits > maxbits) {
         nbits = maxbits;
     }
-    ics->Imel.SigBits = nbits;
+    ics->imel.sigBits = nbits;
 
     return error;
 }
@@ -918,14 +918,14 @@ Ics_Error IcsGetImelUnits(const ICS *ics,
 
     ICS_FM_RMD(ics);
     if (origin) {
-        *origin = ics->Imel.Origin;
+        *origin = ics->imel.origin;
     }
     if (scale) {
-        *scale = ics->Imel.Scale;
+        *scale = ics->imel.scale;
     }
     if (units) {
-        if (ics->Imel.Unit[0] != '\0') {
-            strcpy(units, ics->Imel.Unit);
+        if (ics->imel.unit[0] != '\0') {
+            strcpy(units, ics->imel.unit);
         } else {
             strcpy(units, ICS_UNITS_RELATIVE);
         }
@@ -947,12 +947,12 @@ Ics_Error IcsSetImelUnits(ICS        *ics,
 
 
     ICS_FM_WMD(ics);
-    ics->Imel.Origin = origin;
-    ics->Imel.Scale = scale;
+    ics->imel.origin = origin;
+    ics->imel.scale = scale;
     if (units &&(units[0] != '\0')) {
-        IcsStrCpy(ics->Imel.Unit, units, ICS_STRLEN_TOKEN);
+        IcsStrCpy(ics->imel.unit, units, ICS_STRLEN_TOKEN);
     } else {
-        strcpy(ics->Imel.Unit, ICS_UNITS_RELATIVE);
+        strcpy(ics->imel.unit, ICS_UNITS_RELATIVE);
     }
 
     return error;
@@ -969,7 +969,7 @@ Ics_Error IcsGetScilType(const ICS *ics,
 
     ICS_FM_RMD(ics);
     ICSTR(sciltype == NULL, IcsErr_NotValidAction);
-    strcpy(sciltype, ics->ScilType);
+    strcpy(sciltype, ics->scilType);
 
     return error;
 }
@@ -984,7 +984,7 @@ Ics_Error IcsSetScilType(ICS        *ics,
 
 
     ICS_FM_WMD(ics);
-    IcsStrCpy(ics->ScilType, sciltype, ICS_STRLEN_TOKEN);
+    IcsStrCpy(ics->scilType, sciltype, ICS_STRLEN_TOKEN);
 
     return error;
 }
@@ -998,18 +998,18 @@ Ics_Error IcsGuessScilType(ICS *ics)
 
 
     ICS_FM_WMD(ics);
-    switch (ics->Imel.DataType) {
+    switch (ics->imel.dataType) {
         case Ics_uint8:
         case Ics_sint8:
         case Ics_uint16:
         case Ics_sint16:
-            ics->ScilType[0] = 'g';
+            ics->scilType[0] = 'g';
             break;
         case Ics_real32:
-            ics->ScilType[0] = 'f';
+            ics->scilType[0] = 'f';
             break;
         case Ics_complex32:
-            ics->ScilType[0] = 'c';
+            ics->scilType[0] = 'c';
             break;
         case Ics_uint32:
         case Ics_sint32:
@@ -1018,19 +1018,19 @@ Ics_Error IcsGuessScilType(ICS *ics)
             return IcsErr_NoScilType;
         case Ics_unknown:
         default:
-            ics->ScilType[0] = '\0';
+            ics->scilType[0] = '\0';
             return IcsErr_NotValidAction;
     }
-    if (ics->Dimensions == 3) {
-        ics->ScilType[1] = '3';
-    } else if (ics->Dimensions > 3) {
-        ics->ScilType[0] = '\0';
+    if (ics->dimensions == 3) {
+        ics->scilType[1] = '3';
+    } else if (ics->dimensions > 3) {
+        ics->scilType[0] = '\0';
         error = IcsErr_NoScilType;
     } else {
-        ics->ScilType[1] = '2';
+        ics->scilType[1] = '2';
     }
-    ics->ScilType[2] = 'd';
-    ics->ScilType[3] = '\0';
+    ics->scilType[2] = 'd';
+    ics->scilType[3] = '\0';
 
     return error;
 }

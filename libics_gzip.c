@@ -375,8 +375,8 @@ Ics_Error IcsWriteZipWithStrides(const void   *src,
 Ics_Error IcsOpenZip(Ics_Header *icsStruct)
 {
 #ifdef ICS_ZLIB
-    Ics_BlockRead * br   = (Ics_BlockRead*)icsStruct->BlockRead;
-    FILE           *file = br->DataFilePtr;
+    Ics_BlockRead * br   = (Ics_BlockRead*)icsStruct->blockRead;
+    FILE           *file = br->dataFilePtr;
     z_stream*       stream;
     void           *inBuf;
     int             err;
@@ -444,9 +444,9 @@ Ics_Error IcsOpenZip(Ics_Header *icsStruct)
         }
     }
 
-    br->ZlibStream = stream;
-    br->ZlibInputBuffer = inBuf;
-    br->ZlibCRC = crc32(0L, Z_NULL, 0);
+    br->zlibStream = stream;
+    br->zlibInputBuffer = inBuf;
+    br->zlibCRC = crc32(0L, Z_NULL, 0);
     return IcsErr_Ok;
 #else
     return IcsErr_UnknownCompression;
@@ -459,15 +459,15 @@ Ics_Error IcsOpenZip(Ics_Header *icsStruct)
 Ics_Error IcsCloseZip(Ics_Header *icsStruct)
 {
 #ifdef ICS_ZLIB
-    Ics_BlockRead *br     = (Ics_BlockRead*)icsStruct->BlockRead;
-    z_stream*      stream = (z_stream*)br->ZlibStream;
+    Ics_BlockRead *br     = (Ics_BlockRead*)icsStruct->blockRead;
+    z_stream*      stream = (z_stream*)br->zlibStream;
     int            err;
 
     err = inflateEnd(stream);
     free(stream);
-    br->ZlibStream = NULL;
-    free(br->ZlibInputBuffer);
-    br->ZlibInputBuffer = NULL;
+    br->zlibStream = NULL;
+    free(br->zlibInputBuffer);
+    br->zlibInputBuffer = NULL;
 
     if (err != Z_OK) {
         return IcsErr_DecompressionProblem;
@@ -486,10 +486,10 @@ Ics_Error IcsReadZipBlock(Ics_Header *icsStruct,
                            size_t      len)
 {
 #ifdef ICS_ZLIB
-    Ics_BlockRead *br      = (Ics_BlockRead*)icsStruct->BlockRead;
-    FILE          *file    = br->DataFilePtr;
-    z_stream*      stream  = (z_stream*)br->ZlibStream;
-    void          *inBuf   = br->ZlibInputBuffer;
+    Ics_BlockRead *br      = (Ics_BlockRead*)icsStruct->blockRead;
+    FILE          *file    = br->dataFilePtr;
+    z_stream*      stream  = (z_stream*)br->zlibStream;
+    void          *inBuf   = br->zlibInputBuffer;
     int            err;
     size_t         prevout = stream->total_out, todo = len;
     unsigned int   bufsize, done;
@@ -520,7 +520,7 @@ Ics_Error IcsReadZipBlock(Ics_Header *icsStruct,
             }
             done = bufsize - stream->avail_out;
             todo -= done;
-            br->ZlibCRC = crc32(br->ZlibCRC, prevbuf, done);
+            br->zlibCRC = crc32(br->zlibCRC, prevbuf, done);
         } while (stream->avail_out == 0);
     } while (err != Z_STREAM_END && todo > 0);
 
@@ -530,7 +530,7 @@ Ics_Error IcsReadZipBlock(Ics_Header *icsStruct,
     if (err == Z_STREAM_END) {
             /* All the data has been decompressed: Check CRC and original data
                size */
-        if (icsGetLong(file) != br->ZlibCRC) {
+        if (icsGetLong(file) != br->zlibCRC) {
             err = Z_STREAM_ERROR;
         } else {
             if (icsGetLong(file) != stream->total_out) {
@@ -563,8 +563,8 @@ Ics_Error IcsSetZipBlock(Ics_Header *icsStruct,
     ICSINIT;
     size_t         n, bufsize;
     void          *buf;
-    Ics_BlockRead *br     = (Ics_BlockRead*)icsStruct->BlockRead;
-    z_stream*      stream = (z_stream*)br->ZlibStream;
+    Ics_BlockRead *br     = (Ics_BlockRead*)icsStruct->blockRead;
+    z_stream*      stream = (z_stream*)br->zlibStream;
 
     if ((whence == SEEK_CUR) && (offset<0)) {
         offset += stream->total_out;

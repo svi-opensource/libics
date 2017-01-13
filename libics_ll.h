@@ -1,13 +1,14 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013 Cris Luengo and others
  * Copyright 2015-2017:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
  *
  * Contact: libics@svi.nl
+ *
+ * Copyright (C) 2000-2013 Cris Luengo and others
  *
  * Large chunks of this library written by
  *    Bert Gijsbers
@@ -68,45 +69,45 @@ typedef enum {
 
 
 /* Reads a .ics file into an Ics_Header structure. */
-ICSEXPORT Ics_Error IcsReadIcs(Ics_Header *IcsStruct,
+ICSEXPORT Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                                const char *filename,
                                int         forcename,
                                int         forcelocale);
 
 /* Writes an Ics_Header structure into a .ics file. */
-ICSEXPORT Ics_Error IcsWriteIcs(Ics_Header *IcsStruct,
+ICSEXPORT Ics_Error IcsWriteIcs(Ics_Header *icsStruct,
                                 const char *filename);
 
 /* Initializes image data reading. */
-ICSEXPORT Ics_Error IcsOpenIds(Ics_Header *IcsStruct);
+ICSEXPORT Ics_Error IcsOpenIds(Ics_Header *icsStruct);
 
 /* Ends image data reading. */
-ICSEXPORT Ics_Error IcsCloseIds(Ics_Header *IcsStruct);
+ICSEXPORT Ics_Error IcsCloseIds(Ics_Header *icsStruct);
 
 /* Reads image data block from disk. */
-ICSEXPORT Ics_Error IcsReadIdsBlock(Ics_Header *IcsStruct,
+ICSEXPORT Ics_Error IcsReadIdsBlock(Ics_Header *icsStruct,
                                     void       *outbuf,
                                     size_t      len);
 
 /* Skips image data block from disk (fseek forward). */
-ICSEXPORT Ics_Error IcsSkipIdsBlock(Ics_Header *IcsStruct,
+ICSEXPORT Ics_Error IcsSkipIdsBlock(Ics_Header *icsStruct,
                                     size_t      len);
 
 /* Sets the file pointer into the image data on disk (fseek anywhere). */
-ICSEXPORT Ics_Error IcsSetIdsBlock(Ics_Header *IcsStruct,
+ICSEXPORT Ics_Error IcsSetIdsBlock(Ics_Header *icsStruct,
                                    long        offset,
                                    int         whence);
 
 /* Reads image data from disk. */
-ICSEXPORT Ics_Error IcsReadIds(Ics_Header *IcsStruct,
+ICSEXPORT Ics_Error IcsReadIds(Ics_Header *icsStruct,
                                void       *dest,
                                size_t      n);
 
 /* Writes image data to disk. */
-ICSEXPORT Ics_Error IcsWriteIds(const Ics_Header *IcsStruct);
+ICSEXPORT Ics_Error IcsWriteIds(const Ics_Header *icsStruct);
 
 /* Initializes the Ics_Header structure to default values and zeros. */
-ICSEXPORT void IcsInit(Ics_Header *IcsStruct);
+ICSEXPORT void IcsInit(Ics_Header *icsStruct);
 
 /* Appends ".ics" to the filename (removing ".ids" if present) If (forcename) we
   do change ".ids" into ".ics", but do not add anything. */

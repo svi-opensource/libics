@@ -125,38 +125,38 @@ Ics_Error IcsWriteIds(const Ics_Header *icsStruct)
     size_t  dim[ICS_MAXDIM];
 
 
-    if (icsStruct->Version == 1) {
-        IcsGetIdsName(filename, icsStruct->Filename);
+    if (icsStruct->version == 1) {
+        IcsGetIdsName(filename, icsStruct->filename);
     } else {
-        ICSTR(icsStruct->SrcFile[0] != '\0', IcsErr_Ok);
+        ICSTR(icsStruct->srcFile[0] != '\0', IcsErr_Ok);
             /* Do nothing: the data is in another file somewhere */
-        IcsStrCpy(filename, icsStruct->Filename, ICS_MAXPATHLEN);
+        IcsStrCpy(filename, icsStruct->filename, ICS_MAXPATHLEN);
         mode[0] = 'a'; /* Open for append */
     }
-    ICSTR((icsStruct->Data == NULL) || (icsStruct->DataLength == 0),
+    ICSTR((icsStruct->data == NULL) || (icsStruct->dataLength == 0),
           IcsErr_MissingData);
 
     fp = IcsFOpen(filename, mode);
     ICSTR(fp == NULL, IcsErr_FOpenIds);
 
-    for (i=0; i<icsStruct->Dimensions; i++) {
-        dim[i] = icsStruct->Dim[i].Size;
+    for (i=0; i<icsStruct->dimensions; i++) {
+        dim[i] = icsStruct->dim[i].size;
     }
-    switch (icsStruct->Compression) {
+    switch (icsStruct->compression) {
         case IcsCompr_uncompressed:
-            if (icsStruct->DataStrides) {
-                size_t size = IcsGetDataTypeSize(icsStruct->Imel.DataType);
-                error = IcsWritePlainWithStrides(icsStruct->Data, dim,
-                                                 icsStruct->DataStrides,
-                                                 icsStruct->Dimensions,
+            if (icsStruct->dataStrides) {
+                size_t size = IcsGetDataTypeSize(icsStruct->imel.dataType);
+                error = IcsWritePlainWithStrides(icsStruct->data, dim,
+                                                 icsStruct->dataStrides,
+                                                 icsStruct->dimensions,
                                                  size, fp);
             } else {
                     /* We do the writing in blocks if the data is very large,
                        this avoids a bug in some c library implementations on
                        windows. */
-                size_t n = icsStruct->DataLength;
+                size_t n = icsStruct->dataLength;
                 const size_t nwrite = 1024 * 1024 * 1024;
-                char *p = (char*)icsStruct->Data;
+                char *p = (char*)icsStruct->data;
                 while (error == IcsErr_Ok && n > 0) {
                     if (n >= nwrite) {
                         if (fwrite(p, 1, nwrite, fp) != nwrite) {
@@ -175,15 +175,15 @@ Ics_Error IcsWriteIds(const Ics_Header *icsStruct)
             break;
 #ifdef ICS_ZLIB
         case IcsCompr_gzip:
-            if (icsStruct->DataStrides) {
-                size_t size = IcsGetDataTypeSize(icsStruct->Imel.DataType);
-                error = IcsWriteZipWithStrides(icsStruct->Data, dim,
-                                               icsStruct->DataStrides,
-                                               icsStruct->Dimensions,
-                                               size, fp, icsStruct->CompLevel);
+            if (icsStruct->dataStrides) {
+                size_t size = IcsGetDataTypeSize(icsStruct->imel.dataType);
+                error = IcsWriteZipWithStrides(icsStruct->data, dim,
+                                               icsStruct->dataStrides,
+                                               icsStruct->dimensions,
+                                               size, fp, icsStruct->compLevel);
             } else {
-                error = IcsWriteZip(icsStruct->Data, icsStruct->DataLength, fp,
-                                    icsStruct->CompLevel);
+                error = IcsWriteZip(icsStruct->data, icsStruct->dataLength, fp,
+                                    icsStruct->compLevel);
             }
             break;
 #endif
@@ -357,11 +357,11 @@ Ics_Error IcsOpenIds(Ics_Header *icsStruct)
     size_t         offset = 0;
 
 
-    if (icsStruct->BlockRead != NULL) {
-        ICSXR( IcsCloseIds (icsStruct) );
+    if (icsStruct->blockRead != NULL) {
+        ICSXR(IcsCloseIds(icsStruct));
     }
-    if (icsStruct->Version == 1) {          /* Version 1.0 */
-        IcsGetIdsName(filename, icsStruct->Filename);
+    if (icsStruct->version == 1) {          /* Version 1.0 */
+        IcsGetIdsName(filename, icsStruct->filename);
 #ifdef ICS_DO_GZEXT
             /* If the .ids file does not exist then maybe the .ids.gz or .ids.Z
              * file exists. */
@@ -369,11 +369,11 @@ Ics_Error IcsOpenIds(Ics_Header *icsStruct)
             if (strlen(filename) < ICS_MAXPATHLEN - 4) {
                 strcat(filename, ".gz");
                 if (IcsExistFile(filename)) {
-                    icsStruct->Compression = IcsCompr_gzip;
+                    icsStruct->compression = IcsCompr_gzip;
                 } else {
                     strcpy(filename + strlen(filename) - 3, ".Z");
                     if (IcsExistFile(filename)) {
-                        icsStruct->Compression = IcsCompr_compress;
+                        icsStruct->compression = IcsCompr_compress;
                     } else {
                         return IcsErr_FOpenIds;
                     }
@@ -382,35 +382,35 @@ Ics_Error IcsOpenIds(Ics_Header *icsStruct)
         }
 #endif
     } else {                                  /* Version 2.0 */
-        ICSTR(icsStruct->SrcFile[0] == '\0', IcsErr_MissingData);
-        IcsStrCpy(filename, icsStruct->SrcFile, ICS_MAXPATHLEN);
-        offset = icsStruct->SrcOffset;
+        ICSTR(icsStruct->srcFile[0] == '\0', IcsErr_MissingData);
+        IcsStrCpy(filename, icsStruct->srcFile, ICS_MAXPATHLEN);
+        offset = icsStruct->srcOffset;
     }
 
     br = (Ics_BlockRead*)malloc(sizeof (Ics_BlockRead));
     ICSTR(br == NULL, IcsErr_Alloc);
 
-    br->DataFilePtr = IcsFOpen(filename, "rb");
-    ICSTR(br->DataFilePtr == NULL, IcsErr_FOpenIds);
-    if (fseek(br->DataFilePtr, offset, SEEK_SET) != 0) {
-        fclose(br->DataFilePtr);
+    br->dataFilePtr = IcsFOpen(filename, "rb");
+    ICSTR(br->dataFilePtr == NULL, IcsErr_FOpenIds);
+    if (fseek(br->dataFilePtr, offset, SEEK_SET) != 0) {
+        fclose(br->dataFilePtr);
         free(br);
         return IcsErr_FReadIds;
     }
 #ifdef ICS_ZLIB
-    br->ZlibStream = NULL;
-    br->ZlibInputBuffer = NULL;
+    br->zlibStream = NULL;
+    br->zlibInputBuffer = NULL;
 #endif
-    br->CompressRead = 0;
-    icsStruct->BlockRead = br;
+    br->compressRead = 0;
+    icsStruct->blockRead = br;
 
 #ifdef ICS_ZLIB
-    if (icsStruct->Compression == IcsCompr_gzip) {
+    if (icsStruct->compression == IcsCompr_gzip) {
         error = IcsOpenZip(icsStruct);
         if (error) {
-            fclose (br->DataFilePtr);
-            free(icsStruct->BlockRead);
-            icsStruct->BlockRead = NULL;
+            fclose (br->dataFilePtr);
+            free(icsStruct->blockRead);
+            icsStruct->blockRead = NULL;
             return error;
         }
     }
@@ -424,19 +424,19 @@ Ics_Error IcsOpenIds(Ics_Header *icsStruct)
 Ics_Error IcsCloseIds(Ics_Header *icsStruct)
 {
     ICSINIT;
-    Ics_BlockRead* br = (Ics_BlockRead*)icsStruct->BlockRead;
+    Ics_BlockRead* br = (Ics_BlockRead*)icsStruct->blockRead;
 
 
-    if (br->DataFilePtr && fclose(br->DataFilePtr) == EOF) {
+    if (br->dataFilePtr && fclose(br->dataFilePtr) == EOF) {
         error = IcsErr_FCloseIds;
     }
 #ifdef ICS_ZLIB
-    if (br->ZlibStream != NULL) {
+    if (br->zlibStream != NULL) {
         ICSXA(IcsCloseZip(icsStruct));
     }
 #endif
     free(br);
-    icsStruct->BlockRead = NULL;
+    icsStruct->blockRead = NULL;
 
     return error;
 }
@@ -448,13 +448,13 @@ Ics_Error IcsReadIdsBlock(Ics_Header *icsStruct,
                           size_t      n)
 {
     ICSINIT;
-    Ics_BlockRead* br = (Ics_BlockRead*)icsStruct->BlockRead;
+    Ics_BlockRead* br = (Ics_BlockRead*)icsStruct->blockRead;
 
 
-    switch (icsStruct->Compression) {
+    switch (icsStruct->compression) {
         case IcsCompr_uncompressed:
-            if ((fread(dest, 1, n, br->DataFilePtr)) != n) {
-                if (ferror(br->DataFilePtr)) {
+            if ((fread(dest, 1, n, br->dataFilePtr)) != n) {
+                if (ferror(br->dataFilePtr)) {
                     error = IcsErr_FReadIds;
                 } else {
                     error = IcsErr_EndOfStream;
@@ -467,18 +467,18 @@ Ics_Error IcsReadIdsBlock(Ics_Header *icsStruct,
             break;
 #endif
         case IcsCompr_compress:
-            if (br->CompressRead) {
+            if (br->compressRead) {
                 error = IcsErr_BlockNotAllowed;
             } else {
                 error = IcsReadCompress(icsStruct, dest, n);
-                br->CompressRead = 1;
+                br->compressRead = 1;
             }
             break;
         default:
             error = IcsErr_UnknownCompression;
     }
 
-    ICSCX(IcsReorderIds((char*)dest, n, icsStruct->ByteOrder,
+    ICSCX(IcsReorderIds((char*)dest, n, icsStruct->byteOrder,
                         IcsGetBytesPerSample(icsStruct)));
 
     return error;
@@ -499,16 +499,16 @@ Ics_Error IcsSetIdsBlock(Ics_Header *icsStruct,
                          int         whence)
 {
     ICSINIT;
-    Ics_BlockRead* br = (Ics_BlockRead*)icsStruct->BlockRead;
+    Ics_BlockRead* br = (Ics_BlockRead*)icsStruct->blockRead;
 
 
-    switch (icsStruct->Compression) {
+    switch (icsStruct->compression) {
         case IcsCompr_uncompressed:
             switch (whence) {
                 case SEEK_SET:
                 case SEEK_CUR:
-                    if (fseek(br->DataFilePtr, (long)offset, whence) != 0) {
-                        if (ferror(br->DataFilePtr)) {
+                    if (fseek(br->dataFilePtr, (long)offset, whence) != 0) {
+                        if (ferror(br->dataFilePtr)) {
                             error = IcsErr_FReadIds;
                         } else {
                             error = IcsErr_EndOfStream;

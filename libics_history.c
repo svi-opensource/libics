@@ -124,28 +124,28 @@ Ics_Error IcsInternAddHistory(Ics_Header *ics,
     ICSTR(strchr(value, '\r') != NULL, IcsErr_IllParameter);
 
         /* Allocate array if necessary */
-    if (ics->History == NULL) {
-        ics->History = malloc(sizeof(Ics_History));
-        ICSTR(ics->History == NULL, IcsErr_Alloc);
-        hist = (Ics_History*)ics->History;
-        hist->Strings = (char**)malloc(ICS_HISTARRAY_INCREMENT * sizeof(char*));
-        if (hist->Strings == NULL) {
-            free(ics->History);
-            ics->History = NULL;
+    if (ics->history == NULL) {
+        ics->history = malloc(sizeof(Ics_History));
+        ICSTR(ics->history == NULL, IcsErr_Alloc);
+        hist = (Ics_History*)ics->history;
+        hist->strings = (char**)malloc(ICS_HISTARRAY_INCREMENT * sizeof(char*));
+        if (hist->strings == NULL) {
+            free(ics->history);
+            ics->history = NULL;
             return IcsErr_Alloc;
         }
-        hist->Length = ICS_HISTARRAY_INCREMENT;
-        hist->NStr = 0;
+        hist->length = ICS_HISTARRAY_INCREMENT;
+        hist->nStr = 0;
     } else {
-        hist = (Ics_History*)ics->History;
+        hist = (Ics_History*)ics->history;
     }
         /* Reallocate if array is not large enough */
-    if ((size_t)hist->NStr >= hist->Length) {
-        size_t n = hist->Length + ICS_HISTARRAY_INCREMENT;
-        char** tmp = (char**)realloc(hist->Strings, n * sizeof(char*));
+    if ((size_t)hist->nStr >= hist->length) {
+        size_t n = hist->length + ICS_HISTARRAY_INCREMENT;
+        char** tmp = (char**)realloc(hist->strings, n * sizeof(char*));
         ICSTR(tmp == NULL, IcsErr_Alloc);
-        hist->Strings = tmp;
-        hist->Length += ICS_HISTARRAY_INCREMENT;
+        hist->strings = tmp;
+        hist->length += ICS_HISTARRAY_INCREMENT;
     }
 
         /* Create line */
@@ -167,8 +167,8 @@ Ics_Error IcsInternAddHistory(Ics_Header *ics,
     }
 
         /* Put line into array */
-    hist->Strings[hist->NStr] = line;
-    hist->NStr++;
+    hist->strings[hist->nStr] = line;
+    hist->nStr++;
 
     return error;
 }
@@ -179,14 +179,14 @@ Ics_Error IcsGetNumHistoryStrings(ICS *ics,
 {
     ICSINIT;
     int          i, count = 0;
-    Ics_History *hist      = (Ics_History*)ics->History;
+    Ics_History *hist      = (Ics_History*)ics->history;
 
     ICS_FM_RMD(ics);
 
     *num = 0;
     ICSTR(hist == NULL, IcsErr_Ok);
-    for (i = 0; i < hist->NStr; i++) {
-        if (hist->Strings[i] != NULL) {
+    for (i = 0; i < hist->nStr; i++) {
+        if (hist->strings[i] != NULL) {
             count++;
         }
     }
@@ -203,14 +203,14 @@ static void IcsIteratorNext(Ics_History         *hist,
     it->previous = it->next;
     it->next++;
     if (nchar > 0) {
-        for (; it->next < hist->NStr; it->next++) {
-            if ((hist->Strings[it->next] != NULL) &&
-                (strncmp(it->key, hist->Strings[it->next], nchar) == 0)) {
+        for (; it->next < hist->nStr; it->next++) {
+            if ((hist->strings[it->next] != NULL) &&
+                (strncmp(it->key, hist->strings[it->next], nchar) == 0)) {
                 break;
             }
         }
     }
-    if (it->next >= hist->NStr) {
+    if (it->next >= hist->nStr) {
         it->next = -1;
     }
 }
@@ -221,7 +221,7 @@ Ics_Error IcsNewHistoryIterator(ICS                 *ics,
                                 char const          *key)
 {
     ICSINIT;
-    Ics_History *hist = (Ics_History*)ics->History;
+    Ics_History *hist = (Ics_History*)ics->history;
 
     ICS_FM_RMD(ics);
 
@@ -296,12 +296,12 @@ Ics_Error IcsGetHistoryStringI(ICS                 *ics,
                                char                *string)
 {
     ICSINIT;
-    Ics_History *hist = (Ics_History*)ics->History;
+    Ics_History *hist = (Ics_History*)ics->history;
 
     ICS_FM_RMD(ics);
 
     ICSTR(hist == NULL, IcsErr_EndOfHistory);
-    if ((it->next >= 0) &&(hist->Strings[it->next] == NULL)) {
+    if ((it->next >= 0) &&(hist->strings[it->next] == NULL)) {
             /* The string pointed to has been deleted.
              * Find the next string, but don't change prev! */
         int prev = it->previous;
@@ -309,7 +309,7 @@ Ics_Error IcsGetHistoryStringI(ICS                 *ics,
         it->previous = prev;
     }
     ICSTR(it->next < 0, IcsErr_EndOfHistory);
-    IcsStrCpy(string, hist->Strings[it->next], ICS_LINE_LENGTH);
+    IcsStrCpy(string, hist->strings[it->next], ICS_LINE_LENGTH);
     IcsIteratorNext(hist, it);
 
     return error;
@@ -355,23 +355,23 @@ Ics_Error IcsDeleteHistory(ICS        *ics,
                            const char *key)
 {
     ICSINIT;
-    Ics_History *hist = (Ics_History*)ics->History;
+    Ics_History *hist = (Ics_History*)ics->history;
 
 
     ICSTR(hist == NULL, IcsErr_Ok);
-    ICSTR(hist->NStr == 0, IcsErr_Ok);
+    ICSTR(hist->nStr == 0, IcsErr_Ok);
 
     ICS_FM_RMD(ics);
 
     if ((key == NULL) ||(key[0] == '\0')) {
         int i;
-        for (i = 0; i < hist->NStr; i++) {
-            if (hist->Strings[i] != NULL) {
-                free(hist->Strings[i]);
-                hist->Strings[i] = NULL;
+        for (i = 0; i < hist->nStr; i++) {
+            if (hist->strings[i] != NULL) {
+                free(hist->strings[i]);
+                hist->strings[i] = NULL;
             }
         }
-        hist->NStr = 0;
+        hist->nStr = 0;
     } else {
         Ics_HistoryIterator it;
         IcsNewHistoryIterator(ics, &it, key);
@@ -379,16 +379,16 @@ Ics_Error IcsDeleteHistory(ICS        *ics,
             IcsIteratorNext(hist, &it);
         }
         while (it.previous >= 0) {
-            free(hist->Strings[it.previous]);
-            hist->Strings[it.previous] = NULL;
+            free(hist->strings[it.previous]);
+            hist->strings[it.previous] = NULL;
             IcsIteratorNext(hist, &it);
         }
             /* If we deleted strings at the end, recover those spots. */
-        hist->NStr--;
-        while ((hist->NStr >= 0) &&(hist->Strings[hist->NStr] == NULL)) {
-            hist->NStr--;
+        hist->nStr--;
+        while ((hist->nStr >= 0) &&(hist->strings[hist->nStr] == NULL)) {
+            hist->nStr--;
         }
-        hist->NStr++;
+        hist->nStr++;
     }
 
     return error;
@@ -400,20 +400,20 @@ Ics_Error IcsDeleteHistoryStringI(ICS                 *ics,
                                   Ics_HistoryIterator *it)
 {
     ICSINIT;
-    Ics_History *hist = (Ics_History*)ics->History;
+    Ics_History *hist = (Ics_History*)ics->history;
 
 
     ICS_FM_RMD(ics);
 
     ICSTR(hist == NULL, IcsErr_Ok);      /* give error message? */
     ICSTR(it->previous < 0, IcsErr_Ok);
-    ICSTR(hist->Strings[it->previous] == NULL,  IcsErr_Ok);
+    ICSTR(hist->strings[it->previous] == NULL,  IcsErr_Ok);
 
-    free(hist->Strings[it->previous]);
-    hist->Strings[it->previous] = NULL;
-    if (it->previous == hist->NStr-1) {
+    free(hist->strings[it->previous]);
+    hist->strings[it->previous] = NULL;
+    if (it->previous == hist->nStr-1) {
             /* We just deleted the last string. Let's recover that spot. */
-        hist->NStr--;
+        hist->nStr--;
     }
     it->previous = -1;
 
@@ -430,14 +430,14 @@ Ics_Error IcsReplaceHistoryStringI(ICS                 *ics,
     ICSINIT;
     size_t       len;
     char        *line;
-    Ics_History *hist = (Ics_History*)ics->History;
+    Ics_History *hist = (Ics_History*)ics->history;
 
 
     ICS_FM_RMD(ics);
 
     ICSTR(hist == NULL, IcsErr_Ok);      /* give error message? */
     ICSTR(it->previous < 0, IcsErr_Ok);
-    ICSTR(hist->Strings[it->previous] == NULL,  IcsErr_Ok);
+    ICSTR(hist->strings[it->previous] == NULL,  IcsErr_Ok);
 
         /* Checks */
     len = strlen(key) + strlen(value) + 2;
@@ -453,9 +453,9 @@ Ics_Error IcsReplaceHistoryStringI(ICS                 *ics,
     ICSTR(strchr(value, '\r') != NULL, IcsErr_IllParameter);
 
         /* Create line */
-    line = (char*)realloc(hist->Strings[it->previous], len * sizeof(char));
+    line = (char*)realloc(hist->strings[it->previous], len * sizeof(char));
     ICSTR(line == NULL, IcsErr_Alloc);
-    hist->Strings[it->previous] = line;
+    hist->strings[it->previous] = line;
     if (key[0] != '\0') {
         strcpy(line, key); /* already tested length */
         IcsAppendChar(line, ICS_FIELD_SEP);
@@ -469,17 +469,17 @@ Ics_Error IcsReplaceHistoryStringI(ICS                 *ics,
 void IcsFreeHistory(Ics_Header *ics)
 {
     int          i;
-    Ics_History *hist = (Ics_History*)ics->History;
+    Ics_History *hist = (Ics_History*)ics->history;
 
 
     if (hist != NULL) {
-        for (i = 0; i < hist->NStr; i++) {
-            if (hist->Strings[i] != NULL) {
-                free(hist->Strings[i]);
+        for (i = 0; i < hist->nStr; i++) {
+            if (hist->strings[i] != NULL) {
+                free(hist->strings[i]);
             }
         }
-        free(hist->Strings);
-        free(ics->History);
-        ics->History = NULL;
+        free(hist->strings);
+        free(ics->history);
+        ics->history = NULL;
     }
 }

@@ -61,8 +61,8 @@ Ics_Error IcsLoadPreview(const char  *filename,
 
 
     ICSXR(IcsOpen (&ics, filename, "r"));
-    xs = ics->Dim[0].Size;
-    ys = ics->Dim[1].Size;
+    xs = ics->dim[0].size;
+    ys = ics->dim[1].size;
     bufSize = xs*ys;
     buf = malloc(bufSize);
     ICSTR(buf == NULL, IcsErr_Alloc);
@@ -98,22 +98,22 @@ Ics_Error IcsGetPreviewData(ICS    *ics,
 
     ICSTR((n == 0) || (dest == NULL), IcsErr_Ok);
     nPlanes = 1;
-    for (j = 2; j< ics->Dimensions; j++) {
-        nPlanes *= ics->Dim[j].Size;
+    for (j = 2; j< ics->dimensions; j++) {
+        nPlanes *= ics->dim[j].size;
     }
     ICSTR(planeNumber > nPlanes, IcsErr_IllegalROI);
-    if (ics->BlockRead != NULL) {
-        ICSXR(IcsCloseIds (ics));
+    if (ics->blockRead != NULL) {
+        ICSXR(IcsCloseIds(ics));
     }
-    ICSXR(IcsOpenIds (ics));
-    roiSize = ics->Dim[0].Size * ics->Dim[1].Size;
+    ICSXR(IcsOpenIds(ics));
+    roiSize = ics->dim[0].size * ics->dim[1].size;
     if (n != roiSize) {
         sizeConflict = 1;
         ICSTR(n < roiSize, IcsErr_BufferTooSmall);
     }
-    bps = IcsGetBytesPerSample (ics);
+    bps = IcsGetBytesPerSample(ics);
     if (bps > 1) {
-        buf = malloc (roiSize*bps);
+        buf = malloc (roiSize * bps);
         ICSTR(buf == NULL, IcsErr_Alloc);
     }
     else {
@@ -132,7 +132,7 @@ Ics_Error IcsGetPreviewData(ICS    *ics,
         }
         return error;
     }
-    switch (ics->Imel.DataType) {
+    switch (ics->imel.dataType) {
         case Ics_uint8:
         {
             ics_t_uint8 *in  = buf;
