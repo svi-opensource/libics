@@ -315,7 +315,7 @@ Ics_Error IcsOpenIcs(FILE **fpp,
 
     IcsGetIcsName(FileName, filename, forceName);
     fp = IcsFOpen(FileName, "rb");
-    ICSTR(fp == NULL, IcsErr_FOpenIcs);
+    if (fp == NULL) return IcsErr_FOpenIcs;
 
     *fpp = fp;
     strcpy(filename, FileName);

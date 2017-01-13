@@ -1,11 +1,12 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013, 2016 Cris Luengo and others
- * Copyright 2015, 2016:
+ * Copyright 2015-2017:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
+ *
+ * Copyright (C) 2000-2013, 2016 Cris Luengo and others
  *
  * Large chunks of this library written by
  *    Bert Gijsbers
@@ -177,4 +178,3 @@ void IcsPrintError (Ics_Error error)
     msg = IcsGetErrorText (error);
     printf ("libics error: %s.\n", msg);
 }
-

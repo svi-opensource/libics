@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015, 2017:
+ * Copyright 2015-2017:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
@@ -81,11 +81,12 @@ Ics_Error IcsAddHistoryString(ICS        *ics,
                               const char *key,
                               const char *value)
 {
-    ICSDECL;
+    ICSINIT;
     static char const seps[3] = {ICS_FIELD_SEP,ICS_EOL,'\0'};
 
 
-    ICS_FM_WMD(ics);
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
 
     if (key == NULL) {
         key = "";
@@ -110,23 +111,24 @@ Ics_Error IcsInternAddHistory(Ics_Header *ics,
         /* Checks */
     len = strlen(key) + strlen(value) + 2;
         /* Length of { key + '\t' + value + '\0' } */
-    ICSTR(strlen(ICS_HISTORY) + len + 2 > ICS_LINE_LENGTH, IcsErr_LineOverflow);
+    if (strlen(ICS_HISTORY) + len + 2 > ICS_LINE_LENGTH)
+        return IcsErr_LineOverflow;
         /* Length of { "history" + '\t' + key + '\t' + value + '\n' + '\0' } */
-    ICSTR(strchr(key, ICS_FIELD_SEP) != NULL, IcsErr_IllParameter);
-    ICSTR(strchr(key, seps[0]) != NULL, IcsErr_IllParameter);
-    ICSTR(strchr(key, seps[1]) != NULL, IcsErr_IllParameter);
-    ICSTR(strchr(key, ICS_EOL) != NULL, IcsErr_IllParameter);
-    ICSTR(strchr(key, '\n') != NULL, IcsErr_IllParameter);
-    ICSTR(strchr(key, '\r') != NULL, IcsErr_IllParameter);
-    ICSTR(strchr(value, seps[1]) != NULL, IcsErr_IllParameter);
-    ICSTR(strchr(value, ICS_EOL) != NULL, IcsErr_IllParameter);
-    ICSTR(strchr(value, '\n') != NULL, IcsErr_IllParameter);
-    ICSTR(strchr(value, '\r') != NULL, IcsErr_IllParameter);
+    if (strchr(key, ICS_FIELD_SEP) != NULL) return IcsErr_IllParameter;
+    if (strchr(key, seps[0]) != NULL) return IcsErr_IllParameter;
+    if (strchr(key, seps[1]) != NULL) return IcsErr_IllParameter;
+    if (strchr(key, ICS_EOL) != NULL) return IcsErr_IllParameter;
+    if (strchr(key, '\n') != NULL) return IcsErr_IllParameter;
+    if (strchr(key, '\r') != NULL) return IcsErr_IllParameter;
+    if (strchr(value, seps[1]) != NULL) return IcsErr_IllParameter;
+    if (strchr(value, ICS_EOL) != NULL) return IcsErr_IllParameter;
+    if (strchr(value, '\n') != NULL) return IcsErr_IllParameter;
+    if (strchr(value, '\r') != NULL) return IcsErr_IllParameter;
 
         /* Allocate array if necessary */
     if (ics->history == NULL) {
         ics->history = malloc(sizeof(Ics_History));
-        ICSTR(ics->history == NULL, IcsErr_Alloc);
+        if (ics->history == NULL) return IcsErr_Alloc;
         hist = (Ics_History*)ics->history;
         hist->strings = (char**)malloc(ICS_HISTARRAY_INCREMENT * sizeof(char*));
         if (hist->strings == NULL) {
@@ -143,14 +145,14 @@ Ics_Error IcsInternAddHistory(Ics_Header *ics,
     if ((size_t)hist->nStr >= hist->length) {
         size_t n = hist->length + ICS_HISTARRAY_INCREMENT;
         char** tmp = (char**)realloc(hist->strings, n * sizeof(char*));
-        ICSTR(tmp == NULL, IcsErr_Alloc);
+        if (tmp == NULL) return IcsErr_Alloc;
         hist->strings = tmp;
         hist->length += ICS_HISTARRAY_INCREMENT;
     }
 
         /* Create line */
     line = (char*)malloc(len * sizeof(char));
-    ICSTR(line == NULL, IcsErr_Alloc);
+    if (line == NULL) return IcsErr_Alloc;
     if (key[0] != '\0') {
         strcpy(line, key); /* already tested length */
         IcsAppendChar(line, ICS_FIELD_SEP);
@@ -181,10 +183,9 @@ Ics_Error IcsGetNumHistoryStrings(ICS *ics,
     int          i, count = 0;
     Ics_History *hist      = (Ics_History*)ics->history;
 
-    ICS_FM_RMD(ics);
-
+    if (ics == NULL) return IcsErr_NotValidAction;
     *num = 0;
-    ICSTR(hist == NULL, IcsErr_Ok);
+    if (hist == NULL) return IcsErr_Ok;
     for (i = 0; i < hist->nStr; i++) {
         if (hist->strings[i] != NULL) {
             count++;
@@ -223,7 +224,7 @@ Ics_Error IcsNewHistoryIterator(ICS                 *ics,
     ICSINIT;
     Ics_History *hist = (Ics_History*)ics->history;
 
-    ICS_FM_RMD(ics);
+    if (ics == NULL) return IcsErr_NotValidAction;
 
     it->next = -1;
     it->previous = -1;
@@ -238,10 +239,10 @@ Ics_Error IcsNewHistoryIterator(ICS                 *ics,
         it->key[n+1] = '\0';
     }
 
-    ICSTR(hist == NULL, IcsErr_EndOfHistory);
+    if (hist == NULL) return IcsErr_EndOfHistory;
 
     IcsIteratorNext(hist, it);
-    ICSTR(it->next < 0, IcsErr_EndOfHistory);
+    if (it->next < 0) return IcsErr_EndOfHistory;
 
     return error;
 }
@@ -258,12 +259,14 @@ Ics_Error IcsGetHistoryString(ICS              *ics,
 {
     ICSINIT;
 
-    ICS_FM_RMD(ics);
+    if (ics == NULL) return IcsErr_NotValidAction;
 
     if (which == IcsWhich_First) {
-        ICSXR(IcsNewHistoryIterator(ics, &intern_iter, NULL));
+        error = IcsNewHistoryIterator(ics, &intern_iter, NULL);
+        if (error) return error;
     }
-    ICSXR(IcsGetHistoryStringI(ics, &intern_iter, string));
+    error = IcsGetHistoryStringI(ics, &intern_iter, string);
+    if (error) return error;
 
     return error;
 }
@@ -278,12 +281,14 @@ Ics_Error IcsGetHistoryKeyValue(ICS              *ics,
 {
     ICSINIT;
 
-    ICS_FM_RMD(ics);
+    if (ics == NULL) return IcsErr_NotValidAction;
 
     if (which == IcsWhich_First) {
-        ICSXR(IcsNewHistoryIterator(ics, &intern_iter, NULL));
+        error = IcsNewHistoryIterator(ics, &intern_iter, NULL);
+        if (error) return error;
     }
-    ICSXR(IcsGetHistoryKeyValueI(ics, &intern_iter, key, value));
+    error = IcsGetHistoryKeyValueI(ics, &intern_iter, key, value);
+    if (error) return error;
 
     return error;
 }
@@ -298,9 +303,9 @@ Ics_Error IcsGetHistoryStringI(ICS                 *ics,
     ICSINIT;
     Ics_History *hist = (Ics_History*)ics->history;
 
-    ICS_FM_RMD(ics);
+    if (ics == NULL) return IcsErr_NotValidAction;
 
-    ICSTR(hist == NULL, IcsErr_EndOfHistory);
+    if (hist == NULL) return IcsErr_EndOfHistory;
     if ((it->next >= 0) &&(hist->strings[it->next] == NULL)) {
             /* The string pointed to has been deleted.
              * Find the next string, but don't change prev! */
@@ -308,7 +313,7 @@ Ics_Error IcsGetHistoryStringI(ICS                 *ics,
         IcsIteratorNext(hist, it);
         it->previous = prev;
     }
-    ICSTR(it->next < 0, IcsErr_EndOfHistory);
+    if (it->next < 0) return IcsErr_EndOfHistory;
     IcsStrCpy(string, hist->strings[it->next], ICS_LINE_LENGTH);
     IcsIteratorNext(hist, it);
 
@@ -329,7 +334,8 @@ Ics_Error IcsGetHistoryKeyValueI(ICS                 *ics,
     char   *ptr;
 
 
-    ICSXR(IcsGetHistoryStringI(ics, it, buf));
+    error = IcsGetHistoryStringI(ics, it, buf);
+    if (error) return error;
 
     ptr = strchr(buf, ICS_FIELD_SEP);
     length = ptr-buf;
@@ -358,10 +364,10 @@ Ics_Error IcsDeleteHistory(ICS        *ics,
     Ics_History *hist = (Ics_History*)ics->history;
 
 
-    ICSTR(hist == NULL, IcsErr_Ok);
-    ICSTR(hist->nStr == 0, IcsErr_Ok);
+    if (hist == NULL) return IcsErr_Ok;
+    if (hist->nStr == 0) return IcsErr_Ok;
 
-    ICS_FM_RMD(ics);
+    if (ics == NULL) return IcsErr_NotValidAction;
 
     if ((key == NULL) ||(key[0] == '\0')) {
         int i;
@@ -403,11 +409,11 @@ Ics_Error IcsDeleteHistoryStringI(ICS                 *ics,
     Ics_History *hist = (Ics_History*)ics->history;
 
 
-    ICS_FM_RMD(ics);
+    if (ics == NULL) return IcsErr_NotValidAction;
 
-    ICSTR(hist == NULL, IcsErr_Ok);      /* give error message? */
-    ICSTR(it->previous < 0, IcsErr_Ok);
-    ICSTR(hist->strings[it->previous] == NULL,  IcsErr_Ok);
+    if (hist == NULL) return IcsErr_Ok;      /* give error message? */
+    if (it->previous < 0) return IcsErr_Ok;
+    if (hist->strings[it->previous] == NULL,  IcsErr_Ok);
 
     free(hist->strings[it->previous]);
     hist->strings[it->previous] = NULL;
@@ -433,28 +439,29 @@ Ics_Error IcsReplaceHistoryStringI(ICS                 *ics,
     Ics_History *hist = (Ics_History*)ics->history;
 
 
-    ICS_FM_RMD(ics);
+    if (ics == NULL) return IcsErr_NotValidAction;
 
-    ICSTR(hist == NULL, IcsErr_Ok);      /* give error message? */
-    ICSTR(it->previous < 0, IcsErr_Ok);
-    ICSTR(hist->strings[it->previous] == NULL,  IcsErr_Ok);
+    if (hist == NULL) return IcsErr_Ok;      /* give error message? */
+    if (it->previous < 0) return IcsErr_Ok;
+    if (hist->strings[it->previous] == NULL) IcsErr_Ok;
 
         /* Checks */
     len = strlen(key) + strlen(value) + 2;
         /* Length of { key + '\t' + value + '\0' } */
-    ICSTR(strlen(ICS_HISTORY) + len + 2 > ICS_LINE_LENGTH, IcsErr_LineOverflow);
+    if (strlen(ICS_HISTORY) + len + 2 > ICS_LINE_LENGTH)
+        return IcsErr_LineOverflow;
         /* Length of { "history" + '\t' + key + '\t' + value + '\n' + '\0' } */
-    ICSTR(strchr(key, ICS_FIELD_SEP) != NULL, IcsErr_IllParameter);
-    ICSTR(strchr(key, ICS_EOL) != NULL, IcsErr_IllParameter);
-    ICSTR(strchr(key, '\n') != NULL, IcsErr_IllParameter);
-    ICSTR(strchr(key, '\r') != NULL, IcsErr_IllParameter);
-    ICSTR(strchr(value, ICS_EOL) != NULL, IcsErr_IllParameter);
-    ICSTR(strchr(value, '\n') != NULL, IcsErr_IllParameter);
-    ICSTR(strchr(value, '\r') != NULL, IcsErr_IllParameter);
+    if (strchr(key, ICS_FIELD_SEP) != NULL) return IcsErr_IllParameter;
+    if (strchr(key, ICS_EOL) != NULL) return IcsErr_IllParameter;
+    if (strchr(key, '\n') != NULL) return IcsErr_IllParameter;
+    if (strchr(key, '\r') != NULL) return IcsErr_IllParameter;
+    if (strchr(value, ICS_EOL) != NULL) return IcsErr_IllParameter;
+    if (strchr(value, '\n') != NULL) return IcsErr_IllParameter;
+    if (strchr(value, '\r') != NULL) return IcsErr_IllParameter;
 
         /* Create line */
     line = (char*)realloc(hist->strings[it->previous], len * sizeof(char));
-    ICSTR(line == NULL, IcsErr_Alloc);
+    if (line == NULL) return IcsErr_Alloc;
     hist->strings[it->previous] = line;
     if (key[0] != '\0') {
         strcpy(line, key); /* already tested length */

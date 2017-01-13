@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015, 2017:
+ * Copyright 2015-2017:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
@@ -110,7 +110,7 @@ static unsigned long int icsGetLong(FILE *file)
      gzFile out;
      char mode[4]; strcpy(mode, "wb0"); mode[2] += level;
      out = gzdopen(dup(fileno(file)), mode);
-     ICSTR( out == NULL, IcsErr_FWriteIds );
+     if (out == NULL) return IcsErr_FWriteIds);
      if (gzwrite(out, (const voidp)inbuf, n) != (int)n)
      error = IcsErr_CompressionProblem;
      gzclose(out); */
@@ -130,7 +130,7 @@ Ics_Error IcsWriteZip(const void *inBuf,
 
         /* Create an output buffer */
     outBuf = (Byte*)malloc(ICS_BUF_SIZE);
-    ICSTR( outBuf == Z_NULL, IcsErr_Alloc );
+    if (outBuf == Z_NULL) return IcsErr_Alloc;
 
         /* Initialize the stream for output */
     stream.zalloc = (alloc_func)0;
@@ -232,7 +232,7 @@ Ics_Error IcsWriteZipWithStrides(const void   *src,
 
         /* Create an output buffer */
     outBuf = (Byte*)malloc(ICS_BUF_SIZE);
-    ICSTR(outBuf == Z_NULL, IcsErr_Alloc);
+    if (outBuf == Z_NULL) return IcsErr_Alloc;
         /* Create an input buffer */
     if (!contiguousLine) {
         inBuf = (Byte*)malloc(dim[0] * nBytes);
@@ -384,18 +384,18 @@ Ics_Error IcsOpenZip(Ics_Header *icsStruct)
 
 
         /* check the GZIP header */
-    ICSTR((getc(file) != gz_magic[0]) || (getc(file) != gz_magic[1]),
-          IcsErr_CorruptedStream);
+    if ((getc(file) != gz_magic[0]) || (getc(file) != gz_magic[1]))
+        return IcsErr_CorruptedStream;
     method = getc(file);
     flags = getc(file);
-    ICSTR((method != Z_DEFLATED) || ((flags & RESERVED) != 0),
-          IcsErr_CorruptedStream);
+    if ((method != Z_DEFLATED) || ((flags & RESERVED) != 0))
+        return IcsErr_CorruptedStream;
     fseek(file, 6, SEEK_CUR);          /* Discard time, xflags and OS code: */
     if ((flags & EXTRA_FIELD) != 0) {  /* skip the extra field */
         size_t len;
         len  =  (uInt)getc(file);
         len += ((uInt)getc(file)) << 8;
-        ICSTR(feof (file), IcsErr_CorruptedStream);
+        if (feof (file)) return IcsErr_CorruptedStream;
         fseek(file, len, SEEK_CUR);
     }
     if ((flags & ORIG_NAME) != 0) {   /* skip the original file name */
@@ -409,15 +409,15 @@ Ics_Error IcsOpenZip(Ics_Header *icsStruct)
     if ((flags & HEAD_CRC) != 0) {    /* skip the header crc */
         fseek(file, 2, SEEK_CUR);
     }
-    ICSTR(feof(file) || ferror(file), IcsErr_CorruptedStream);
+    if (feof(file) || ferror(file)) return IcsErr_CorruptedStream;
 
         /* Create an input buffer */
     inBuf = malloc(ICS_BUF_SIZE);
-    ICSTR(inBuf == NULL, IcsErr_Alloc);
+    if (inBuf == NULL) return IcsErr_Alloc;
 
         /* Initialize the stream for input */
     stream = (z_stream*)malloc(sizeof (z_stream));
-    ICSTR(stream == NULL, IcsErr_Alloc);
+    if (stream == NULL) return IcsErr_Alloc;
     stream->zalloc = NULL;
     stream->zfree = NULL;
     stream->opaque = NULL;
@@ -540,12 +540,12 @@ Ics_Error IcsReadZipBlock(Ics_Header *icsStruct,
     }
 
         /* Report errors */
-    ICSTR(err == Z_STREAM_ERROR, IcsErr_CorruptedStream);
+    if (err == Z_STREAM_ERROR) return IcsErr_CorruptedStream;
     if (err == Z_STREAM_END) {
-        ICSTR(len != stream->total_out - prevout, IcsErr_EndOfStream);
+        if (len != stream->total_out - prevout) return IcsErr_EndOfStream;
         return IcsErr_Ok;
     }
-    ICSTR(err == Z_OK, IcsErr_Ok);
+    if (err == Z_OK) return IcsErr_Ok;
     return IcsErr_DecompressionProblem;
 #else
     return IcsErr_UnknownCompression;
@@ -571,15 +571,17 @@ Ics_Error IcsSetZipBlock(Ics_Header *icsStruct,
         whence = SEEK_SET;
     }
     if (whence == SEEK_SET) {
-        ICSTR(offset < 0, IcsErr_IllParameter);
-        ICSXR(IcsCloseIds(icsStruct));
-        ICSXR(IcsOpenIds(icsStruct));
-        ICSTR(offset==0, IcsErr_Ok);
+        if (offset < 0) return IcsErr_IllParameter;
+        error = IcsCloseIds(icsStruct);
+        if (error) return error;
+        error = IcsOpenIds(icsStruct);
+        if (error) return error;
+        if (offset==0) return IcsErr_Ok;
     }
 
     bufsize = offset < ICS_BUF_SIZE ? offset : ICS_BUF_SIZE;
     buf = malloc(bufsize);
-    ICSTR(buf == NULL, IcsErr_Alloc);
+    if (buf == NULL) return IcsErr_Alloc;
 
     n = offset;
     while (n > 0) {

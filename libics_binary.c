@@ -128,16 +128,16 @@ Ics_Error IcsWriteIds(const Ics_Header *icsStruct)
     if (icsStruct->version == 1) {
         IcsGetIdsName(filename, icsStruct->filename);
     } else {
-        ICSTR(icsStruct->srcFile[0] != '\0', IcsErr_Ok);
+        if (icsStruct->srcFile[0] != '\0') return IcsErr_Ok;
             /* Do nothing: the data is in another file somewhere */
         IcsStrCpy(filename, icsStruct->filename, ICS_MAXPATHLEN);
         mode[0] = 'a'; /* Open for append */
     }
-    ICSTR((icsStruct->data == NULL) || (icsStruct->dataLength == 0),
-          IcsErr_MissingData);
+    if ((icsStruct->data == NULL) || (icsStruct->dataLength == 0))
+        return IcsErr_MissingData;
 
     fp = IcsFOpen(filename, mode);
-    ICSTR(fp == NULL, IcsErr_FOpenIds);
+    if (fp == NULL) return IcsErr_FOpenIds;
 
     for (i=0; i<icsStruct->dimensions; i++) {
         dim[i] = icsStruct->dim[i].size;
@@ -192,7 +192,7 @@ Ics_Error IcsWriteIds(const Ics_Header *icsStruct)
     }
 
     if (fclose (fp) == EOF) {
-        ICSCX(IcsErr_FCloseIds); /* Don't overwrite any previous error. */
+        if (!error) error = IcsErr_FCloseIds; /* Don't overwrite any previous error. */
     }
     return error;
 }
@@ -322,7 +322,7 @@ static Ics_Error IcsReorderIds(char   *buf,
 
 
     imels = length / bytes;
-    ICSTR(length % bytes != 0, IcsErr_BitsVsSizeConfl);
+    if (length % bytes != 0) return IcsErr_BitsVsSizeConfl;
 
         /* Create destination byte order: */
     IcsFillByteOrder(bytes, dstByteOrder);
@@ -332,7 +332,7 @@ static Ics_Error IcsReorderIds(char   *buf,
         different |= (srcByteOrder[i] != dstByteOrder[i]);
         empty |= !(srcByteOrder[i]);
     }
-    ICSTR(!different || empty, IcsErr_Ok);
+    if (!different || empty) return IcsErr_Ok;
 
     for (j = 0; j < imels; j++){
         for (i = 0; i < bytes; i++){
@@ -358,7 +358,8 @@ Ics_Error IcsOpenIds(Ics_Header *icsStruct)
 
 
     if (icsStruct->blockRead != NULL) {
-        ICSXR(IcsCloseIds(icsStruct));
+        error = IcsCloseIds(icsStruct);
+        if (error) return error;
     }
     if (icsStruct->version == 1) {          /* Version 1.0 */
         IcsGetIdsName(filename, icsStruct->filename);
@@ -382,16 +383,16 @@ Ics_Error IcsOpenIds(Ics_Header *icsStruct)
         }
 #endif
     } else {                                  /* Version 2.0 */
-        ICSTR(icsStruct->srcFile[0] == '\0', IcsErr_MissingData);
+        if (icsStruct->srcFile[0] == '\0') return IcsErr_MissingData;
         IcsStrCpy(filename, icsStruct->srcFile, ICS_MAXPATHLEN);
         offset = icsStruct->srcOffset;
     }
 
     br = (Ics_BlockRead*)malloc(sizeof (Ics_BlockRead));
-    ICSTR(br == NULL, IcsErr_Alloc);
+    if (br == NULL) return IcsErr_Alloc;
 
     br->dataFilePtr = IcsFOpen(filename, "rb");
-    ICSTR(br->dataFilePtr == NULL, IcsErr_FOpenIds);
+    if (br->dataFilePtr == NULL) return IcsErr_FOpenIds;
     if (fseek(br->dataFilePtr, offset, SEEK_SET) != 0) {
         fclose(br->dataFilePtr);
         free(br);
@@ -432,7 +433,10 @@ Ics_Error IcsCloseIds(Ics_Header *icsStruct)
     }
 #ifdef ICS_ZLIB
     if (br->zlibStream != NULL) {
-        ICSXA(IcsCloseZip(icsStruct));
+        if (!error)
+            error = IcsCloseZip(icsStruct);
+        else
+            IcsCloseZip(icsStruct);
     }
 #endif
     free(br);
@@ -478,8 +482,8 @@ Ics_Error IcsReadIdsBlock(Ics_Header *icsStruct,
             error = IcsErr_UnknownCompression;
     }
 
-    ICSCX(IcsReorderIds((char*)dest, n, icsStruct->byteOrder,
-                        IcsGetBytesPerSample(icsStruct)));
+    if (!error) error = IcsReorderIds((char*)dest, n, icsStruct->byteOrder,
+                                      IcsGetBytesPerSample(icsStruct));
 
     return error;
 }
@@ -547,11 +551,15 @@ Ics_Error IcsReadIds(Ics_Header *icsStruct,
                      void       *dest,
                      size_t      n)
 {
-    ICSDECL;
+    ICSINIT;
 
-    ICSXR(IcsOpenIds(icsStruct));
+    error = IcsOpenIds(icsStruct);
+    if (error) return error;
     error = IcsReadIdsBlock(icsStruct, dest, n);
-    ICSXA( IcsCloseIds(icsStruct) );
+    if (!error)
+        error = IcsCloseIds(icsStruct);
+    else
+        IcsCloseIds(icsStruct);
 
     return error;
 }

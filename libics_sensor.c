@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015, 2017:
+ * Copyright 2015-2017:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
@@ -68,7 +68,9 @@
 Ics_Error IcsEnableWriteSensor(ICS *ics,
                                int  enable)
 {
-    ICS_FM_WMD(ics);
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
+
     ics->writeSensor = enable ? 1 : 0;
     return IcsErr_Ok;
 }
@@ -87,7 +89,9 @@ Ics_Error IcsSetSensorType(ICS        *ics,
                            int         channel,
                            const char *sensorType)
 {
-    ICS_FM_WMD(ics);
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
+
     IcsStrCpy(ics->type[channel], sensorType, sizeof(ics->type[channel]));
     return IcsErr_Ok;
 }
@@ -104,7 +108,9 @@ const char *IcsGetSensorModel(const ICS *ics)
 Ics_Error IcsSetSensorModel(ICS        *ics,
                             const char *sensorModel)
 {
-    ICS_FM_WMD(ics);
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
+
     IcsStrCpy(ics->model, sensorModel, sizeof(ics->model));
     return IcsErr_Ok;
 }
@@ -121,8 +127,11 @@ int IcsGetSensorChannels(const ICS *ics)
 Ics_Error IcsSetSensorChannels(ICS *ics,
                                int  channels)
 {
-    ICS_FM_WMD(ics);
-    ICSTR(channels < 0 || channels > ICS_MAX_LAMBDA, IcsErr_NotValidAction);
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
+
+    if (channels < 0 || channels > ICS_MAX_LAMBDA)
+        return IcsErr_NotValidAction;
     ics->sensorChannels = channels;
     return IcsErr_Ok;
 }
@@ -144,8 +153,11 @@ Ics_Error IcsSetSensorPinholeRadius(ICS    *ics,
                                     int     channel,
                                     double  radius)
 {
-    ICS_FM_WMD(ics);
-    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
+
+    if (channel < 0 || channel >= ics->sensorChannels)
+        return IcsErr_NotValidAction;
     ics->pinholeRadius[channel] = radius;
     return IcsErr_Ok;
 }
@@ -167,8 +179,11 @@ Ics_Error IcsSetSensorExcitationWavelength(ICS    *ics,
                                            int     channel,
                                            double  wl)
 {
-    ICS_FM_WMD(ics);
-    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
+
+    if (channel < 0 || channel >= ics->sensorChannels)
+        return IcsErr_NotValidAction;
     ics->lambdaEx[channel] = wl;
     return IcsErr_Ok;
 }
@@ -190,8 +205,11 @@ Ics_Error IcsSetSensorEmissionWavelength(ICS    *ics,
                                          int     channel,
                                          double  wl)
 {
-    ICS_FM_WMD(ics);
-    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
+
+    if (channel < 0 || channel >= ics->sensorChannels)
+        return IcsErr_NotValidAction;
     ics->lambdaEm[channel] = wl;
     return IcsErr_Ok;
 }
@@ -213,8 +231,11 @@ Ics_Error IcsSetSensorPhotonCount(ICS *ics,
                                   int  channel,
                                   int  cnt)
 {
-    ICS_FM_WMD(ics);
-    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
+
+    if (channel < 0 || channel >= ics->sensorChannels)
+        return IcsErr_NotValidAction;
     ics->exPhotonCnt[channel] = cnt;
     return IcsErr_Ok;
 }
@@ -231,7 +252,9 @@ double IcsGetSensorMediumRI(const ICS *ics)
 Ics_Error IcsSetSensorMediumRI(ICS    *ics,
                                double  ri)
 {
-    ICS_FM_WMD(ics);
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
+
     ics->refrInxMedium = ri;
     return IcsErr_Ok;
 }
@@ -248,7 +271,9 @@ double IcsGetSensorLensRI(const ICS *ics)
 Ics_Error IcsSetSensorLensRI(ICS    *ics,
                              double  ri)
 {
-    ICS_FM_WMD(ics);
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
+
     ics->refrInxLensMedium = ri;
     return IcsErr_Ok;
 }
@@ -265,7 +290,9 @@ double IcsGetSensorNumAperture(const ICS *ics)
 Ics_Error IcsSetSensorNumAperture(ICS    *ics,
                                   double  na)
 {
-    ICS_FM_WMD(ics);
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
+
     ics->numAperture = na;
     return IcsErr_Ok;
 }
@@ -282,7 +309,9 @@ double IcsGetSensorPinholeSpacing(const ICS *ics)
 Ics_Error IcsSetSensorPinholeSpacing(ICS    *ics,
                                      double  spacing)
 {
-    ICS_FM_WMD(ics);
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
+
     ics->pinholeSpacing = spacing;
     return IcsErr_Ok;
 }
@@ -304,8 +333,11 @@ Ics_Error IcsSetSensorSTEDDepletionMode(ICS        *ics,
                                         int         channel,
                                         const char *depletionMode)
 {
-    ICS_FM_WMD(ics);
-    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
+
+    if (channel < 0 || channel >= ics->sensorChannels)
+        return IcsErr_NotValidAction;
     IcsStrCpy(ics->stedDepletionMode[channel], depletionMode,
               sizeof(ics->stedDepletionMode[channel]));
     return IcsErr_Ok;
@@ -328,8 +360,11 @@ Ics_Error IcsSetSensorSTEDLambda(ICS    *ics,
                                  int     channel,
                                  double  lambda)
 {
-    ICS_FM_WMD(ics);
-    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
+
+    if (channel < 0 || channel >= ics->sensorChannels)
+        return IcsErr_NotValidAction;
     ics->stedLambda[channel] = lambda;
     return IcsErr_Ok;
 }
@@ -351,8 +386,11 @@ Ics_Error IcsSetSensorSTEDSatFactor(ICS    *ics,
                                     int     channel,
                                     double  factor)
 {
-    ICS_FM_WMD(ics);
-    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
+
+    if (channel < 0 || channel >= ics->sensorChannels)
+        return IcsErr_NotValidAction;
     ics->stedSatFactor[channel] = factor;
     return IcsErr_Ok;
 }
@@ -374,8 +412,11 @@ Ics_Error IcsSetSensorSTEDImmFraction(ICS    *ics,
                                       int     channel,
                                       double  fraction)
 {
-    ICS_FM_WMD(ics);
-    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
+
+    if (channel < 0 || channel >= ics->sensorChannels)
+        return IcsErr_NotValidAction;
     ics->stedImmFraction[channel] = fraction;
     return IcsErr_Ok;
 }
@@ -397,9 +438,11 @@ Ics_Error IcsSetSensorSTEDVPPM(ICS    *ics,
                                int     channel,
                                double  vppm)
 {
-    ICS_FM_WMD(ics);
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
 
-    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    if (channel < 0 || channel >= ics->sensorChannels)
+        return IcsErr_NotValidAction;
     ics->stedVPPM[channel] = vppm;
     return IcsErr_Ok;
 }
@@ -422,9 +465,11 @@ Ics_Error IcsSetSensorDetectorPPU(ICS    *ics,
                                   int     channel,
                                   double  ppu)
 {
-    ICS_FM_WMD(ics);
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
 
-    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    if (channel < 0 || channel >= ics->sensorChannels)
+        return IcsErr_NotValidAction;
     ics->detectorPPU[channel] = ppu;
     return IcsErr_Ok;
 }
@@ -445,9 +490,11 @@ Ics_Error IcsSetSensorDetectorBaseline(ICS    *ics,
                                        int     channel,
                                        double  baseline)
 {
-    ICS_FM_WMD(ics);
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
 
-    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    if (channel < 0 || channel >= ics->sensorChannels)
+        return IcsErr_NotValidAction;
     ics->detectorBaseline [channel] = baseline;
     return IcsErr_Ok;
 }
@@ -467,9 +514,11 @@ Ics_Error IcsSetSensorDetectorLineAvgCnt(ICS    *ics,
                                          int     channel,
                                          double  lineAvgCnt)
 {
-    ICS_FM_WMD(ics);
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
 
-    ICSTR(channel < 0 || channel >= ics->sensorChannels, IcsErr_NotValidAction);
+    if (channel < 0 || channel >= ics->sensorChannels)
+        return IcsErr_NotValidAction;
     ics->detectorLineAvgCnt[channel] = lineAvgCnt;
     return IcsErr_Ok;
 }

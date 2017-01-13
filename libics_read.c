@@ -163,13 +163,13 @@ static Ics_Error getIcsVersion(FILE       *fi,
     char  line[ICS_LINE_LENGTH];
 
 
-    ICSTR(icsFGetStr(line, ICS_LINE_LENGTH, fi, seps[1]) == NULL,
-          IcsErr_FReadIcs);
+    if (icsFGetStr(line, ICS_LINE_LENGTH, fi, seps[1]) == NULL)
+        return IcsErr_FReadIcs;
     word = strtok(line, seps);
-    ICSTR(word == NULL, IcsErr_NotIcsFile);
-    ICSTR(strcmp(word, ICS_VERSION) != 0, IcsErr_NotIcsFile);
+    if (word == NULL) return IcsErr_NotIcsFile;
+    if (strcmp(word, ICS_VERSION) != 0) return IcsErr_NotIcsFile;
     word = strtok(NULL, seps);
-    ICSTR(word == NULL, IcsErr_NotIcsFile);
+    if (word == NULL) return IcsErr_NotIcsFile;
     if (strcmp(word, "1.0") == 0) {
         *ver = 1;
     } else if (strcmp(word, "2.0") == 0) {
@@ -190,11 +190,11 @@ static Ics_Error getIcsFileName(FILE       *fi,
     char  line[ICS_LINE_LENGTH];
 
 
-    ICSTR(icsFGetStr(line, ICS_LINE_LENGTH, fi, seps[1]) == NULL,
-          IcsErr_FReadIcs);
+    if (icsFGetStr(line, ICS_LINE_LENGTH, fi, seps[1]) == NULL)
+        return IcsErr_FReadIcs;
     word = strtok(line, seps);
-    ICSTR(word == NULL, IcsErr_NotIcsFile);
-    ICSTR(strcmp(word, ICS_FILENAME) != 0, IcsErr_NotIcsFile);
+    if (word == NULL) return IcsErr_NotIcsFile;
+    if (strcmp(word, ICS_FILENAME) != 0) return IcsErr_NotIcsFile;
 
     return error;
 }
@@ -234,15 +234,15 @@ static Ics_Error getIcsCat(char       *str,
     IcsStrCpy(buffer, str, ICS_LINE_LENGTH);
     token = strtok(buffer, seps);
     *cat = getIcsToken(token, &G_Categories);
-    ICSTR(*cat == ICSTOK_NONE, IcsErr_MissCat);
+    if (*cat == ICSTOK_NONE) return IcsErr_MissCat;
     if ((*cat != ICSTOK_HISTORY) &&(*cat != ICSTOK_END)) {
         token = strtok(NULL, seps);
         *subCat = getIcsToken(token, &G_SubCategories);
-        ICSTR(*subCat == ICSTOK_NONE, IcsErr_MissSubCat);
+        if (*subCat == ICSTOK_NONE) return IcsErr_MissSubCat;
         if (*subCat == ICSTOK_SPARAMS) {
             token = strtok(NULL, seps);
             *subSubCat = getIcsToken(token, &G_SubSubCategories);
-            ICSTR(*subSubCat == ICSTOK_NONE , IcsErr_MissSensorSubSubCat);
+            if (*subSubCat == ICSTOK_NONE) return IcsErr_MissSensorSubSubCat;
         }
     }
 
@@ -264,7 +264,7 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                      int         forceName,
                      int         forceLocale)
 {
-    ICSDECL;
+    ICSINIT;
     ICS_INIT_LOCALE;
     FILE       *fp;
     int         end        = 0, i, j, bits;
@@ -299,16 +299,17 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
     icsStruct->fileMode = IcsFileMode_read;
 
     IcsStrCpy(icsStruct->filename, filename, ICS_MAXPATHLEN);
-    ICSXR(IcsOpenIcs(&fp, icsStruct->filename, forceName));
+    error = IcsOpenIcs(&fp, icsStruct->filename, forceName);
+    if (error) return error;
 
     if (forceLocale) {
         ICS_SET_LOCALE;
     }
 
-    ICSCX(getIcsSeparators(fp, seps));
+    if (!error) error = getIcsSeparators(fp, seps);
 
-    ICSCX(getIcsVersion(fp, seps, &(icsStruct->version)));
-    ICSCX(getIcsFileName(fp, seps));
+    if (!error) error = getIcsVersion(fp, seps, &(icsStruct->version));
+    if (!error) error = getIcsFileName(fp, seps);
 
     while (!end && !error
            && (icsFGetStr(line, ICS_LINE_LENGTH, fp, seps[1]) != NULL)) {
@@ -671,7 +672,8 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
     }
 
     if (fclose(fp) == EOF) {
-        ICSCX(IcsErr_FCloseIcs); /* Don't overwrite any previous error. */
+        if (!error) error = IcsErr_FCloseIcs; /* Don't overwrite any previous
+                                                 error. */
     }
     return error;
 }
@@ -682,7 +684,7 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
 int IcsVersion(const char *filename,
                int         forceName)
 {
-    ICSDECL;
+    ICSINIT;
     ICS_INIT_LOCALE;
     int   version;
     FILE *fp;
@@ -692,7 +694,7 @@ int IcsVersion(const char *filename,
 
     IcsStrCpy(FileName, filename, ICS_MAXPATHLEN);
     error = IcsOpenIcs(&fp, FileName, forceName);
-    ICSTR(error, 0);
+    if (error) return 0;
     version = 0;
     ICS_SET_LOCALE;
     if (!error) error = getIcsSeparators(fp, seps);

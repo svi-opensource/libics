@@ -53,21 +53,25 @@ Ics_Error IcsLoadPreview(const char  *filename,
                          size_t      *xsize,
                          size_t      *ysize)
 {
-    ICSDECL;
+    ICSINIT;
     ICS    *ics;
     size_t  bufSize;
     size_t  xs, ys;
     void *  buf;
 
 
-    ICSXR(IcsOpen (&ics, filename, "r"));
+    error = IcsOpen (&ics, filename, "r");
+    if (error) return error;
     xs = ics->dim[0].size;
     ys = ics->dim[1].size;
     bufSize = xs*ys;
     buf = malloc(bufSize);
-    ICSTR(buf == NULL, IcsErr_Alloc);
-    error = IcsGetPreviewData (ics, buf, bufSize, planeNumber);
-    ICSXA(IcsClose(ics));
+    if (buf == NULL) return IcsErr_Alloc;
+    error = IcsGetPreviewData(ics, buf, bufSize, planeNumber);
+    if (error)
+        IcsClose(ics);
+    else
+        error =IcsClose(ics);
 
     if (error == IcsErr_Ok) {
         *dest = buf;
@@ -94,36 +98,39 @@ Ics_Error IcsGetPreviewData(ICS    *ics,
     int     j, sizeConflict = 0;
 
 
-    ICS_FM_RD(ics);
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_write))
+        return IcsErr_NotValidAction;
 
-    ICSTR((n == 0) || (dest == NULL), IcsErr_Ok);
+    if ((n == 0) || (dest == NULL)) return IcsErr_Ok;
     nPlanes = 1;
     for (j = 2; j< ics->dimensions; j++) {
         nPlanes *= ics->dim[j].size;
     }
-    ICSTR(planeNumber > nPlanes, IcsErr_IllegalROI);
+    if (planeNumber > nPlanes) return IcsErr_IllegalROI;
     if (ics->blockRead != NULL) {
-        ICSXR(IcsCloseIds(ics));
+        error = IcsCloseIds(ics);
+        if (error) return error;
     }
-    ICSXR(IcsOpenIds(ics));
+    error = IcsOpenIds(ics);
+    if (error) return error;
     roiSize = ics->dim[0].size * ics->dim[1].size;
     if (n != roiSize) {
         sizeConflict = 1;
-        ICSTR(n < roiSize, IcsErr_BufferTooSmall);
+        if (n < roiSize) return IcsErr_BufferTooSmall;
     }
     bps = IcsGetBytesPerSample(ics);
     if (bps > 1) {
         buf = malloc (roiSize * bps);
-        ICSTR(buf == NULL, IcsErr_Alloc);
+        if (buf == NULL) return IcsErr_Alloc;
     }
     else {
         buf = dest;
     }
     if (planeNumber > 0) {
-        ICSCX(IcsSkipIdsBlock (ics, planeNumber * roiSize*bps));
+        if (!error) error = IcsSkipIdsBlock (ics, planeNumber * roiSize*bps);
     }
-    ICSCX(IcsReadIdsBlock (ics, buf, roiSize*bps));
-    ICSCX(IcsCloseIds (ics));
+    if (!error) error = IcsReadIdsBlock (ics, buf, roiSize*bps);
+    if (!error) error = IcsCloseIds (ics);
     if (error != IcsErr_Ok &&
         error != IcsErr_FSizeConflict &&
         error != IcsErr_OutputNotFilled) {

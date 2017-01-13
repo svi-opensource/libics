@@ -47,43 +47,6 @@
 /* Declare and initialize the error variable. */
 #define ICSINIT Ics_Error error = IcsErr_Ok
 
-/* Declare the error variable without initializing. */
-#define ICSDECL Ics_Error error
-
-/* Execute function and return if an error occurred. (eXecute and Return). */
-#define ICSXR(f) error = (f); if (error) return error
-
-/* Execute the function only if no error is defined. (Conditional eXecution). */
-#define ICSCX(f) if (!error) error = (f)
-
-/* Execute the function, without overwrite an error condition. (eXecute and
-   Append) */
-#define ICSXA(f) if (!error) error = (f); else (f)
-
-/* If t is true, returns with e. (Test and Return). */
-#define ICSTR(t,e) if (t) return (e)
-
-/* Test to see if reading data is allowed */
-#define ICS_FM_RD(p)                                         \
-    if ((p == NULL) || ((p)->fileMode == IcsFileMode_write)) \
-        return IcsErr_NotValidAction
-
-/* Test to see if writing data is allowed */
-#define ICS_FM_WD(p)                                         \
-    if ((p == NULL) || ((p)->fileMode != IcsFileMode_write)) \
-        return IcsErr_NotValidAction
-
-/* Test to see if reading metadata is allowed */
-#define ICS_FM_RMD(p) \
-    if  (p == NULL)   \
-        return IcsErr_NotValidAction
-
-/* Test to see if writing metadata is allowed */
-#define ICS_FM_WMD(p)                                       \
-    if ((p == NULL) || ((p)->fileMode == IcsFileMode_read)) \
-        return IcsErr_NotValidAction
-
-
 /* Forcing the proper locale. */
 #ifdef ICS_FORCE_C_LOCALE
 #include <locale.h>
