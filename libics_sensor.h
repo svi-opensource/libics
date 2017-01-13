@@ -215,6 +215,18 @@ ICSEXPORT Ics_Error IcsSetSensorDetectorLineAvgCnt(ICS    *ics,
                                                    double  lineAvgCnt);
 
 
+/* Get the status of a sensor parameter. */
+ICSEXPORT Ics_SensorStatus IcsGetSensorStatus(ICS                 *ics,
+                                              Ics_SensorParameter  parameter,
+                                              int                  channel);
+
+/* Set the status of a sensor parameter. */
+ICSEXPORT Ics_Error IcsSetSensorStatus(ICS                 *ics,
+                                       Ics_SensorParameter  parameter,
+                                       int                  channel,
+                                       Ics_SensorStatus     status);
+
+    
 #ifdef __cplusplus
 }
 #endif

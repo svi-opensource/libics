@@ -153,6 +153,37 @@ typedef struct {
 } Ics_ImelRepresentation;
 
 
+/* A list of sensor parameters that are also equiped with a status. */
+typedef enum {
+    ICS_SENSOR_FIRST,
+    ICS_SENSOR_PINHOLE_RADIUS,
+    ICS_SENSOR_LAMBDA_EXCITATION,
+    ICS_SENSOR_LAMBDA_EMISSION,
+    ICS_SENSOR_PHOTON_COUNT,
+    ICS_SENSOR_MEDIUM_REFRACTIVE_INDEX,
+    ICS_SENSOR_NUMERICAL_APERTURE,
+    ICS_SENSOR_LENS_REFRACTIVE_INDEX,
+    ICS_SENSOR_PINHOLE_SPACING,
+    ICS_SENSOR_STED_DEPLETION_MODE,
+    ICS_SENSOR_STED_LAMBDA,
+    ICS_SENSOR_STED_SATURATION_FACTOR,
+    ICS_SENSOR_STED_IMM_FRACTION,
+    ICS_SENSOR_STED_VPPM,
+    ICS_SENSOR_DETECTOR_PPU,
+    ICS_SENSOR_DETECTOR_BASELINE,
+    ICS_SENSOR_DETECTOR_LINE_AVG_COUNT,
+    ICS_SENSOR_LAST
+} Ics_SensorParameter;
+
+
+/* Supported sensor status values. */
+typedef enum {
+    IcsSensorStatus_default,
+    IcsSensorStatus_reported,
+    IcsSensorStatus_estimated
+} Ics_SensorStatus;
+
+
 /* Thee data structure that holds all the information in the ICS file */
 typedef struct _ICS {
         /* ICS version: 1 or 2: */
@@ -199,37 +230,53 @@ typedef struct _ICS {
     int                     sensorChannels;
         /* Backprojected microns: */
     double                  pinholeRadius[ICS_MAX_LAMBDA];
+    Ics_SensorStatus        pinholeRadiusStatus[ICS_MAX_LAMBDA];
         /* Excitation wavelength in nanometers: */
     double                  lambdaEx[ICS_MAX_LAMBDA];
+    Ics_SensorStatus        lambdaExStatus[ICS_MAX_LAMBDA];
         /* Emission wavelength in nm: */
     double                  lambdaEm[ICS_MAX_LAMBDA];
+    Ics_SensorStatus        lambdaEmStatus[ICS_MAX_LAMBDA];
         /* Number of excitation photons: */
     int                     exPhotonCnt[ICS_MAX_LAMBDA];
+    Ics_SensorStatus        exPhotonCntStatus[ICS_MAX_LAMBDA];
         /* Refractive index of embedding medium: */
     double                  refrInxMedium;
+    Ics_SensorStatus        refrInxMediumStatus;
         /* Numerical Aperture: */
     double                  numAperture;
+    Ics_SensorStatus        numApertureStatus;
         /* Refractive index of design medium: */
     double                  refrInxLensMedium;
+    Ics_SensorStatus        refrInxLensMediumStatus;
         /* Nipkow Disk pinhole spacing: */
     double                  pinholeSpacing;
+    Ics_SensorStatus        pinholeSpacingStatus;
         /* STED depletion mode: */
     char                    stedDepletionMode[ICS_MAX_LAMBDA][ICS_STRLEN_TOKEN];
+    Ics_SensorStatus        stedDepletionModeStatus[ICS_MAX_LAMBDA];
         /* STED wavelength: */
     double                  stedLambda[ICS_MAX_LAMBDA];
+    Ics_SensorStatus        stedLambdaStatus[ICS_MAX_LAMBDA];
         /* STED saturation factor: */
     double                  stedSatFactor[ICS_MAX_LAMBDA];
+    Ics_SensorStatus        stedSatFactorStatus[ICS_MAX_LAMBDA];
         /* STED immunity fraction: */
     double                  stedImmFraction[ICS_MAX_LAMBDA];
+    Ics_SensorStatus        stedImmFractionStatus[ICS_MAX_LAMBDA];
         /* STED vortex to phase plate mix: */
     double                  stedVPPM[ICS_MAX_LAMBDA];
+    Ics_SensorStatus        stedVPPMStatus[ICS_MAX_LAMBDA];
 
         /* Detector photons per unit: */
     double                  detectorPPU[ICS_MAX_LAMBDA];
+    Ics_SensorStatus        detectorPPUStatus[ICS_MAX_LAMBDA];
         /* Detector Baseline: */
     double                  detectorBaseline[ICS_MAX_LAMBDA];
+    Ics_SensorStatus        detectorBaselineStatus[ICS_MAX_LAMBDA];
         /* Averaging line count */
     double                  detectorLineAvgCnt[ICS_MAX_LAMBDA];
+    Ics_SensorStatus        detectorLineAvgCntStatus[ICS_MAX_LAMBDA];
 
         /* SCIL_Image compatibility parameter: */
     char                    scilType[ICS_STRLEN_TOKEN];

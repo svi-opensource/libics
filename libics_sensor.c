@@ -485,6 +485,7 @@ double IcsGetSensorDetectorBaseline(const ICS *ics,
         return ics->detectorBaseline[channel];
 }
 
+
 /* Set the Detector baseline per channel. */
 Ics_Error IcsSetSensorDetectorBaseline(ICS    *ics,
                                        int     channel,
@@ -499,6 +500,7 @@ Ics_Error IcsSetSensorDetectorBaseline(ICS    *ics,
     return IcsErr_Ok;
 }
 
+
 /* Get the Detector lineAvgCnt per channel. */
 double IcsGetSensorDetectorLineAvgCnt(const ICS *ics,
  int channel)
@@ -508,6 +510,7 @@ double IcsGetSensorDetectorLineAvgCnt(const ICS *ics,
     else
         return ics->detectorLineAvgCnt[channel];
 }
+
 
  /* Set the Detector lineAvgCnt per channel. */
 Ics_Error IcsSetSensorDetectorLineAvgCnt(ICS    *ics,
@@ -520,5 +523,151 @@ Ics_Error IcsSetSensorDetectorLineAvgCnt(ICS    *ics,
     if (channel < 0 || channel >= ics->sensorChannels)
         return IcsErr_NotValidAction;
     ics->detectorLineAvgCnt[channel] = lineAvgCnt;
+    return IcsErr_Ok;
+}
+
+
+/* Get the status of a sensor parameter. */
+ICSEXPORT Ics_SensorStatus IcsGetSensorStatus(ICS                 *ics,
+                                              Ics_SensorParameter  parameter,
+                                              int                  channel)
+{
+    switch (parameter) {
+        case ICS_SENSOR_PINHOLE_RADIUS:
+            return ics->pinholeRadiusStatus[channel];
+            break;
+        case ICS_SENSOR_LAMBDA_EXCITATION:
+            return ics->lambdaExStatus[channel];
+            break;
+        case ICS_SENSOR_LAMBDA_EMISSION:
+            return ics->lambdaEmStatus[channel];
+            break;
+        case ICS_SENSOR_PHOTON_COUNT:
+            return ics->exPhotonCntStatus[channel];
+            break;
+        case ICS_SENSOR_MEDIUM_REFRACTIVE_INDEX:
+            return ics->refrInxMediumStatus;
+            break;
+        case ICS_SENSOR_NUMERICAL_APERTURE:
+            return ics->numApertureStatus;
+            break;
+        case ICS_SENSOR_LENS_REFRACTIVE_INDEX:
+            return ics->refrInxLensMediumStatus;
+            break;
+        case ICS_SENSOR_PINHOLE_SPACING:
+            return ics->pinholeSpacingStatus;
+            break;
+        case ICS_SENSOR_STED_DEPLETION_MODE:
+            return ics->stedDepletionModeStatus[channel];
+            break;
+        case ICS_SENSOR_STED_LAMBDA:
+            return ics->stedLambdaStatus[channel];
+            break;
+        case ICS_SENSOR_STED_SATURATION_FACTOR:
+            return ics->stedSatFactorStatus[channel];
+            break;
+        case ICS_SENSOR_STED_IMM_FRACTION:
+            return ics->stedImmFractionStatus[channel];
+            break;
+        case ICS_SENSOR_STED_VPPM:
+            return ics->stedVPPMStatus[channel];
+            break;
+        case ICS_SENSOR_DETECTOR_PPU:
+            return ics->detectorPPUStatus[channel];
+            break;
+        case ICS_SENSOR_DETECTOR_BASELINE:
+            return ics->detectorBaselineStatus[channel];
+            break;
+        case ICS_SENSOR_DETECTOR_LINE_AVG_COUNT:
+            return ics->detectorLineAvgCntStatus[channel];
+            break;
+        default:
+            return IcsSensorStatus_default;
+    }
+}
+
+
+/* Set the status of a sensor parameter. */
+ICSEXPORT Ics_Error IcsSetSensorStatus(ICS                 *ics,
+                                       Ics_SensorParameter  parameter,
+                                       int                  channel,
+                                       Ics_SensorStatus     status)
+{
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
+
+    switch (parameter) {
+        case ICS_SENSOR_PINHOLE_RADIUS:
+        case ICS_SENSOR_LAMBDA_EXCITATION:
+        case ICS_SENSOR_LAMBDA_EMISSION:
+        case ICS_SENSOR_PHOTON_COUNT:
+        case ICS_SENSOR_STED_DEPLETION_MODE:
+        case ICS_SENSOR_STED_LAMBDA:
+        case ICS_SENSOR_STED_SATURATION_FACTOR:
+        case ICS_SENSOR_STED_IMM_FRACTION:
+        case ICS_SENSOR_STED_VPPM:
+        case ICS_SENSOR_DETECTOR_PPU:
+        case ICS_SENSOR_DETECTOR_BASELINE:
+        case ICS_SENSOR_DETECTOR_LINE_AVG_COUNT:
+            if (channel < 0 || channel >= ics->sensorChannels)
+                return IcsErr_NotValidAction;
+            break;
+        default:
+            break;
+    }
+
+    switch (parameter) {
+        case ICS_SENSOR_PINHOLE_RADIUS:
+            ics->pinholeRadiusStatus[channel] = status;
+            break;
+        case ICS_SENSOR_LAMBDA_EXCITATION:
+            ics->lambdaExStatus[channel] = status;
+            break;
+        case ICS_SENSOR_LAMBDA_EMISSION:
+            ics->lambdaEmStatus[channel] = status;
+            break;
+        case ICS_SENSOR_PHOTON_COUNT:
+            ics->exPhotonCntStatus[channel] = status;
+            break;
+        case ICS_SENSOR_MEDIUM_REFRACTIVE_INDEX:
+            ics->refrInxMediumStatus = status;
+            break;
+        case ICS_SENSOR_NUMERICAL_APERTURE:
+            ics->numApertureStatus = status;
+            break;
+        case ICS_SENSOR_LENS_REFRACTIVE_INDEX:
+            ics->refrInxLensMediumStatus = status;
+            break;
+        case ICS_SENSOR_PINHOLE_SPACING:
+            ics->pinholeSpacingStatus = status;
+            break;
+        case ICS_SENSOR_STED_DEPLETION_MODE:
+            ics->stedDepletionModeStatus[channel] = status;
+            break;
+        case ICS_SENSOR_STED_LAMBDA:
+            ics->stedLambdaStatus[channel] = status;
+            break;
+        case ICS_SENSOR_STED_SATURATION_FACTOR:
+            ics->stedSatFactorStatus[channel] = status;
+            break;
+        case ICS_SENSOR_STED_IMM_FRACTION:
+            ics->stedImmFractionStatus[channel] = status;
+            break;
+        case ICS_SENSOR_STED_VPPM:
+            ics->stedVPPMStatus[channel] = status;
+            break;
+        case ICS_SENSOR_DETECTOR_PPU:
+            ics->detectorPPUStatus[channel] = status;
+            break;
+        case ICS_SENSOR_DETECTOR_BASELINE:
+            ics->detectorBaselineStatus[channel] = status;
+            break;
+        case ICS_SENSOR_DETECTOR_LINE_AVG_COUNT:
+            ics->detectorLineAvgCntStatus[channel] = status;
+            break;
+        default:
+            return IcsErr_NotValidAction;
+    }
+
     return IcsErr_Ok;
 }
