@@ -1,11 +1,12 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013 Cris Luengo and others
  * Copyright 2015-2017:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
+ *
+ * Copyright (C) 2000-2013 Cris Luengo and others
  *
  * Large chunks of this library written by
  *    Bert Gijsbers
@@ -45,14 +46,14 @@
 
 
 /* Find the index for "bits", which should be the first parameter. */
-static int IcsGetBitsParam(char Order[ICS_MAXDIM+1][ICS_STRLEN_TOKEN],
-                           int  Parameters)
+static int icsGetBitsParam(char order[ICS_MAXDIM+1][ICS_STRLEN_TOKEN],
+                           int  parameters)
 {
     int i;
 
 
-    for (i = 0; i < Parameters; i++) {
-        if (strcmp(Order[i], ICS_ORDER_BITS) == 0) {
+    for (i = 0; i < parameters; i++) {
+        if (strcmp(order[i], ICS_ORDER_BITS) == 0) {
             return i;
         }
     }
@@ -66,7 +67,7 @@ static int IcsGetBitsParam(char Order[ICS_MAXDIM+1][ICS_STRLEN_TOKEN],
    string; a null byte is appended. Also, it implements the solution to the
    CR/LF pair problem caused by some windows applications. If 'sep' is LF, it
    might be prepended by a CR. */
-static char *IcsFGetStr(char *line,
+static char *icsFGetStr(char *line,
                         int   n,
                         FILE *fi,
                         char  sep)
@@ -114,7 +115,7 @@ static char *IcsFGetStr(char *line,
    newline then peek at the third character to see if it is a newline.  If so
    then use newline as the second separator. Return IcsErr_FReadIcs on read
    errors and IcsErr_NotIcsFile on premature end-of-file. */
-static Ics_Error GetIcsSeparators(FILE *fi,
+static Ics_Error getIcsSeparators(FILE *fi,
                                   char *seps)
 {
     int sep1;
@@ -153,7 +154,7 @@ static Ics_Error GetIcsSeparators(FILE *fi,
 }
 
 
-static Ics_Error GetIcsVersion(FILE       *fi,
+static Ics_Error getIcsVersion(FILE       *fi,
                                const char *seps,
                                int        *ver)
 {
@@ -162,7 +163,7 @@ static Ics_Error GetIcsVersion(FILE       *fi,
     char  line[ICS_LINE_LENGTH];
 
 
-    ICSTR(IcsFGetStr(line, ICS_LINE_LENGTH, fi, seps[1]) == NULL,
+    ICSTR(icsFGetStr(line, ICS_LINE_LENGTH, fi, seps[1]) == NULL,
           IcsErr_FReadIcs);
     word = strtok(line, seps);
     ICSTR(word == NULL, IcsErr_NotIcsFile);
@@ -181,7 +182,7 @@ static Ics_Error GetIcsVersion(FILE       *fi,
 }
 
 
-static Ics_Error GetIcsFileName(FILE       *fi,
+static Ics_Error getIcsFileName(FILE       *fi,
                                 const char *seps)
 {
     ICSINIT;
@@ -189,28 +190,27 @@ static Ics_Error GetIcsFileName(FILE       *fi,
     char  line[ICS_LINE_LENGTH];
 
 
-    ICSTR(IcsFGetStr(line, ICS_LINE_LENGTH, fi, seps[1]) == NULL,
+    ICSTR(icsFGetStr(line, ICS_LINE_LENGTH, fi, seps[1]) == NULL,
           IcsErr_FReadIcs);
     word = strtok(line, seps);
     ICSTR(word == NULL, IcsErr_NotIcsFile);
     ICSTR(strcmp(word, ICS_FILENAME) != 0, IcsErr_NotIcsFile);
-        /* The rest of the line is discarded */
 
     return error;
 }
 
 
-static Ics_Token GetIcsToken(char           *str,
-                              Ics_SymbolList *ListSpec)
+static Ics_Token getIcsToken(char           *str,
+                              Ics_SymbolList *listSpec)
 {
     int i;
     Ics_Token token = ICSTOK_NONE;
 
 
     if (str != NULL) {
-        for (i = 0; i < ListSpec->Entries; i++) {
-            if (strcmp(ListSpec->List[i].Name, str) == 0) {
-                token = ListSpec->List[i].Token;
+        for (i = 0; i < listSpec->Entries; i++) {
+            if (strcmp(listSpec->List[i].Name, str) == 0) {
+                token = listSpec->List[i].Token;
             }
         }
     }
@@ -219,30 +219,30 @@ static Ics_Token GetIcsToken(char           *str,
 }
 
 
-static Ics_Error GetIcsCat(char       *str,
+static Ics_Error getIcsCat(char       *str,
                            const char *seps,
-                           Ics_Token  *Cat,
-                           Ics_Token  *SubCat,
-                           Ics_Token  *SubSubCat)
+                           Ics_Token  *cat,
+                           Ics_Token  *subCat,
+                           Ics_Token  *subSubCat)
 {
     ICSINIT;
     char *token, buffer[ICS_LINE_LENGTH];
 
 
-    *SubCat = *SubSubCat = ICSTOK_NONE;
+    *subCat = *subSubCat = ICSTOK_NONE;
 
     IcsStrCpy(buffer, str, ICS_LINE_LENGTH);
     token = strtok(buffer, seps);
-    *Cat = GetIcsToken(token, &G_Categories);
-    ICSTR(*Cat == ICSTOK_NONE, IcsErr_MissCat);
-    if ((*Cat != ICSTOK_HISTORY) &&(*Cat != ICSTOK_END)) {
+    *cat = getIcsToken(token, &G_Categories);
+    ICSTR(*cat == ICSTOK_NONE, IcsErr_MissCat);
+    if ((*cat != ICSTOK_HISTORY) &&(*cat != ICSTOK_END)) {
         token = strtok(NULL, seps);
-        *SubCat = GetIcsToken(token, &G_SubCategories);
-        ICSTR(*SubCat == ICSTOK_NONE, IcsErr_MissSubCat);
-        if (*SubCat == ICSTOK_SPARAMS) {
+        *subCat = getIcsToken(token, &G_SubCategories);
+        ICSTR(*subCat == ICSTOK_NONE, IcsErr_MissSubCat);
+        if (*subCat == ICSTOK_SPARAMS) {
             token = strtok(NULL, seps);
-            *SubSubCat = GetIcsToken(token, &G_SubSubCategories);
-            ICSTR(*SubSubCat == ICSTOK_NONE , IcsErr_MissSensorSubSubCat);
+            *subSubCat = getIcsToken(token, &G_SubSubCategories);
+            ICSTR(*subSubCat == ICSTOK_NONE , IcsErr_MissSensorSubSubCat);
         }
     }
 
@@ -259,10 +259,10 @@ static Ics_Error GetIcsCat(char       *str,
 }
 
 
-Ics_Error IcsReadIcs(Ics_Header *IcsStruct,
+Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                      const char *filename,
-                     int         forcename,
-                     int         forcelocale)
+                     int         forceName,
+                     int         forceLocale)
 {
     ICSDECL;
     ICS_INIT_LOCALE;
@@ -275,53 +275,53 @@ Ics_Error IcsReadIcs(Ics_Header *IcsStruct,
            to the Ics_Header structure. This is needed because the Ics_Header
            structure is made to look more like we like to see images, compared
            to the way the data is written in the ICS file. */
-    Ics_Format  Format     = IcsForm_unknown;
-    int         Sign       = 1;
-    int         Parameters = 0;
-    char        Order[ICS_MAXDIM+1][ICS_STRLEN_TOKEN];
-    size_t      Sizes[ICS_MAXDIM+1];
-    double      Origin[ICS_MAXDIM+1];
-    double      Scale[ICS_MAXDIM+1];
-    char        Label[ICS_MAXDIM+1][ICS_STRLEN_TOKEN];
-    char        Unit[ICS_MAXDIM+1][ICS_STRLEN_TOKEN];
+    Ics_Format  format     = IcsForm_unknown;
+    int         sign       = 1;
+    int         parameters = 0;
+    char        order[ICS_MAXDIM+1][ICS_STRLEN_TOKEN];
+    size_t      sizes[ICS_MAXDIM+1];
+    double      origin[ICS_MAXDIM+1];
+    double      scale[ICS_MAXDIM+1];
+    char        label[ICS_MAXDIM+1][ICS_STRLEN_TOKEN];
+    char        unit[ICS_MAXDIM+1][ICS_STRLEN_TOKEN];
 
 
     for (i = 0; i < ICS_MAXDIM+1; i++) {
-        Sizes[i] = 1;
-        Origin[i] = 0.0;
-        Scale[i] = 1.0;
-        Order[i][0] = '\0';
-        Label[i][0] = '\0';
-        Unit[i][0] = '\0';
+        sizes[i] = 1;
+        origin[i] = 0.0;
+        scale[i] = 1.0;
+        order[i][0] = '\0';
+        label[i][0] = '\0';
+        unit[i][0] = '\0';
     }
 
-    IcsInit(IcsStruct);
-    IcsStruct->FileMode = IcsFileMode_read;
+    IcsInit(icsStruct);
+    icsStruct->FileMode = IcsFileMode_read;
 
-    IcsStrCpy(IcsStruct->Filename, filename, ICS_MAXPATHLEN);
-    ICSXR( IcsOpenIcs(&fp, IcsStruct->Filename, forcename));
+    IcsStrCpy(icsStruct->Filename, filename, ICS_MAXPATHLEN);
+    ICSXR(IcsOpenIcs(&fp, icsStruct->Filename, forceName));
 
-    if (forcelocale) {
+    if (forceLocale) {
         ICS_SET_LOCALE;
     }
 
-    ICSCX( GetIcsSeparators(fp, seps));
+    ICSCX(getIcsSeparators(fp, seps));
 
-    ICSCX( GetIcsVersion(fp, seps, &(IcsStruct->Version)));
-    ICSCX( GetIcsFileName(fp, seps));
+    ICSCX(getIcsVersion(fp, seps, &(icsStruct->Version)));
+    ICSCX(getIcsFileName(fp, seps));
 
     while (!end && !error
-           && (IcsFGetStr(line, ICS_LINE_LENGTH, fp, seps[1]) != NULL)) {
-        if (GetIcsCat(line, seps, &cat, &subCat, &subSubCat) != IcsErr_Ok)
+           && (icsFGetStr(line, ICS_LINE_LENGTH, fp, seps[1]) != NULL)) {
+        if (getIcsCat(line, seps, &cat, &subCat, &subSubCat) != IcsErr_Ok)
             continue;
         ptr = strtok(line, seps);
         i = 0;
         switch (cat) {
             case ICSTOK_END:
                 end = 1;
-                if (IcsStruct->SrcFile[0] == '\0') {
-                    IcsStruct->SrcOffset =(size_t) ftell(fp);
-                    IcsStrCpy(IcsStruct->SrcFile, IcsStruct->Filename,
+                if (icsStruct->SrcFile[0] == '\0') {
+                    icsStruct->SrcOffset =(size_t) ftell(fp);
+                    IcsStrCpy(icsStruct->SrcFile, icsStruct->Filename,
                               ICS_MAXPATHLEN);
                 }
                 break;
@@ -329,12 +329,12 @@ Ics_Error IcsReadIcs(Ics_Header *IcsStruct,
                 switch (subCat) {
                     case ICSTOK_FILE:
                         if (ptr != NULL) {
-                            IcsStrCpy(IcsStruct->SrcFile, ptr, ICS_MAXPATHLEN);
+                            IcsStrCpy(icsStruct->SrcFile, ptr, ICS_MAXPATHLEN);
                         }
                         break;
                     case ICSTOK_OFFSET:
                         if (ptr != NULL) {
-                            IcsStruct->SrcOffset = IcsStrToSize(ptr);
+                            icsStruct->SrcOffset = IcsStrToSize(ptr);
                         }
                         break;
                     default:
@@ -345,32 +345,32 @@ Ics_Error IcsReadIcs(Ics_Header *IcsStruct,
                 switch (subCat) {
                     case ICSTOK_PARAMS:
                         if (ptr != NULL) {
-                            Parameters = atoi(ptr);
-                            if (Parameters > ICS_MAXDIM+1) {
+                            parameters = atoi(ptr);
+                            if (parameters > ICS_MAXDIM+1) {
                                 error = IcsErr_TooManyDims;
                             }
                         }
                         break;
                     case ICSTOK_ORDER:
                         while (ptr!= NULL && i < ICS_MAXDIM+1) {
-                            IcsStrCpy(Order[i++], ptr, ICS_STRLEN_TOKEN);
+                            IcsStrCpy(order[i++], ptr, ICS_STRLEN_TOKEN);
                             ptr = strtok(NULL, seps);
                         }
                         break;
                     case ICSTOK_SIZES:
                         while (ptr!= NULL && i < ICS_MAXDIM+1) {
-                            Sizes[i++] = IcsStrToSize(ptr);
+                            sizes[i++] = IcsStrToSize(ptr);
                             ptr = strtok(NULL, seps);
                         }
                         break;
                     case ICSTOK_COORD:
                         if (ptr != NULL) {
-                            IcsStrCpy(IcsStruct->Coord, ptr, ICS_STRLEN_TOKEN);
+                            IcsStrCpy(icsStruct->Coord, ptr, ICS_STRLEN_TOKEN);
                         }
                         break;
                     case ICSTOK_SIGBIT:
                         if (ptr != NULL) {
-                            IcsStruct->Imel.SigBits = IcsStrToSize(ptr);
+                            icsStruct->Imel.SigBits = IcsStrToSize(ptr);
                         }
                         break;
                     default:
@@ -380,51 +380,51 @@ Ics_Error IcsReadIcs(Ics_Header *IcsStruct,
             case ICSTOK_REPRES:
                 switch (subCat) {
                     case ICSTOK_FORMAT:
-                        switch (GetIcsToken(ptr, &G_Values)) {
+                        switch (getIcsToken(ptr, &G_Values)) {
                             case ICSTOK_FORMAT_INTEGER:
-                                Format = IcsForm_integer;
+                                format = IcsForm_integer;
                                 break;
                             case ICSTOK_FORMAT_REAL:
-                                Format = IcsForm_real;
+                                format = IcsForm_real;
                                 break;
                             case ICSTOK_FORMAT_COMPLEX:
-                                Format = IcsForm_complex;
+                                format = IcsForm_complex;
                                 break;
                             default:
-                                Format = IcsForm_unknown;
+                                format = IcsForm_unknown;
                         }
                         break;
                     case ICSTOK_SIGN:
                     {
-                        Ics_Token tok = GetIcsToken(ptr, &G_Values);
+                        Ics_Token tok = getIcsToken(ptr, &G_Values);
                         if (tok == ICSTOK_SIGN_UNSIGNED) {
-                            Sign = 0;
+                            sign = 0;
                         } else {
-                            Sign = 1;
+                            sign = 1;
                         }
                         break;
                     }
                     case ICSTOK_SCILT:
                         if (ptr!= NULL) {
-                            IcsStrCpy(IcsStruct->ScilType, ptr,
+                            IcsStrCpy(icsStruct->ScilType, ptr,
                                       ICS_STRLEN_TOKEN);
                         }
                         break;
                     case ICSTOK_COMPR:
-                        switch (GetIcsToken(ptr, &G_Values)) {
+                        switch (getIcsToken(ptr, &G_Values)) {
                             case ICSTOK_COMPR_UNCOMPRESSED:
-                                IcsStruct->Compression = IcsCompr_uncompressed;
+                                icsStruct->Compression = IcsCompr_uncompressed;
                                 break;
                             case ICSTOK_COMPR_COMPRESS:
-                                if (IcsStruct->Version==1) {
-                                    IcsStruct->Compression = IcsCompr_compress;
+                                if (icsStruct->Version==1) {
+                                    icsStruct->Compression = IcsCompr_compress;
                                 } else { /* A version 2.0 file never uses
                                             COMPRESS, maybe it means GZIP? */
-                                    IcsStruct->Compression = IcsCompr_gzip;
+                                    icsStruct->Compression = IcsCompr_gzip;
                                 }
                                 break;
                             case ICSTOK_COMPR_GZIP:
-                                IcsStruct->Compression = IcsCompr_gzip;
+                                icsStruct->Compression = IcsCompr_gzip;
                                 break;
                             default:
                                 error = IcsErr_UnknownCompression;
@@ -432,7 +432,7 @@ Ics_Error IcsReadIcs(Ics_Header *IcsStruct,
                         break;
                     case ICSTOK_BYTEO:
                         while (ptr!= NULL && i < ICS_MAX_IMEL_SIZE) {
-                            IcsStruct->ByteOrder[i++] = atoi(ptr);
+                            icsStruct->ByteOrder[i++] = atoi(ptr);
                             ptr = strtok(NULL, seps);
                         }
                         break;
@@ -445,25 +445,25 @@ Ics_Error IcsReadIcs(Ics_Header *IcsStruct,
                 switch (subCat) {
                     case ICSTOK_ORIGIN:
                         while (ptr!= NULL && i < ICS_MAXDIM+1) {
-                            Origin[i++] = atof(ptr);
+                            origin[i++] = atof(ptr);
                             ptr = strtok(NULL, seps);
                         }
                         break;
                     case ICSTOK_SCALE:
                         while (ptr!= NULL && i < ICS_MAXDIM+1) {
-                            Scale[i++] = atof(ptr);
+                            scale[i++] = atof(ptr);
                             ptr = strtok(NULL, seps);
                         }
                         break;
                     case ICSTOK_UNITS:
                         while (ptr!= NULL && i < ICS_MAXDIM+1) {
-                            IcsStrCpy(Unit[i++], ptr, ICS_STRLEN_TOKEN);
+                            IcsStrCpy(unit[i++], ptr, ICS_STRLEN_TOKEN);
                             ptr = strtok(NULL, seps);
                         }
                         break;
                     case ICSTOK_LABELS:
                         while (ptr!= NULL && i < ICS_MAXDIM+1) {
-                            IcsStrCpy(Label[i++], ptr, ICS_STRLEN_TOKEN);
+                            IcsStrCpy(label[i++], ptr, ICS_STRLEN_TOKEN);
                             ptr = strtok(NULL, seps);
                         }
                         break;
@@ -491,21 +491,21 @@ Ics_Error IcsReadIcs(Ics_Header *IcsStruct,
                     if ((strlen(data) + i + j + 4) > ICS_LINE_LENGTH) {
                         data[ICS_LINE_LENGTH - i - j - 4] = '\0';
                     }
-                    error = IcsInternAddHistory(IcsStruct, ptr, data, seps);
+                    error = IcsInternAddHistory(icsStruct, ptr, data, seps);
                 }
                 break;
             case ICSTOK_SENSOR:
                 switch (subCat) {
                     case ICSTOK_TYPE:
                         while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                            IcsStrCpy(IcsStruct->Type[i++], ptr,
+                            IcsStrCpy(icsStruct->Type[i++], ptr,
                                       ICS_STRLEN_TOKEN);
                             ptr = strtok(NULL, seps);
                         }
                         break;
                     case ICSTOK_MODEL:
                         if (ptr != NULL) {
-                            IcsStrCpy(IcsStruct->Model, ptr, ICS_STRLEN_OTHER);
+                            IcsStrCpy(icsStruct->Model, ptr, ICS_STRLEN_OTHER);
                         }
                         break;
                     case ICSTOK_SPARAMS:
@@ -513,7 +513,7 @@ Ics_Error IcsReadIcs(Ics_Header *IcsStruct,
                             case ICSTOK_CHANS:
                                 if (ptr != NULL) {
                                     int v = atoi(ptr);
-                                    IcsStruct->SensorChannels = v;
+                                    icsStruct->SensorChannels = v;
                                     if (v > ICS_MAX_LAMBDA) {
                                         error = IcsErr_TooManyChans;
                                     }
@@ -521,96 +521,96 @@ Ics_Error IcsReadIcs(Ics_Header *IcsStruct,
                                 break;
                             case ICSTOK_PINHRAD:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    IcsStruct->PinholeRadius[i++] = atof(ptr);
+                                    icsStruct->PinholeRadius[i++] = atof(ptr);
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_LAMBDEX:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    IcsStruct->LambdaEx[i++] = atof(ptr);
+                                    icsStruct->LambdaEx[i++] = atof(ptr);
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_LAMBDEM:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    IcsStruct->LambdaEm[i++] = atof(ptr);
+                                    icsStruct->LambdaEm[i++] = atof(ptr);
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_PHOTCNT:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    IcsStruct->ExPhotonCnt[i++] = atoi(ptr);
+                                    icsStruct->ExPhotonCnt[i++] = atoi(ptr);
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_REFRIME:
                                 if (ptr != NULL) {
-                                    IcsStruct->RefrInxMedium = atof(ptr);
+                                    icsStruct->RefrInxMedium = atof(ptr);
                                 }
                                 break;
                             case ICSTOK_NUMAPER:
                                 if (ptr != NULL) {
-                                    IcsStruct->NumAperture = atof(ptr);
+                                    icsStruct->NumAperture = atof(ptr);
                                 }
                                 break;
                             case ICSTOK_REFRILM:
                                 if (ptr != NULL) {
-                                    IcsStruct->RefrInxLensMedium = atof(ptr);
+                                    icsStruct->RefrInxLensMedium = atof(ptr);
                                 }
                                 break;
                             case ICSTOK_PINHSPA:
                                 if (ptr != NULL) {
-                                    IcsStruct->PinholeSpacing = atof(ptr);
+                                    icsStruct->PinholeSpacing = atof(ptr);
                                 }
                                 break;
                             case ICSTOK_STEDDEPLMODE:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    IcsStrCpy(IcsStruct->StedDepletionMode[i++],
+                                    IcsStrCpy(icsStruct->StedDepletionMode[i++],
                                               ptr, ICS_STRLEN_TOKEN);
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_STEDLAMBDA:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    IcsStruct->StedLambda[i++] = atof(ptr);
+                                    icsStruct->StedLambda[i++] = atof(ptr);
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_STEDSATFACTOR:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    IcsStruct->StedSatFactor[i++] = atof(ptr);
+                                    icsStruct->StedSatFactor[i++] = atof(ptr);
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_STEDIMMFRACTION:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    IcsStruct->StedImmFraction[i++] = atof(ptr);
+                                    icsStruct->StedImmFraction[i++] = atof(ptr);
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_STEDVPPM:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    IcsStruct->StedVPPM[i++] = atof(ptr);
+                                    icsStruct->StedVPPM[i++] = atof(ptr);
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_DETPPU:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    IcsStruct->DetectorPPU[i++] = atof(ptr);
+                                    icsStruct->DetectorPPU[i++] = atof(ptr);
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_DETBASELINE:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
                                     double v = atof(ptr);
-                                    IcsStruct->DetectorBaseline[i++] = v;
+                                    icsStruct->DetectorBaseline[i++] = v;
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_DETLNAVGCNT:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
                                     double v = atof(ptr);
-                                    IcsStruct->DetectorLineAvgCnt[i++] = v;
+                                    icsStruct->DetectorLineAvgCnt[i++] = v;
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
@@ -633,40 +633,40 @@ Ics_Error IcsReadIcs(Ics_Header *IcsStruct,
            files in which a single microscope type is defined and multiple
            sensor channels, the microscope type will be duplicated to all sensor
            channels. */
-    for (j = 1; j < IcsStruct->SensorChannels; j++) {
-        if (strlen(IcsStruct->Type[j]) == 0) {
-            IcsStrCpy(IcsStruct->Type[j], IcsStruct->Type[0],
+    for (j = 1; j < icsStruct->SensorChannels; j++) {
+        if (strlen(icsStruct->Type[j]) == 0) {
+            IcsStrCpy(icsStruct->Type[j], icsStruct->Type[0],
                        ICS_STRLEN_TOKEN);
         }
     }
 
     if (!error) {
-        bits = IcsGetBitsParam(Order, Parameters);
+        bits = icsGetBitsParam(order, parameters);
         if (bits < 0) {
             error = IcsErr_MissBits;
         } else {
-            IcsGetDataTypeProps(&(IcsStruct->Imel.DataType), Format, Sign,
-                                Sizes[bits]);
-            for (j = 0, i = 0; i < Parameters; i++) {
+            IcsGetDataTypeProps(&(icsStruct->Imel.DataType), format, sign,
+                                sizes[bits]);
+            for (j = 0, i = 0; i < parameters; i++) {
                 if (i == bits) {
-                    IcsStruct->Imel.Origin = Origin[i];
-                    IcsStruct->Imel.Scale = Scale[i];
-                    strcpy(IcsStruct->Imel.Unit, Unit[i]);
+                    icsStruct->Imel.Origin = origin[i];
+                    icsStruct->Imel.Scale = scale[i];
+                    strcpy(icsStruct->Imel.Unit, unit[i]);
                 } else {
-                    IcsStruct->Dim[j].Size = Sizes[i];
-                    IcsStruct->Dim[j].Origin = Origin[i];
-                    IcsStruct->Dim[j].Scale = Scale[i];
-                    strcpy(IcsStruct->Dim[j].Order, Order[i]);
-                    strcpy(IcsStruct->Dim[j].Label, Label[i]);
-                    strcpy(IcsStruct->Dim[j].Unit, Unit[i]);
+                    icsStruct->Dim[j].Size = sizes[i];
+                    icsStruct->Dim[j].Origin = origin[i];
+                    icsStruct->Dim[j].Scale = scale[i];
+                    strcpy(icsStruct->Dim[j].Order, order[i]);
+                    strcpy(icsStruct->Dim[j].Label, label[i]);
+                    strcpy(icsStruct->Dim[j].Unit, unit[i]);
                     j++;
                 }
             }
-            IcsStruct->Dimensions = Parameters - 1;
+            icsStruct->Dimensions = parameters - 1;
         }
     }
 
-    if (forcelocale) {
+    if (forceLocale) {
         ICS_REVERT_LOCALE;
     }
 
@@ -680,7 +680,7 @@ Ics_Error IcsReadIcs(Ics_Header *IcsStruct,
 /* Read the first 3 lines of an ICS file to see which version it is. It returns
    0 if it is not an ICS file, or the version number if it is. */
 int IcsVersion(const char *filename,
-               int         forcename)
+               int         forceName)
 {
     ICSDECL;
     ICS_INIT_LOCALE;
@@ -691,13 +691,13 @@ int IcsVersion(const char *filename,
 
 
     IcsStrCpy(FileName, filename, ICS_MAXPATHLEN);
-    error = IcsOpenIcs(&fp, FileName, forcename);
+    error = IcsOpenIcs(&fp, FileName, forceName);
     ICSTR(error, 0);
     version = 0;
     ICS_SET_LOCALE;
-    if (!error) error = GetIcsSeparators(fp, seps);
-    if (!error) error = GetIcsVersion(fp, seps, &version);
-    if (!error) error = GetIcsFileName(fp, seps);
+    if (!error) error = getIcsSeparators(fp, seps);
+    if (!error) error = getIcsVersion(fp, seps, &version);
+    if (!error) error = getIcsFileName(fp, seps);
     ICS_REVERT_LOCALE;
     if (fclose(fp) == EOF) {
         return 0;

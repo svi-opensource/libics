@@ -1,13 +1,14 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013 Cris Luengo and others
  * Copyright 2015-2017:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
  *
  * Contact: libics@svi.nl
+ *
+ * Copyright (C) 2000-2013 Cris Luengo and others
  *
  * Large chunks of this library written by
  *    Bert Gijsbers
@@ -39,15 +40,8 @@
 #define LIBICS_INTERN_H
 
 #include <stdio.h>
-
-#ifndef LIBICS_H
 #include "libics.h"
-#endif
-
-#ifndef LIBICS_LL_H
 #include "libics_ll.h"
-#endif
-
 #include "libics_conf.h"
 
 /* Declare and initialize the error variable. */
@@ -105,6 +99,7 @@
 #define ICS_SET_LOCALE
 #define ICS_REVERT_LOCALE
 #endif
+
 
 /* Below the IcsTokens are defined . Each token corresponds to an ICS
    keyword. Several token are defined for intenal bookkeeping: LASTMAIN, FIRST,
@@ -261,7 +256,7 @@ void IcsGetFileName(char       *dest,
 
 Ics_Error IcsOpenIcs(FILE **fpp,
                      char  *filename,
-                     int    forcename);
+                     int    forceName);
 
 Ics_Error IcsInternAddHistory(Ics_Header *ics,
                               const char *key,
@@ -275,8 +270,8 @@ void IcsFillByteOrder(int bytes,
 Ics_Error IcsWritePlainWithStrides(const void   *src,
                                    const size_t *dim,
                                    const size_t *stride,
-                                   int           ndims,
-                                   int           nbytes,
+                                   int           nDims,
+                                   int           nBytes,
                                    FILE         *file);
 
 Ics_Error IcsCopyIds(const char *infilename,
@@ -292,8 +287,8 @@ Ics_Error IcsWriteZip(const void *src,
 Ics_Error IcsWriteZipWithStrides(const void   *src,
                                  const size_t *dim,
                                  const size_t *stride,
-                                 int           ndims,
-                                 int           nbytes,
+                                 int           nDims,
+                                 int           nBytes,
                                  FILE         *file,
                                  int           level);
 
@@ -302,7 +297,7 @@ Ics_Error IcsOpenZip(Ics_Header *IcsStruct);
 Ics_Error IcsCloseZip(Ics_Header *IcsStruct);
 
 Ics_Error IcsReadZipBlock(Ics_Header *IcsStruct,
-                          void       *outbuf,
+                          void       *outBuf,
                           size_t      len);
 
 Ics_Error IcsSetZipBlock(Ics_Header *IcsStruct,
@@ -311,7 +306,7 @@ Ics_Error IcsSetZipBlock(Ics_Header *IcsStruct,
 
 /* Reading COMPRESS-compressed data */
 Ics_Error IcsReadCompress(Ics_Header *IcsStruct,
-                          void       *outbuf,
+                          void       *outBuf,
                           size_t      len);
 
 #endif

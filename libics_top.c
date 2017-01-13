@@ -1,11 +1,12 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013 Cris Luengo and others
  * Copyright 2015-2017:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
+ *
+ * Copyright (C) 2000-2013 Cris Luengo and others
  *
  * Large chunks of this library written by
  *    Bert Gijsbers
@@ -41,14 +42,14 @@
  *   IcsGetImelSize()
  *   IcsGetImageSize()
  *   IcsGetData()
- *   IcsGetDataBlock ()
- *   IcsSkipDataBlock ()
- *   IcsGetROIData ()
+ *   IcsGetDataBlock()
+ *   IcsSkipDataBlock()
+ *   IcsGetROIData()
  *   IcsGetDataWithStrides()
  *   IcsSetData()
  *   IcsSetDataWithStrides()
- *   IcsSetSource ()
- *   IcsSetCompression ()
+ *   IcsSetSource()
+ *   IcsSetCompression()
  *   IcsGetPosition()
  *   IcsSetPosition()
  *   IcsGetOrder()
@@ -74,8 +75,7 @@
 /* Default Order and Label strings: */
 char const* ICSKEY_ORDER[] = {"x", "y", "z", "t", "probe"};
 const char * ICSKEY_LABEL[] = {"x-position", "y-position", "z-position",
-
-                              "time", "probe"};
+                               "time", "probe"};
 #define ICSKEY_ORDER_LENGTH 5 /* Number of elements in ICSKEY_ORDER and ICSKEY_LABEL arrays. */
 
 
@@ -85,12 +85,13 @@ Ics_Error IcsOpen(ICS        **ics,
                   const char  *mode)
 {
     ICSINIT;
-    int    version = 0, forcename = 0, forcelocale = 1, reading = 0, writing = 0;
+    int    version = 0, forceName = 0, forceLocale = 1, reading = 0;
+    int    writing = 0;
     size_t i;
 
 
-        /* the mode string is one of: "r", "w", "rw", with "f" and/or "l" appended for
-           reading and "1" or "2" appended for writing */
+        /* the mode string is one of: "r", "w", "rw", with "f" and/or "l"
+           appended for reading and "1" or "2" appended for writing */
     for (i = 0; i<strlen(mode); i++) {
         switch (mode[i]) {
             case 'r':
@@ -102,12 +103,12 @@ Ics_Error IcsOpen(ICS        **ics,
                 writing = 1;
                 break;
             case 'f':
-                ICSTR(forcename, IcsErr_IllParameter);
-                forcename = 1;
+                ICSTR(forceName, IcsErr_IllParameter);
+                forceName = 1;
                 break;
             case 'l':
-                ICSTR(forcelocale, IcsErr_IllParameter);
-                forcelocale = 0;
+                ICSTR(forceLocale, IcsErr_IllParameter);
+                forceLocale = 0;
                 break;
             case '1':
                 ICSTR(version!=0, IcsErr_IllParameter);
@@ -125,7 +126,7 @@ Ics_Error IcsOpen(ICS        **ics,
     ICSTR(*ics == NULL, IcsErr_Alloc);
     if (reading) {
             /* We're reading or updating */
-        error = IcsReadIcs(*ics, filename, forcename, forcelocale);
+        error = IcsReadIcs(*ics, filename, forceName, forceLocale);
         if (error) {
             free(*ics);
             *ics = NULL;
@@ -214,7 +215,7 @@ Ics_Error IcsClose(ICS *ics)
 /* Get the layout parameters from the ICS structure. */
 Ics_Error IcsGetLayout(const ICS    *ics,
                        Ics_DataType *dt,
-                       int          *ndims,
+                       int          *nDims,
                        size_t       *dims)
 {
     ICSINIT;
@@ -222,10 +223,10 @@ Ics_Error IcsGetLayout(const ICS    *ics,
 
 
     ICS_FM_RD(ics);
-    *ndims = ics->Dimensions;
+    *nDims = ics->Dimensions;
     *dt = ics->Imel.DataType;
         /* Get the image sizes. Ignore the orders */
-    for (i = 0; i < *ndims; i++) {
+    for (i = 0; i < *nDims; i++) {
         dims[i] = ics->Dim[i].Size;
     }
 
@@ -236,7 +237,7 @@ Ics_Error IcsGetLayout(const ICS    *ics,
 /* Put the layout parameters in the ICS structure. */
 Ics_Error IcsSetLayout(ICS          *ics,
                        Ics_DataType  dt,
-                       int           ndims,
+                       int           nDims,
                        const size_t *dims)
 {
     ICSINIT;
@@ -244,11 +245,11 @@ Ics_Error IcsSetLayout(ICS          *ics,
 
 
     ICS_FM_WD(ics);
-    ICSTR(ndims > ICS_MAXDIM, IcsErr_TooManyDims);
+    ICSTR(nDims > ICS_MAXDIM, IcsErr_TooManyDims);
         /* Set the pixel parameters */
     ics->Imel.DataType = dt;
         /* Set the image sizes */
-    for (i=0; i<ndims; i++) {
+    for (i=0; i<nDims; i++) {
         ics->Dim[i].Size = dims[i];
         if (i < ICSKEY_ORDER_LENGTH) {
             strcpy(ics->Dim[i].Order, ICSKEY_ORDER[i]);
@@ -259,7 +260,7 @@ Ics_Error IcsSetLayout(ICS          *ics,
             snprintf(ics->Dim[i].Label, ICS_STRLEN_TOKEN, "dim_%d", i);
         }
     }
-    ics->Dimensions = ndims;
+    ics->Dimensions = nDims;
 
     return error;
 }
@@ -360,107 +361,108 @@ Ics_Error IcsSkipDataBlock(ICS    *ics,
 
 /* Read a square region of the image from an ICS file. */
 Ics_Error IcsGetROIData(ICS          *ics,
-                        const size_t *p_offset,
-                        const size_t *p_size,
-                        const size_t *p_sampling,
-                        void         *p_dest,
+                        const size_t *offsetPtr,
+                        const size_t *sizePtr,
+                        const size_t *samplingPtr,
+                        void         *destPtr,
                         size_t        n)
 {
     ICSDECL;
-    int           i, sizeconflict = 0, p;
+    int           i, sizeConflict = 0, p;
     size_t        j;
-    size_t        imelsize, roisize, cur_loc, new_loc, bufsize;
-    size_t        curpos[ICS_MAXDIM];
+    size_t        imelSize, roiSize, curLoc, newLoc, bufSize;
+    size_t        curPos[ICS_MAXDIM];
     size_t        stride[ICS_MAXDIM];
-    size_t        b_offset[ICS_MAXDIM];
-    size_t        b_size[ICS_MAXDIM];
-    size_t        b_sampling[ICS_MAXDIM];
-    size_t const *offset, *size, *sampling;
+    size_t        bOffset[ICS_MAXDIM];
+    size_t        bSize[ICS_MAXDIM];
+    size_t        bSampling[ICS_MAXDIM];
+    const size_t *offset, *size, *sampling;
     char         *buf;
-    char         *dest            = (char*)p_dest;
+    char         *dest            = (char*)destPtr;
 
 
     ICS_FM_RD(ics);
     ICSTR((n == 0) ||(dest == NULL), IcsErr_Ok);
     p = ics->Dimensions;
-    if (p_offset != NULL) {
-        offset = p_offset;
+    if (offsetPtr != NULL) {
+        offset = offsetPtr;
     } else {
         for (i = 0; i < p; i++) {
-            b_offset[i] = 0;
+            bOffset[i] = 0;
         }
-        offset = b_offset;
+        offset = bOffset;
     }
-    if (p_size != NULL) {
-        size = p_size;
+    if (sizePtr != NULL) {
+        size = sizePtr;
     } else {
         for (i = 0; i < p; i++) {
-            b_size[i] = ics->Dim[i].Size - offset[i];
+            bSize[i] = ics->Dim[i].Size - offset[i];
         }
-        size = b_size;
+        size = bSize;
     }
-    if (p_sampling != NULL) {
-        sampling = p_sampling;
+    if (samplingPtr != NULL) {
+        sampling = samplingPtr;
     } else {
         for (i = 0; i < p; i++) {
-            b_sampling[i] = 1;
+            bSampling[i] = 1;
         }
-        sampling = b_sampling;
+        sampling = bSampling;
     }
     for (i = 0; i < p; i++) {
-        if (sampling[i] < 1 || offset[i]+size[i] > ics->Dim[i].Size)
+        if (sampling[i] < 1 || offset[i] + size[i] > ics->Dim[i].Size)
             return IcsErr_IllegalROI;
     }
-    imelsize = IcsGetBytesPerSample(ics);
-    roisize = imelsize;
+    imelSize = IcsGetBytesPerSample(ics);
+    roiSize = imelSize;
     for (i = 0; i < p; i++) {
-        roisize *=(size[i]+sampling[i]-1) / sampling[i]; /* my own ceil() */
+        roiSize *= (size[i] + sampling[i] - 1) / sampling[i];
     }
-    if (n != roisize) {
-        sizeconflict = 1;
-        ICSTR(n < roisize, IcsErr_BufferTooSmall);
+    if (n != roiSize) {
+        sizeConflict = 1;
+        ICSTR(n < roiSize, IcsErr_BufferTooSmall);
     }
-        /* The stride array tells us how many imels to skip to go the next pixel in
-           each dimension */
+        /* The stride array tells us how many imels to skip to go the next pixel
+           in each dimension */
     stride[0] = 1;
     for (i = 1; i < p; i++) {
-        stride[i] = stride[i-1]*ics->Dim[i-1].Size;
+        stride[i] = stride[i - 1] * ics->Dim[i - 1].Size;
     }
     ICSXR(IcsOpenIds(ics));
-    bufsize = imelsize*size[0];
+    bufSize = imelSize*size[0];
     if (sampling[0] > 1) {
-            /* We read a line in a buffer, and then copy the needed imels to dest */
-        buf =(char*)malloc(bufsize);
+            /* We read a line in a buffer, and then copy the needed imels to
+               dest */
+        buf =(char*)malloc(bufSize);
         ICSTR(buf == NULL, IcsErr_Alloc);
-        cur_loc = 0;
+        curLoc = 0;
         for (i = 0; i < p; i++) {
-            curpos[i] = offset[i];
+            curPos[i] = offset[i];
         }
         while (1) {
-            new_loc = 0;
+            newLoc = 0;
             for (i = 0; i < p; i++) {
-                new_loc += curpos[i]*stride[i];
+                newLoc += curPos[i] * stride[i];
             }
-            new_loc *= imelsize;
-            if (cur_loc < new_loc) {
-                error = IcsSkipIdsBlock(ics, new_loc - cur_loc);
-                cur_loc = new_loc;
+            newLoc *= imelSize;
+            if (curLoc < newLoc) {
+                error = IcsSkipIdsBlock(ics, newLoc - curLoc);
+                curLoc = newLoc;
             }
-            ICSCX(IcsReadIdsBlock(ics, buf, bufsize));
+            ICSCX(IcsReadIdsBlock(ics, buf, bufSize));
             if (error != IcsErr_Ok) {
                 break; /* stop reading on error */
             }
-            cur_loc += bufsize;
-            for (j=0; j<size[0]; j+=sampling[0]) {
-                memcpy(dest, buf+i*imelsize, imelsize);
-                dest += imelsize;
+            curLoc += bufSize;
+            for (j=0; j < size[0]; j += sampling[0]) {
+                memcpy(dest, buf + i * imelSize, imelSize);
+                dest += imelSize;
             }
             for (i = 1; i < p; i++) {
-                curpos[i] += sampling[i];
-                if (curpos[i] < offset[i]+size[i]) {
+                curPos[i] += sampling[i];
+                if (curPos[i] < offset[i] + size[i]) {
                     break;
                 }
-                curpos[i] = offset[i];
+                curPos[i] = offset[i];
             }
             if (i==p) {
                 break; /* we're done reading */
@@ -469,32 +471,32 @@ Ics_Error IcsGetROIData(ICS          *ics,
         free(buf);
     } else {
             /* No subsampling in dim[0] required: read directly into dest */
-        cur_loc = 0;
+        curLoc = 0;
         for (i = 0; i < p; i++) {
-            curpos[i] = offset[i];
+            curPos[i] = offset[i];
         }
         while (1) {
-            new_loc = 0;
+            newLoc = 0;
             for (i = 0; i < p; i++) {
-                new_loc += curpos[i]*stride[i];
+                newLoc += curPos[i] * stride[i];
             }
-            new_loc *= imelsize;
-            if (cur_loc < new_loc) {
-                error = IcsSkipIdsBlock(ics, new_loc - cur_loc);
-                cur_loc = new_loc;
+            newLoc *= imelSize;
+            if (curLoc < newLoc) {
+                error = IcsSkipIdsBlock(ics, newLoc - curLoc);
+                curLoc = newLoc;
             }
-            ICSCX(IcsReadIdsBlock(ics, dest, bufsize));
+            ICSCX(IcsReadIdsBlock(ics, dest, bufSize));
             if (error != IcsErr_Ok) {
                 break; /* stop reading on error */
             }
-            cur_loc += bufsize;
-            dest += bufsize;
+            curLoc += bufSize;
+            dest += bufSize;
             for (i = 1; i < p; i++) {
-                curpos[i] += sampling[i];
-                if (curpos[i] < offset[i]+size[i]) {
+                curPos[i] += sampling[i];
+                if (curPos[i] < offset[i] + size[i]) {
                     break;
                 }
-                curpos[i] = offset[i];
+                curPos[i] = offset[i];
             }
             if (i==p) {
                 break; /* we're done reading */
@@ -503,7 +505,7 @@ Ics_Error IcsGetROIData(ICS          *ics,
     }
     ICSXA(IcsCloseIds(ics));
 
-    if ((error == IcsErr_Ok) && sizeconflict) {
+    if ((error == IcsErr_Ok) && sizeConflict) {
         error = IcsErr_OutputNotFilled;
     }
     return error;
@@ -512,71 +514,71 @@ Ics_Error IcsGetROIData(ICS          *ics,
 
 /* Read the image data into a region of your buffer. */
 Ics_Error IcsGetDataWithStrides(ICS          *ics,
-                                void         *p_dest,
+                                void         *destPtr,
                                 size_t        n,
-                                const size_t *p_stride,
-                                int           ndims)
+                                const size_t *stridePtr,
+                                int           nDims)
 {
    ICSDECL;
    int           i, p;
    size_t        j;
-   size_t        imelsize, lastpixel, bufsize;
-   size_t        curpos[ICS_MAXDIM];
+   size_t        imelSize, lastpixel, bufSize;
+   size_t        curPos[ICS_MAXDIM];
    size_t        b_stride[ICS_MAXDIM];
    size_t const *stride;
    char         *buf;
-   char         *dest = (char*)p_dest;
+   char         *dest = (char*)destPtr;
    char         *out;
 
 
    ICS_FM_RD(ics);
    ICSTR((n == 0) ||(dest == NULL), IcsErr_Ok);
    p = ics->Dimensions;
-   ICSTR(ndims != p, IcsErr_IllParameter);
-   if (p_stride != NULL) {
-      stride = p_stride;
+   ICSTR(nDims != p, IcsErr_IllParameter);
+   if (stridePtr != NULL) {
+      stride = stridePtr;
    } else {
       b_stride[0] = 1;
       for (i = 1; i < p; i++) {
-         b_stride[i] = b_stride[i-1]*ics->Dim[i-1].Size;
+         b_stride[i] = b_stride[i - 1] * ics->Dim[i - 1].Size;
       }
       stride = b_stride;
    }
-   imelsize = IcsGetBytesPerSample(ics);
+   imelSize = IcsGetBytesPerSample(ics);
    lastpixel = 0;
    for (i = 0; i < p; i++) {
-      lastpixel +=(ics->Dim[i].Size-1) * stride[i];
+      lastpixel +=(ics->Dim[i].Size - 1) * stride[i];
    }
-   ICSTR(lastpixel*imelsize > n, IcsErr_IllParameter);
+   ICSTR(lastpixel * imelSize > n, IcsErr_IllParameter);
 
    ICSXR(IcsOpenIds(ics));
-   bufsize = imelsize*ics->Dim[0].Size;
+   bufSize = imelSize*ics->Dim[0].Size;
    if (stride[0] > 1) {
       /* We read a line in a buffer, and then copy the imels to dest */
-      buf =(char*)malloc(bufsize);
+      buf =(char*)malloc(bufSize);
       ICSTR(buf == NULL, IcsErr_Alloc);
       for (i = 0; i < p; i++) {
-         curpos[i] = 0;
+         curPos[i] = 0;
       }
       while (1) {
          out = dest;
          for (i = 1; i < p; i++) {
-            out += curpos[i]*stride[i]*imelsize;
+            out += curPos[i] * stride[i] * imelSize;
          }
-         ICSCX(IcsReadIdsBlock(ics, buf, bufsize));
+         ICSCX(IcsReadIdsBlock(ics, buf, bufSize));
          if (error != IcsErr_Ok) {
             break; /* stop reading on error */
          }
          for (j = 0; j < ics->Dim[0].Size; j++) {
-            memcpy(out, buf+j*imelsize, imelsize);
-            out += stride[0]*imelsize;
+            memcpy(out, buf + j * imelSize, imelSize);
+            out += stride[0]*imelSize;
          }
          for (i = 1; i < p; i++) {
-            curpos[i]++;
-            if (curpos[i] < ics->Dim[i].Size) {
+            curPos[i]++;
+            if (curPos[i] < ics->Dim[i].Size) {
                break;
             }
-            curpos[i] = 0;
+            curPos[i] = 0;
          }
          if (i==p) {
             break; /* we're done reading */
@@ -586,23 +588,23 @@ Ics_Error IcsGetDataWithStrides(ICS          *ics,
    } else {
       /* No subsampling in dim[0] required: read directly into dest */
       for (i = 0; i < p; i++) {
-         curpos[i] = 0;
+         curPos[i] = 0;
       }
       while (1) {
          out = dest;
          for (i = 1; i < p; i++) {
-            out += curpos[i]*stride[i]*imelsize;
+            out += curPos[i] * stride[i] * imelSize;
          }
-         ICSCX(IcsReadIdsBlock(ics, out, bufsize));
+         ICSCX(IcsReadIdsBlock(ics, out, bufSize));
          if (error != IcsErr_Ok) {
             break; /* stop reading on error */
          }
          for (i = 1; i < p; i++) {
-            curpos[i]++;
-            if (curpos[i] < ics->Dim[i].Size) {
+            curPos[i]++;
+            if (curPos[i] < ics->Dim[i].Size) {
                break;
             }
-            curpos[i] = 0;
+            curPos[i] = 0;
          }
          if (i==p) {
             break; /* we're done reading */
@@ -641,13 +643,13 @@ Ics_Error IcsSetData(ICS        *ics,
 /* Set the image data. The pointers must be valid until IcsClose() is
    called. The strides indicate how to go to the next neighbor along each
    dimension. Use this is your image data is not in one contiguous block or you
-   want to swap some dimensions in the file. ndims is the length of the strides
+   want to swap some dimensions in the file. nDims is the length of the strides
    array and should match the dimensionality previously given. */
 Ics_Error IcsSetDataWithStrides(ICS          *ics,
                                 const void   *src,
                                 size_t        n,
                                 const size_t *strides,
-                                int           ndims)
+                                int           nDims)
 {
    ICSINIT;
    size_t lastpixel;
@@ -658,12 +660,13 @@ Ics_Error IcsSetDataWithStrides(ICS          *ics,
    ICSTR(ics->SrcFile[0] != '\0', IcsErr_DuplicateData);
    ICSTR(ics->Data != NULL, IcsErr_DuplicateData);
    ICSTR(ics->Dimensions == 0, IcsErr_NoLayout);
-   ICSTR(ndims != ics->Dimensions, IcsErr_IllParameter);
+   ICSTR(nDims != ics->Dimensions, IcsErr_IllParameter);
    lastpixel = 0;
-   for (i = 0; i < ndims; i++) {
+   for (i = 0; i < nDims; i++) {
       lastpixel +=(ics->Dim[i].Size-1) * strides[i];
    }
-   ICSTR(lastpixel*IcsGetDataTypeSize(ics->Imel.DataType) > n, IcsErr_IllParameter);
+   ICSTR(lastpixel*IcsGetDataTypeSize(ics->Imel.DataType) > n,
+         IcsErr_IllParameter);
    if (n != IcsGetDataSize(ics)) {
       error = IcsErr_FSizeConflict;
    }
@@ -704,7 +707,8 @@ Ics_Error IcsSetCompression(ICS             *ics,
 
     ICS_FM_WD(ics);
     if (compression == IcsCompr_compress)
-        compression = IcsCompr_gzip; /* don't try writing 'compress' compressed data. */
+        compression = IcsCompr_gzip; /* don't try writing 'compress' compressed
+                                        data. */
     ics->Compression = compression;
     ics->CompLevel = level;
 
@@ -1045,7 +1049,8 @@ const char *IcsGetErrorText(Ics_Error error)
             msg = "Non fatal error: unexpected data size";
             break;
         case IcsErr_OutputNotFilled:
-            msg = "Non fatal error: the output buffer could not be completely filled";
+            msg = "Non fatal error: the output buffer could not be completely "
+                "filled";
             break;
         case IcsErr_Alloc:
             msg = "Memory allocation error";
@@ -1054,7 +1059,8 @@ const char *IcsGetErrorText(Ics_Error error)
             msg = "Image size conflicts with bits per element";
             break;
         case IcsErr_BlockNotAllowed:
-            msg = "It is not possible to read COMPRESS-compressed data in blocks";
+            msg = "It is not possible to read COMPRESS-compressed data in "
+                "blocks";
             break;
         case IcsErr_BufferTooSmall:
             msg = "The buffer was too small to hold the given ROI";
@@ -1090,7 +1096,8 @@ const char *IcsGetErrorText(Ics_Error error)
             msg = "File close error on .ids file";
             break;
         case IcsErr_FCopyIds:
-            msg = "Failed to copy image data from temporary file on .ics file opened for updating";
+            msg = "Failed to copy image data from temporary file on .ics file "
+                "opened for updating";
             break;
         case IcsErr_FOpenIcs:
             msg = "File open error on .ics file";
@@ -1120,7 +1127,8 @@ const char *IcsGetErrorText(Ics_Error error)
             msg = "Illegal ICS token detected";
             break;
         case IcsErr_IllParameter:
-            msg = "A function parameter has a value that is not legal or does not match with a value previously given";
+            msg = "A function parameter has a value that is not legal or does "
+                "not match with a value previously given";
             break;
         case IcsErr_LineOverflow:
             msg = "Line overflow in .ics file";
@@ -1177,7 +1185,8 @@ const char *IcsGetErrorText(Ics_Error error)
             msg = "The datatype is not recognized";
             break;
         case IcsErr_WrongZlibVersion:
-            msg = "libics is linking to a different version of zlib than used during compilation";
+            msg = "libics is linking to a different version of zlib than used "
+                "during compilation";
             break;
         default:
             msg = "Some error occurred I know nothing about.";

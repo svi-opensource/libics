@@ -1,13 +1,14 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013 Cris Luengo and others
  * Copyright 2015-2017:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
  *
  * Contact: libics@svi.nl
+ *
+ * Copyright (C) 2000-2013 Cris Luengo and others
  *
  * Large chunks of this library written by
  *    Bert Gijsbers
@@ -61,14 +62,14 @@ ICSEXPORT char const* IcsGetSensorType(const ICS *ics,
 /* Set the sensor type string. */
 ICSEXPORT Ics_Error IcsSetSensorType(ICS        *ics,
                                      int         channel,
-                                     const char *sensor_type);
+                                     const char *sensorType);
 
 /* Get the sensor model string. */
 ICSEXPORT const char *IcsGetSensorModel(const ICS *ics);
 
 /* Set the sensor model string. */
 ICSEXPORT Ics_Error IcsSetSensorModel(ICS        *ics,
-                                      const char *sensor_model);
+                                      const char *sensorModel);
 
 /* Get the number of sensor channels. */
 ICSEXPORT int IcsGetSensorChannels(const ICS *ics);
@@ -148,7 +149,7 @@ ICSEXPORT const char *IcsGetSensorSTEDDepletionMode(const ICS *ics,
 /* Set the STED depletion mode. */
 ICSEXPORT Ics_Error IcsSetSensorSTEDDepletionMode(ICS        *ics,
                                                   int         channel,
-                                                  const char *sted_mode);
+                                                  const char *stedMode);
 
 /* Get the STED inhibition wavelength. */
 ICSEXPORT double IcsGetSensorSTEDLambda(const ICS *ics,
@@ -173,9 +174,9 @@ ICSEXPORT double IcsGetSensorSTEDImmFraction(const ICS *ics,
                                              int        channel);
 
 /* Set the fraction that is not inhibited by STED. */
-ICSEXPORT Ics_Error IcsSetSensorSTEDImmFraction(ICS *ics,
-                                                int channel,
-                                                double fraction);
+ICSEXPORT Ics_Error IcsSetSensorSTEDImmFraction(ICS    *ics,
+                                                int     channel,
+                                                double  fraction);
 
 /* Get the STED  vortex to phase plate mix fraction. */
 ICSEXPORT double IcsGetSensorSTEDVPPM(const ICS *ics,

@@ -1,11 +1,12 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013 Cris Luengo and others
  * Copyright 2015-2017:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
+ *
+ * Copyright (C) 2000-2013 Cris Luengo and others
  *
  * Large chunks of this library written by
  *    Bert Gijsbers
@@ -141,13 +142,12 @@ void IcsStrCpy(char       *dest,
 
 
 /* Append a character to a string */
-void IcsAppendChar(char *Line,
-
+void IcsAppendChar(char *line,
                    char  ch)
 {
-    int len = strlen(Line);
-    Line[len] = ch;
-    Line[len+1] = '\0';
+    int len = strlen(line);
+    line[len] = ch;
+    line[len+1] = '\0';
 }
 
 
@@ -234,7 +234,7 @@ void IcsGetFileName(char       *dest,
   '.ids.Z' and '.ids.gz', but strip the compression extension. */
 char *IcsGetIcsName(char       *dest,
                     const char *src,
-                    int         forcename)
+                    int         forceName)
 {
     char *end;
 
@@ -255,13 +255,13 @@ char *IcsGetIcsName(char       *dest,
                 end[4] = '\0';
                 return dest;
             } else { /* does not happen! */
-                if (!forcename) {
+                if (!forceName) {
                     *end = '\0';
                 }
             }
         }
     }
-    if (!forcename && strlen(dest) + strlen(ICSEXT) + 1 < ICS_MAXPATHLEN) {
+    if (!forceName && strlen(dest) + strlen(ICSEXT) + 1 < ICS_MAXPATHLEN) {
         strcat(dest, ICSEXT);
     }
 
@@ -307,13 +307,13 @@ char *IcsGetIdsName(char       *dest,
 /* Open an .ics file, even if the name given end in .ids. */
 Ics_Error IcsOpenIcs(FILE **fpp,
                      char  *filename,
-                     int    forcename)
+                     int    forceName)
 {
     ICSINIT;
     FILE* fp;
     char FileName[ICS_MAXPATHLEN];
 
-    IcsGetIcsName(FileName, filename, forcename);
+    IcsGetIcsName(FileName, filename, forceName);
     fp = IcsFOpen(FileName, "rb");
     ICSTR(fp == NULL, IcsErr_FOpenIcs);
 
@@ -325,80 +325,80 @@ Ics_Error IcsOpenIcs(FILE **fpp,
 
 
 /* Initialize the Ics_Header structure. */
-void IcsInit(Ics_Header* IcsStruct)
+void IcsInit(Ics_Header *icsStruct)
 {
     int i;
 
-    IcsStruct->Version = 2; /* We write an ICS v.2.0 as default */
-    IcsStruct->FileMode = IcsFileMode_write;
-    IcsStruct->Data = NULL;
-    IcsStruct->DataLength = 0;
-    IcsStruct->DataStrides = NULL;
-    IcsStruct->Filename[0] = '\0';
-    IcsStruct->Dimensions = 0;
+    icsStruct->Version = 2; /* We write an ICS v.2.0 as default */
+    icsStruct->FileMode = IcsFileMode_write;
+    icsStruct->Data = NULL;
+    icsStruct->DataLength = 0;
+    icsStruct->DataStrides = NULL;
+    icsStruct->Filename[0] = '\0';
+    icsStruct->Dimensions = 0;
     for (i = 0; i < ICS_MAXDIM; i++) {
-        IcsStruct->Dim[i].Size = 0;
-        IcsStruct->Dim[i].Origin = 0.0;
-        IcsStruct->Dim[i].Scale = 1.0;
-        IcsStruct->Dim[i].Order[0] = '\0';
-        IcsStruct->Dim[i].Label[0] = '\0';
-        IcsStruct->Dim[i].Unit[0] = '\0';
+        icsStruct->Dim[i].Size = 0;
+        icsStruct->Dim[i].Origin = 0.0;
+        icsStruct->Dim[i].Scale = 1.0;
+        icsStruct->Dim[i].Order[0] = '\0';
+        icsStruct->Dim[i].Label[0] = '\0';
+        icsStruct->Dim[i].Unit[0] = '\0';
     }
-    IcsStruct->Imel.DataType = Ics_unknown;
-    IcsStruct->Imel.SigBits = 0;
-    IcsStruct->Imel.Origin = 0.0;
-    IcsStruct->Imel.Scale = 1.0;
-    IcsStruct->Imel.Unit[0] = '\0';
-    IcsStruct->Coord[0] = '\0';
-    IcsStruct->Compression = IcsCompr_uncompressed;
-    IcsStruct->CompLevel = 0;
-    IcsStruct->History = NULL;
-    IcsStruct->BlockRead = NULL;
-    IcsStruct->SrcFile[0] = '\0';
-    IcsStruct->SrcOffset = 0;
+    icsStruct->Imel.DataType = Ics_unknown;
+    icsStruct->Imel.SigBits = 0;
+    icsStruct->Imel.Origin = 0.0;
+    icsStruct->Imel.Scale = 1.0;
+    icsStruct->Imel.Unit[0] = '\0';
+    icsStruct->Coord[0] = '\0';
+    icsStruct->Compression = IcsCompr_uncompressed;
+    icsStruct->CompLevel = 0;
+    icsStruct->History = NULL;
+    icsStruct->BlockRead = NULL;
+    icsStruct->SrcFile[0] = '\0';
+    icsStruct->SrcOffset = 0;
     for (i = 0; i < ICS_MAX_IMEL_SIZE; i++) {
-        IcsStruct->ByteOrder[i] = 0;
+        icsStruct->ByteOrder[i] = 0;
     }
-    IcsStruct->WriteSensor = 0;
-    IcsStruct->Model[0]= '\0';
-    IcsStruct->RefrInxMedium = 0.0;
-    IcsStruct->NumAperture = 0.0;
-    IcsStruct->RefrInxLensMedium = 0.0;
-    IcsStruct->PinholeSpacing = 0.0;
-    IcsStruct->SensorChannels = 0;
+    icsStruct->WriteSensor = 0;
+    icsStruct->Model[0]= '\0';
+    icsStruct->RefrInxMedium = 0.0;
+    icsStruct->NumAperture = 0.0;
+    icsStruct->RefrInxLensMedium = 0.0;
+    icsStruct->PinholeSpacing = 0.0;
+    icsStruct->SensorChannels = 0;
     for (i = 0; i < ICS_MAX_LAMBDA; i++) {
-        IcsStruct->Type[i][0] = '\0';
-        IcsStruct->PinholeRadius[i] = 0.0;
-        IcsStruct->LambdaEx[i] = 0.0;
-        IcsStruct->LambdaEm[i] = 0.0;
-        IcsStruct->ExPhotonCnt[i] = 1;
-        IcsStruct->StedDepletionMode[i][0] = '\0';
-        IcsStruct->StedLambda[i] = 0.0;
-        IcsStruct->StedSatFactor[i] = 0.0;
-        IcsStruct->StedImmFraction[i] = 0.0;
-        IcsStruct->StedVPPM[i] = 0.0;
-        IcsStruct->DetectorPPU[i] = 1.0;
-        IcsStruct->DetectorBaseline[i] = 0.0;
-        IcsStruct->DetectorLineAvgCnt[i] = 1.0;
+        icsStruct->Type[i][0] = '\0';
+        icsStruct->PinholeRadius[i] = 0.0;
+        icsStruct->LambdaEx[i] = 0.0;
+        icsStruct->LambdaEm[i] = 0.0;
+        icsStruct->ExPhotonCnt[i] = 1;
+        icsStruct->StedDepletionMode[i][0] = '\0';
+        icsStruct->StedLambda[i] = 0.0;
+        icsStruct->StedSatFactor[i] = 0.0;
+        icsStruct->StedImmFraction[i] = 0.0;
+        icsStruct->StedVPPM[i] = 0.0;
+        icsStruct->DetectorPPU[i] = 1.0;
+        icsStruct->DetectorBaseline[i] = 0.0;
+        icsStruct->DetectorLineAvgCnt[i] = 1.0;
     }
-    IcsStruct->ScilType[0] = '\0';
+    icsStruct->ScilType[0] = '\0';
 }
 
 
 /* Find the number of bytes per sample. */
-int IcsGetBytesPerSample(const Ics_Header *IcsStruct)
+int IcsGetBytesPerSample(const Ics_Header *icsStruct)
 {
-    return IcsGetDataTypeSize(IcsStruct->Imel.DataType);
+    return IcsGetDataTypeSize(icsStruct->Imel.DataType);
 }
 
 
 /* Get the size of the Ics_DataType in bytes. */
-size_t IcsGetDataTypeSize(Ics_DataType DataType)
+size_t IcsGetDataTypeSize(Ics_DataType dataType)
 {
     size_t bytes;
 
 
-    switch (DataType) {
+    switch (dataType) {
         case Ics_uint8:
         case Ics_sint8:
             bytes = 1;
@@ -428,14 +428,14 @@ size_t IcsGetDataTypeSize(Ics_DataType DataType)
 
 
 /* Get the properties of the Ics_DataType */
-void IcsGetPropsDataType(Ics_DataType  DataType,
+void IcsGetPropsDataType(Ics_DataType  dataType,
                          Ics_Format   *format,
                          int          *sign,
                          size_t       *bits)
 {
-    *bits = IcsGetDataTypeSize(DataType) * 8;
+    *bits = IcsGetDataTypeSize(dataType) * 8;
     *sign = 1;
-    switch (DataType) {
+    switch (dataType) {
         case Ics_uint8:
         case Ics_uint16:
         case Ics_uint32:
@@ -460,7 +460,7 @@ void IcsGetPropsDataType(Ics_DataType  DataType,
 
 
 /* Get the Ics_DataType belonging to the given properties */
-void IcsGetDataTypeProps(Ics_DataType* DataType,
+void IcsGetDataTypeProps(Ics_DataType* dataType,
                          Ics_Format    format,
                          int           sign,
                          size_t        bits)
@@ -469,43 +469,43 @@ void IcsGetDataTypeProps(Ics_DataType* DataType,
         case IcsForm_integer:
             switch (bits) {
                 case 8:
-                    *DataType = sign ? Ics_sint8 : Ics_uint8;
+                    *dataType = sign ? Ics_sint8 : Ics_uint8;
                     break;
                 case 16:
-                    *DataType = sign ? Ics_sint16 : Ics_uint16;
+                    *dataType = sign ? Ics_sint16 : Ics_uint16;
                     break;
                 case 32:
-                    *DataType = sign ? Ics_sint32 : Ics_uint32;
+                    *dataType = sign ? Ics_sint32 : Ics_uint32;
                     break;
                 default:
-                    *DataType = Ics_unknown;
+                    *dataType = Ics_unknown;
             }
             break;
         case IcsForm_real:
             switch (bits) {
                 case 32:
-                    *DataType = Ics_real32;
+                    *dataType = Ics_real32;
                     break;
                 case 64:
-                    *DataType = Ics_real64;
+                    *dataType = Ics_real64;
                     break;
                 default:
-                    *DataType = Ics_unknown;
+                    *dataType = Ics_unknown;
             }
             break;
         case IcsForm_complex:
             switch (bits) {
                 case 2*32:
-                    *DataType = Ics_complex32;
+                    *dataType = Ics_complex32;
                     break;
                 case 2*64:
-                    *DataType = Ics_complex64;
+                    *dataType = Ics_complex64;
                     break;
                 default:
-                    *DataType = Ics_unknown;
+                    *dataType = Ics_unknown;
             }
             break;
         default:
-            *DataType = Ics_unknown;
+            *dataType = Ics_unknown;
     }
 }

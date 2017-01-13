@@ -1,13 +1,14 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013 Cris Luengo and others
  * Copyright 2015, 2017:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
  *
  * Contact: libics@svi.nl
+ *
+ * Copyright (C) 2000-2013 Cris Luengo and others
  *
  * Large chunks of this library written by
  *    Bert Gijsbers
@@ -37,10 +38,10 @@
  *
  *   IcsWriteZip()
  *   IcsWriteZipWithStrides()
- *   IcsOpenZip ()
- *   IcsCloseZip ()
- *   IcsReadZipBlock ()
- *   IcsSetZipBlock ()
+ *   IcsOpenZip()
+ *   IcsCloseZip()
+ *   IcsReadZipBlock()
+ *   IcsSetZipBlock()
  *
  * This is the only file that contains any zlib dependancies.
  *
@@ -52,6 +53,7 @@
  * Therefore, most of the code in this file was written by Jean-loup Gailly.
  *    (Copyright (C) 1995-1998 Jean-loup Gailly)
  */
+
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -82,8 +84,8 @@ static int gz_magic[2] = {0x1f, 0x8b}; /* gzip magic header */
 
 
 /* Outputs a long in LSB order to the given stream */
-static void _IcsPutLong(FILE *file,
-                        unsigned long int x)
+static void icsPutLong(FILE *file,
+                       unsigned long int x)
 {
    int i;
    for (i = 0; i < 4; i++) {
@@ -92,41 +94,43 @@ static void _IcsPutLong(FILE *file,
    }
 }
 
+
 /* Reads a long in LSB order from the given stream. */
-static unsigned long int _IcsGetLong(FILE *file)
+static unsigned long int icsGetLong(FILE *file)
 {
-    unsigned long int x = (unsigned long int)getc (file);
-    x += ((unsigned long int)getc (file))<<8;
-    x += ((unsigned long int)getc (file))<<16;
-    x += ((unsigned long int)getc (file))<<24;
+    unsigned long int x = (unsigned long int)getc(file);
+    x += ((unsigned long int)getc(file))<<8;
+    x += ((unsigned long int)getc(file))<<16;
+    x += ((unsigned long int)getc(file))<<24;
     return x;
 }
 
- /* Write ZIP compressed data. This function mostly does:
-      gzFile out;
-      char mode[4]; strcpy(mode, "wb0"); mode[2] += level;
-      out = gzdopen (dup(fileno(file)), mode);
-      ICSTR( out == NULL, IcsErr_FWriteIds );
-      if (gzwrite (out, (const voidp)inbuf, n) != (int)n)
-      error = IcsErr_CompressionProblem;
-      gzclose (out); */
-Ics_Error IcsWriteZip(const void *inbuf,
+
+/* Write ZIP compressed data. This function mostly does:
+     gzFile out;
+     char mode[4]; strcpy(mode, "wb0"); mode[2] += level;
+     out = gzdopen(dup(fileno(file)), mode);
+     ICSTR( out == NULL, IcsErr_FWriteIds );
+     if (gzwrite(out, (const voidp)inbuf, n) != (int)n)
+     error = IcsErr_CompressionProblem;
+     gzclose(out); */
+Ics_Error IcsWriteZip(const void *inBuf,
                       size_t      len,
                       FILE       *file,
                       int         level)
 {
 #ifdef ICS_ZLIB
     z_stream     stream;
-    Byte *       outbuf;    /* output buffer */
+    Byte *       outBuf;    /* output buffer */
     int          err, flush;
-    size_t       total_count;
+    size_t       totalCount;
     unsigned int have;
     uLong        crc;
 
 
         /* Create an output buffer */
-    outbuf = (Byte*)malloc(ICS_BUF_SIZE);
-    ICSTR( outbuf == Z_NULL, IcsErr_Alloc );
+    outBuf = (Byte*)malloc(ICS_BUF_SIZE);
+    ICSTR( outBuf == Z_NULL, IcsErr_Alloc );
 
         /* Initialize the stream for output */
     stream.zalloc = (alloc_func)0;
@@ -139,11 +143,11 @@ Ics_Error IcsWriteZip(const void *inbuf,
 
     crc = crc32(0L, Z_NULL, 0);
 
-    err = deflateInit2 (&stream, level, Z_DEFLATED, -MAX_WBITS, DEF_MEM_LEVEL,
+    err = deflateInit2(&stream, level, Z_DEFLATED, -MAX_WBITS, DEF_MEM_LEVEL,
                         Z_DEFAULT_STRATEGY);
         /* windowBits is passed < 0 to suppress zlib header */
     if (err != Z_OK) {
-        free(outbuf);
+        free(outBuf);
         if (err == Z_VERSION_ERROR) {
             return IcsErr_WrongZlibVersion;
         } else {
@@ -152,29 +156,29 @@ Ics_Error IcsWriteZip(const void *inbuf,
     }
 
         /* Write a very simple GZIP header: */
-    fprintf (file, "%c%c%c%c%c%c%c%c%c%c", gz_magic[0], gz_magic[1], Z_DEFLATED,
-             0,0,0,0,0,0, OS_CODE);
+    fprintf(file, "%c%c%c%c%c%c%c%c%c%c", gz_magic[0], gz_magic[1], Z_DEFLATED,
+            0,0,0,0,0,0, OS_CODE);
 
         /* Write the compressed data */
-    total_count = 0;
+    totalCount = 0;
     do {
-        if (len - total_count < ICS_BUF_SIZE) {
-            stream.avail_in = len - total_count;
+        if (len - totalCount < ICS_BUF_SIZE) {
+            stream.avail_in = len - totalCount;
         } else {
             stream.avail_in = ICS_BUF_SIZE;
         }
-        stream.next_in = (Bytef*)inbuf + total_count;
+        stream.next_in = (Bytef*)inBuf + totalCount;
         crc = crc32(crc, stream.next_in, stream.avail_in);
-        total_count += stream.avail_in;
-        flush = total_count >= len ? Z_FINISH : Z_NO_FLUSH;
+        totalCount += stream.avail_in;
+        flush = totalCount >= len ? Z_FINISH : Z_NO_FLUSH;
         do {
             stream.avail_out = ICS_BUF_SIZE;
-            stream.next_out = outbuf;
+            stream.next_out = outBuf;
             err = deflate(&stream, flush);
             have = ICS_BUF_SIZE - stream.avail_out;
-            if (fwrite(outbuf, 1, have, file) != have || ferror(file)) {
-                deflateEnd (&stream);
-                free(outbuf);
+            if (fwrite(outBuf, 1, have, file) != have || ferror(file)) {
+                deflateEnd(&stream);
+                free(outBuf);
                 return IcsErr_FWriteIds;
             }
         } while (stream.avail_out == 0);
@@ -182,19 +186,18 @@ Ics_Error IcsWriteZip(const void *inbuf,
 
         /* Was all the input processed? */
     if (stream.avail_in != 0) {
-        deflateEnd (&stream);
-        free(outbuf);
+        deflateEnd(&stream);
+        free(outBuf);
         return IcsErr_CompressionProblem;
-
     }
         /* Write the CRC and original data length */
-    _IcsPutLong(file, crc);
-        /* Data length is written as a 32 bit value, for compatibility we keep it
-           like that, even if total_count is 64 bit. */
-    _IcsPutLong(file, total_count & 0xFFFFFFFF);
+    icsPutLong(file, crc);
+        /* Data length is written as a 32 bit value, for compatibility we keep
+           it like that, even if totalCount is 64 bit. */
+    icsPutLong(file, totalCount & 0xFFFFFFFF);
         /* Deallocate stuff */
-    err = deflateEnd (&stream);
-    free(outbuf);
+    err = deflateEnd(&stream);
+    free(outBuf);
 
     return err == Z_OK ? IcsErr_Ok : IcsErr_CompressionProblem;
 #else
@@ -207,34 +210,34 @@ Ics_Error IcsWriteZip(const void *inbuf,
 Ics_Error IcsWriteZipWithStrides(const void   *src,
                                  const size_t *dim,
                                  const size_t *stride,
-                                 int           ndims,
-                                 int           nbytes,
+                                 int           nDims,
+                                 int           nBytes,
                                  FILE         *file,
                                  int           level)
 {
 #ifdef ICS_ZLIB
     ICSINIT;
     z_stream     stream;
-    Byte        *inbuf              = 0; /* input buffer */
-    Byte        *inbuf_ptr;
-    Byte        *outbuf             = 0; /* output buffer */
-    size_t       curpos[ICS_MAXDIM];
+    Byte        *inBuf              = 0; /* input buffer */
+    Byte        *inBuf_ptr;
+    Byte        *outBuf             = 0; /* output buffer */
+    size_t       curPos[ICS_MAXDIM];
     char const  *data;
     int          i, err, done;
     size_t       j;
-    size_t       count, total_count = 0;
+    size_t       count, totalCount = 0;
     uLong        crc;
-    const int    contiguous_line    = stride[0]==1;
+    const int    contiguousLine    = stride[0]==1;
 
 
         /* Create an output buffer */
-    outbuf = (Byte*)malloc(ICS_BUF_SIZE);
-    ICSTR(outbuf == Z_NULL, IcsErr_Alloc);
+    outBuf = (Byte*)malloc(ICS_BUF_SIZE);
+    ICSTR(outBuf == Z_NULL, IcsErr_Alloc);
         /* Create an input buffer */
-    if (!contiguous_line) {
-        inbuf = (Byte*)malloc(dim[0]*nbytes);
-        if (inbuf == Z_NULL) {
-            free(outbuf);
+    if (!contiguousLine) {
+        inBuf = (Byte*)malloc(dim[0] * nBytes);
+        if (inBuf == Z_NULL) {
+            free(outBuf);
             return IcsErr_Alloc;
         }
     }
@@ -251,53 +254,53 @@ Ics_Error IcsWriteZipWithStrides(const void   *src,
                        DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY);
         /* windowBits is passed < 0 to suppress zlib header */
     if (err != Z_OK) {
-        free(outbuf);
-        if (!contiguous_line) free(inbuf);
+        free(outBuf);
+        if (!contiguousLine) free(inBuf);
         if (err == Z_VERSION_ERROR) {
             return IcsErr_WrongZlibVersion;
         } else {
             return IcsErr_CompressionProblem;
         }
     }
-    stream.next_out = outbuf;
+    stream.next_out = outBuf;
     stream.avail_out = ICS_BUF_SIZE;
-    crc = crc32 (0L, Z_NULL, 0);
+    crc = crc32(0L, Z_NULL, 0);
 
         /* Write a very simple GZIP header: */
     fprintf(file, "%c%c%c%c%c%c%c%c%c%c", gz_magic[0], gz_magic[1], Z_DEFLATED,
             0,0,0,0,0,0, OS_CODE);
 
         /* Walk over each line in the 1st dimension */
-    for (i = 0; i < ndims; i++) {
-        curpos[i] = 0;
+    for (i = 0; i < nDims; i++) {
+        curPos[i] = 0;
     }
     while (1) {
         data = (char const*)src;
-        for (i = 1; i < ndims; i++) { /* curpos[0]==0 here */
-            data += curpos[i] * stride[i] * nbytes;
+        for (i = 1; i < nDims; i++) { /* curPos[0]==0 here */
+            data += curPos[i] * stride[i] * nBytes;
         }
             /* Get data line */
-        if (contiguous_line) {
-            inbuf = (Byte*)data;
+        if (contiguousLine) {
+            inBuf = (Byte*)data;
         } else {
-            inbuf_ptr = inbuf;
+            inBuf_ptr = inBuf;
             for (j = 0; j < dim[0]; j++) {
-                memcpy(inbuf_ptr, data, nbytes);
-                data += stride[0]*nbytes;
-                inbuf_ptr += nbytes;
+                memcpy(inBuf_ptr, data, nBytes);
+                data += stride[0] * nBytes;
+                inBuf_ptr += nBytes;
             }
         }
             /* Write the compressed data */
-        stream.next_in = (Bytef*)inbuf;
-        stream.avail_in = dim[0]*nbytes;
-        total_count += stream.avail_in;
+        stream.next_in = (Bytef*)inBuf;
+        stream.avail_in = dim[0] * nBytes;
+        totalCount += stream.avail_in;
         while (stream.avail_in != 0) {
             if (stream.avail_out == 0) {
-                if (fwrite(outbuf, 1, ICS_BUF_SIZE, file) != ICS_BUF_SIZE) {
+                if (fwrite(outBuf, 1, ICS_BUF_SIZE, file) != ICS_BUF_SIZE) {
                     error = IcsErr_FWriteIds;
                     goto error_exit;
                 }
-                stream.next_out = outbuf;
+                stream.next_out = outBuf;
                 stream.avail_out = ICS_BUF_SIZE;
             }
             err = deflate(&stream, Z_NO_FLUSH);
@@ -310,16 +313,16 @@ Ics_Error IcsWriteZipWithStrides(const void   *src,
             error = IcsErr_CompressionProblem;
             goto error_exit;
         }
-        crc = crc32(crc, (Bytef*)inbuf, dim[0]*nbytes);
+        crc = crc32(crc, (Bytef*)inBuf, dim[0] * nBytes);
             /* This is part of the N-D loop */
-        for (i = 1; i < ndims; i++) {
-            curpos[i]++;
-            if (curpos[i] < dim[i]) {
+        for (i = 1; i < nDims; i++) {
+            curPos[i]++;
+            if (curPos[i] < dim[i]) {
                 break;
             }
-            curpos[i] = 0;
+            curPos[i] = 0;
         }
-        if (i == ndims) {
+        if (i == nDims) {
             break; /* we're done writing */
         }
     }
@@ -329,11 +332,11 @@ Ics_Error IcsWriteZipWithStrides(const void   *src,
     for (;;) {
         count = ICS_BUF_SIZE - stream.avail_out;
         if (count != 0) {
-            if ((size_t)fwrite(outbuf, 1, count, file) != count) {
+            if ((size_t)fwrite(outBuf, 1, count, file) != count) {
                 error = IcsErr_FWriteIds;
                 goto error_exit;
             }
-            stream.next_out = outbuf;
+            stream.next_out = outBuf;
             stream.avail_out = ICS_BUF_SIZE;
         }
         if (done) {
@@ -347,14 +350,14 @@ Ics_Error IcsWriteZipWithStrides(const void   *src,
         done = (stream.avail_out != 0 || err == Z_STREAM_END);
     }
         /* Write the CRC and original data length */
-    _IcsPutLong(file, crc);
-    _IcsPutLong(file, total_count & 0xFFFFFFFF);
+    icsPutLong(file, crc);
+    icsPutLong(file, totalCount & 0xFFFFFFFF);
 
   error_exit:
         /* Deallocate stuff */
     err = deflateEnd(&stream);
-    free(outbuf);
-    if (!contiguous_line) free(inbuf);
+    free(outBuf);
+    if (!contiguousLine) free(inBuf);
 
     if (error) {
         return error;
@@ -368,19 +371,17 @@ Ics_Error IcsWriteZipWithStrides(const void   *src,
 
 
     /* Start reading ZIP compressed data. This function mostly does:
-       br->ZlibStream = gzdopen (dup(fileno(br->DataFilePtr)), "rb"); */
-Ics_Error IcsOpenZip(Ics_Header *IcsStruct)
+       br->ZlibStream = gzdopen(dup(fileno(br->DataFilePtr)), "rb"); */
+Ics_Error IcsOpenZip(Ics_Header *icsStruct)
 {
 #ifdef ICS_ZLIB
-    Ics_BlockRead * br   = (Ics_BlockRead*)IcsStruct->BlockRead;
+    Ics_BlockRead * br   = (Ics_BlockRead*)icsStruct->BlockRead;
     FILE           *file = br->DataFilePtr;
     z_stream*       stream;
-    void           *inbuf;
+    void           *inBuf;
     int             err;
     int             method, flags; /* hold data from the GZIP header */
 
-    /* printf("\nZLIB_VERSION = \"%s\" - zlibVersion() = \"%s\"\n\n", */
-    /*        ZLIB_VERSION, zlibVersion()); */
 
         /* check the GZIP header */
     ICSTR((getc(file) != gz_magic[0]) || (getc(file) != gz_magic[1]),
@@ -389,11 +390,11 @@ Ics_Error IcsOpenZip(Ics_Header *IcsStruct)
     flags = getc(file);
     ICSTR((method != Z_DEFLATED) || ((flags & RESERVED) != 0),
           IcsErr_CorruptedStream);
-    fseek (file, 6, SEEK_CUR);         /* Discard time, xflags and OS code: */
+    fseek(file, 6, SEEK_CUR);          /* Discard time, xflags and OS code: */
     if ((flags & EXTRA_FIELD) != 0) {  /* skip the extra field */
         size_t len;
         len  =  (uInt)getc(file);
-        len += ((uInt)getc(file))<<8;
+        len += ((uInt)getc(file)) << 8;
         ICSTR(feof (file), IcsErr_CorruptedStream);
         fseek(file, len, SEEK_CUR);
     }
@@ -411,8 +412,8 @@ Ics_Error IcsOpenZip(Ics_Header *IcsStruct)
     ICSTR(feof(file) || ferror(file), IcsErr_CorruptedStream);
 
         /* Create an input buffer */
-    inbuf = malloc(ICS_BUF_SIZE);
-    ICSTR(inbuf == NULL, IcsErr_Alloc);
+    inBuf = malloc(ICS_BUF_SIZE);
+    ICSTR(inBuf == NULL, IcsErr_Alloc);
 
         /* Initialize the stream for input */
     stream = (z_stream*)malloc(sizeof (z_stream));
@@ -424,8 +425,8 @@ Ics_Error IcsOpenZip(Ics_Header *IcsStruct)
     stream->avail_in = 0;
     stream->next_out = NULL;
     stream->avail_out = 0;
-    stream->next_in = (Byte*)inbuf;
-    err = inflateInit2 (stream, -MAX_WBITS);
+    stream->next_in = (Byte*)inBuf;
+    err = inflateInit2(stream, -MAX_WBITS);
         /* windowBits is passed < 0 to tell that there is no zlib header.  Note
            that in this case inflate *requires* an extra "dummy" byte after the
            compressed stream in order to complete decompression and return
@@ -433,9 +434,9 @@ Ics_Error IcsOpenZip(Ics_Header *IcsStruct)
            after the compressed stream. */
     if (err != Z_OK) {
         if (err != Z_VERSION_ERROR) {
-            inflateEnd (stream);
+            inflateEnd(stream);
         }
-        free(inbuf);
+        free(inBuf);
         if (err == Z_VERSION_ERROR) {
             return IcsErr_WrongZlibVersion;
         } else {
@@ -444,7 +445,7 @@ Ics_Error IcsOpenZip(Ics_Header *IcsStruct)
     }
 
     br->ZlibStream = stream;
-    br->ZlibInputBuffer = inbuf;
+    br->ZlibInputBuffer = inBuf;
     br->ZlibCRC = crc32(0L, Z_NULL, 0);
     return IcsErr_Ok;
 #else
@@ -455,14 +456,14 @@ Ics_Error IcsOpenZip(Ics_Header *IcsStruct)
 
 /* Close ZIP compressed data stream. This function mostly does:
      gzclose((gzFile)br->ZlibStream); */
-Ics_Error IcsCloseZip(Ics_Header *IcsStruct)
+Ics_Error IcsCloseZip(Ics_Header *icsStruct)
 {
 #ifdef ICS_ZLIB
-    Ics_BlockRead *br     = (Ics_BlockRead*)IcsStruct->BlockRead;
+    Ics_BlockRead *br     = (Ics_BlockRead*)icsStruct->BlockRead;
     z_stream*      stream = (z_stream*)br->ZlibStream;
     int            err;
 
-    err = inflateEnd (stream);
+    err = inflateEnd(stream);
     free(stream);
     br->ZlibStream = NULL;
     free(br->ZlibInputBuffer);
@@ -477,17 +478,18 @@ Ics_Error IcsCloseZip(Ics_Header *IcsStruct)
 #endif
 }
 
+
 /* Read ZIP compressed data block. This function mostly does:
-     gzread ((gzFile)br->ZlibStream, outbuf, len); */
-Ics_Error IcsReadZipBlock (Ics_Header *IcsStruct,
-                           void       *outbuf,
+     gzread((gzFile)br->ZlibStream, outBuf, len); */
+Ics_Error IcsReadZipBlock(Ics_Header *icsStruct,
+                           void       *outBuf,
                            size_t      len)
 {
 #ifdef ICS_ZLIB
-    Ics_BlockRead *br      = (Ics_BlockRead*)IcsStruct->BlockRead;
+    Ics_BlockRead *br      = (Ics_BlockRead*)icsStruct->BlockRead;
     FILE          *file    = br->DataFilePtr;
     z_stream*      stream  = (z_stream*)br->ZlibStream;
-    void          *inbuf   = br->ZlibInputBuffer;
+    void          *inBuf   = br->ZlibInputBuffer;
     int            err;
     size_t         prevout = stream->total_out, todo = len;
     unsigned int   bufsize, done;
@@ -495,7 +497,7 @@ Ics_Error IcsReadZipBlock (Ics_Header *IcsStruct,
 
         /* Read the compressed data */
     do {
-        stream->avail_in = fread(inbuf, 1, ICS_BUF_SIZE, file);
+        stream->avail_in = fread(inBuf, 1, ICS_BUF_SIZE, file);
         if (ferror(file)) {
             return IcsErr_FReadIds;
         }
@@ -503,7 +505,7 @@ Ics_Error IcsReadZipBlock (Ics_Header *IcsStruct,
             err = Z_STREAM_ERROR;
             break;
         }
-        stream->next_in = inbuf;
+        stream->next_in = inBuf;
         do {
             if (todo == 0) {
                 err = Z_OK;
@@ -511,27 +513,27 @@ Ics_Error IcsReadZipBlock (Ics_Header *IcsStruct,
             }
             bufsize = todo < ICS_BUF_SIZE ? todo : ICS_BUF_SIZE;
             stream->avail_out = bufsize;
-            prevbuf = stream->next_out = (Bytef*)outbuf + len - todo;;
+            prevbuf = stream->next_out = (Bytef*)outBuf + len - todo;;
             err = inflate(stream, Z_NO_FLUSH);
             if (!(err == Z_OK || err == Z_STREAM_END || err == Z_BUF_ERROR)) {
                 return IcsErr_FReadIds;
             }
             done = bufsize - stream->avail_out;
             todo -= done;
-            br->ZlibCRC = crc32 (br->ZlibCRC, prevbuf, done);
+            br->ZlibCRC = crc32(br->ZlibCRC, prevbuf, done);
         } while (stream->avail_out == 0);
     } while (err != Z_STREAM_END && todo > 0);
 
         /* Set the file pointer back so that unused input can be read again. */
-    fseek (file, -(int)stream->avail_in, SEEK_CUR);
+    fseek(file, -(int)stream->avail_in, SEEK_CUR);
 
     if (err == Z_STREAM_END) {
             /* All the data has been decompressed: Check CRC and original data
                size */
-        if (_IcsGetLong(file) != br->ZlibCRC) {
+        if (icsGetLong(file) != br->ZlibCRC) {
             err = Z_STREAM_ERROR;
         } else {
-            if (_IcsGetLong(file) != stream->total_out) {
+            if (icsGetLong(file) != stream->total_out) {
                 err = Z_STREAM_ERROR;
             }
         }
@@ -552,8 +554,8 @@ Ics_Error IcsReadZipBlock (Ics_Header *IcsStruct,
 
 
 /* Skip ZIP compressed data block. This function mostly does:
-     gzseek ((gzFile)br->ZlibStream, (z_off_t)offset, whence); */
-Ics_Error IcsSetZipBlock (Ics_Header *IcsStruct,
+     gzseek((gzFile)br->ZlibStream, (z_off_t)offset, whence); */
+Ics_Error IcsSetZipBlock(Ics_Header *icsStruct,
                           long        offset,
                           int         whence)
 {
@@ -561,7 +563,7 @@ Ics_Error IcsSetZipBlock (Ics_Header *IcsStruct,
     ICSINIT;
     size_t         n, bufsize;
     void          *buf;
-    Ics_BlockRead *br     = (Ics_BlockRead*)IcsStruct->BlockRead;
+    Ics_BlockRead *br     = (Ics_BlockRead*)icsStruct->BlockRead;
     z_stream*      stream = (z_stream*)br->ZlibStream;
 
     if ((whence == SEEK_CUR) && (offset<0)) {
@@ -570,8 +572,8 @@ Ics_Error IcsSetZipBlock (Ics_Header *IcsStruct,
     }
     if (whence == SEEK_SET) {
         ICSTR(offset < 0, IcsErr_IllParameter);
-        ICSXR(IcsCloseIds (IcsStruct));
-        ICSXR(IcsOpenIds (IcsStruct));
+        ICSXR(IcsCloseIds(icsStruct));
+        ICSXR(IcsOpenIds(icsStruct));
         ICSTR(offset==0, IcsErr_Ok);
     }
 
@@ -582,10 +584,10 @@ Ics_Error IcsSetZipBlock (Ics_Header *IcsStruct,
     n = offset;
     while (n > 0) {
         if (n > bufsize) {
-            error = IcsReadZipBlock (IcsStruct, buf, bufsize);
+            error = IcsReadZipBlock(icsStruct, buf, bufsize);
             n -= bufsize;
         } else {
-            error = IcsReadZipBlock (IcsStruct, buf, n);
+            error = IcsReadZipBlock(icsStruct, buf, n);
             break;
         }
         if (error) {

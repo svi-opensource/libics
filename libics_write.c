@@ -1,11 +1,12 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013 Cris Luengo and others
  * Copyright 2015-2017:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
+ *
+ * Copyright (C) 2000-2013 Cris Luengo and others
  *
  * Large chunks of this library written by
  *    Bert Gijsbers
@@ -41,43 +42,43 @@
 #include <string.h>
 #include "libics_intern.h"
 
-static Ics_Error IcsToken2Str(Ics_Token  T,
-                              char      *CPtr)
+static Ics_Error icsToken2Str(Ics_Token  token,
+                              char      *cPtr)
 {
     ICSINIT;
     int notFound = 1, i;
 
-    
+
         /* Search the globally defined categories for a token match: */
     i = 0;
     while (notFound && i < G_Categories.Entries) {
-        notFound = T != G_Categories.List[i].Token;
+        notFound = token != G_Categories.List[i].Token;
         if(!notFound) {
-            strcpy(CPtr, G_Categories.List[i].Name);
+            strcpy(cPtr, G_Categories.List[i].Name);
         }
         i++;
     }
     i = 0;
     while (notFound && i < G_SubCategories.Entries) {
-        notFound = T != G_SubCategories.List[i].Token;
+        notFound = token != G_SubCategories.List[i].Token;
         if(!notFound) {
-            strcpy(CPtr, G_SubCategories.List[i].Name);
+            strcpy(cPtr, G_SubCategories.List[i].Name);
         }
         i++;
     }
     i = 0;
     while (notFound && i < G_SubSubCategories.Entries) {
-        notFound = T != G_SubSubCategories.List[i].Token;
+        notFound = token != G_SubSubCategories.List[i].Token;
         if(!notFound) {
-            strcpy(CPtr, G_SubSubCategories.List[i].Name);
+            strcpy(cPtr, G_SubSubCategories.List[i].Name);
         }
         i++;
     }
     i = 0;
     while (notFound && i < G_Values.Entries) {
-        notFound = T != G_Values.List[i].Token;
+        notFound = token != G_Values.List[i].Token;
         if (!notFound) {
-            strcpy(CPtr, G_Values.List[i].Name);
+            strcpy(cPtr, G_Values.List[i].Name);
         }
         i++;
     }
@@ -87,215 +88,215 @@ static Ics_Error IcsToken2Str(Ics_Token  T,
 }
 
 
-static Ics_Error IcsFirstToken(char      *Line,
-                               Ics_Token  T)
+static Ics_Error icsFirstToken(char      *line,
+                               Ics_Token  token)
 {
     ICSDECL;
     char tokenName[ICS_STRLEN_TOKEN];
 
-    
-    ICSXR(IcsToken2Str(T, tokenName));
-    strcpy(Line, tokenName);
-    IcsAppendChar(Line, ICS_FIELD_SEP);
+
+    ICSXR(icsToken2Str(token, tokenName));
+    strcpy(line, tokenName);
+    IcsAppendChar(line, ICS_FIELD_SEP);
 
     return error;
 }
 
 
-static Ics_Error IcsAddToken(char      *Line,
-                             Ics_Token  T)
+static Ics_Error icsAddToken(char      *line,
+                             Ics_Token  token)
 {
     ICSDECL;
     char tokenName[ICS_STRLEN_TOKEN];
 
-    
-    ICSXR(IcsToken2Str(T, tokenName));
-    ICSTR(strlen(Line) + strlen(tokenName) + 2 > ICS_LINE_LENGTH,
+
+    ICSXR(icsToken2Str(token, tokenName));
+    ICSTR(strlen(line) + strlen(tokenName) + 2 > ICS_LINE_LENGTH,
           IcsErr_LineOverflow);
-    strcat(Line, tokenName);
-    IcsAppendChar(Line, ICS_FIELD_SEP);
+    strcat(line, tokenName);
+    IcsAppendChar(line, ICS_FIELD_SEP);
 
     return error;
 }
 
 
-static Ics_Error IcsAddLastToken(char      *Line,
-                                 Ics_Token  T)
+static Ics_Error icsAddLastToken(char      *line,
+                                 Ics_Token  token)
 {
     ICSDECL;
     char tokenName[ICS_STRLEN_TOKEN];
 
-    
-    ICSXR(IcsToken2Str(T, tokenName));
-    ICSTR(strlen(Line) + strlen(tokenName) + 2 > ICS_LINE_LENGTH,
+
+    ICSXR(icsToken2Str(token, tokenName));
+    ICSTR(strlen(line) + strlen(tokenName) + 2 > ICS_LINE_LENGTH,
           IcsErr_LineOverflow);
-    strcat(Line, tokenName);
-    IcsAppendChar(Line, ICS_EOL);
+    strcat(line, tokenName);
+    IcsAppendChar(line, ICS_EOL);
 
     return error;
 }
 
 
-static Ics_Error IcsFirstText(char *Line,
-                              char *Text)
+static Ics_Error icsFirstText(char *line,
+                              char *text)
 {
     ICSINIT;
 
-    
-    ICSTR(Text[0] == '\0', IcsErr_EmptyField);
-    ICSTR(strlen(Text) + 2 > ICS_LINE_LENGTH, IcsErr_LineOverflow);
-    strcpy(Line, Text);
-    IcsAppendChar(Line, ICS_FIELD_SEP);
+
+    ICSTR(text[0] == '\0', IcsErr_EmptyField);
+    ICSTR(strlen(text) + 2 > ICS_LINE_LENGTH, IcsErr_LineOverflow);
+    strcpy(line, text);
+    IcsAppendChar(line, ICS_FIELD_SEP);
 
     return error;
 }
 
 
-static Ics_Error IcsAddText(char *Line,
-                            char *Text)
+static Ics_Error icsAddText(char *line,
+                            char *text)
 {
     ICSINIT;
 
-    
-    ICSTR(Text[0] == '\0', IcsErr_EmptyField);
-    ICSTR(strlen(Line) + strlen(Text) + 2 > ICS_LINE_LENGTH,
+
+    ICSTR(text[0] == '\0', IcsErr_EmptyField);
+    ICSTR(strlen(line) + strlen(text) + 2 > ICS_LINE_LENGTH,
           IcsErr_LineOverflow);
-    strcat(Line, Text);
-    IcsAppendChar(Line, ICS_FIELD_SEP);
+    strcat(line, text);
+    IcsAppendChar(line, ICS_FIELD_SEP);
 
     return error;
 }
 
 
-static Ics_Error IcsAddLastText(char *Line,
-                                char *Text)
+static Ics_Error icsAddLastText(char *line,
+                                char *text)
 {
     ICSINIT;
 
-    
-    ICSTR(Text[0] == '\0', IcsErr_EmptyField);
-    ICSTR(strlen(Line) + strlen(Text) + 2 > ICS_LINE_LENGTH,
+
+    ICSTR(text[0] == '\0', IcsErr_EmptyField);
+    ICSTR(strlen(line) + strlen(text) + 2 > ICS_LINE_LENGTH,
           IcsErr_LineOverflow);
-    strcat(Line, Text);
-    IcsAppendChar(Line, ICS_EOL);
+    strcat(line, text);
+    IcsAppendChar(line, ICS_EOL);
 
     return error;
 }
 
 
-static Ics_Error IcsAddInt(char     *Line,
-                           long int  I)
+static Ics_Error icsAddInt(char     *line,
+                           long int  i)
 {
     ICSINIT;
     char intStr[ICS_STRLEN_OTHER];
 
-    
-    sprintf(intStr, "%ld%c", I, ICS_FIELD_SEP);
-    ICSTR(strlen(Line) + strlen(intStr) + 1 > ICS_LINE_LENGTH,
+
+    sprintf(intStr, "%ld%c", i, ICS_FIELD_SEP);
+    ICSTR(strlen(line) + strlen(intStr) + 1 > ICS_LINE_LENGTH,
           IcsErr_LineOverflow);
-    strcat(Line, intStr);
+    strcat(line, intStr);
 
     return error;
 }
 
 
-static Ics_Error IcsAddLastInt(char     *Line,
-                               long int  I)
+static Ics_Error icsAddLastInt(char     *line,
+                               long int  i)
 {
     ICSINIT;
     char intStr[ICS_STRLEN_OTHER];
 
-    
-    sprintf(intStr, "%ld%c", I, ICS_EOL);
-    ICSTR(strlen(Line) + strlen(intStr) + 1 > ICS_LINE_LENGTH,
+
+    sprintf(intStr, "%ld%c", i, ICS_EOL);
+    ICSTR(strlen(line) + strlen(intStr) + 1 > ICS_LINE_LENGTH,
           IcsErr_LineOverflow);
-    strcat(Line, intStr);
+    strcat(line, intStr);
 
     return error;
 }
 
 
-static Ics_Error IcsAddDouble(char   *Line,
-                              double  D)
+static Ics_Error icsAddDouble(char   *line,
+                              double  d)
 {
     ICSINIT;
     char dStr[ICS_STRLEN_OTHER];
 
-    
-    if (D==0 ||(fabs(D) < ICS_MAX_DOUBLE && fabs(D) >= ICS_MIN_DOUBLE)) {
-        sprintf(dStr, "%f%c", D, ICS_FIELD_SEP);
+
+    if (d == 0 ||(fabs(d) < ICS_MAX_DOUBLE && fabs(d) >= ICS_MIN_DOUBLE)) {
+        sprintf(dStr, "%f%c", d, ICS_FIELD_SEP);
     } else {
-        sprintf(dStr, "%e%c", D, ICS_FIELD_SEP);
+        sprintf(dStr, "%e%c", d, ICS_FIELD_SEP);
     }
-    ICSTR(strlen(Line) + strlen(dStr) + 1 > ICS_LINE_LENGTH,
+    ICSTR(strlen(line) + strlen(dStr) + 1 > ICS_LINE_LENGTH,
           IcsErr_LineOverflow);
-    strcat(Line, dStr);
+    strcat(line, dStr);
 
     return error;
 }
 
 
-static Ics_Error IcsAddLastDouble(char   *Line,
-                                  double  D)
+static Ics_Error icsAddLastDouble(char   *line,
+                                  double  d)
 {
     ICSINIT;
     char dStr[ICS_STRLEN_OTHER];
 
-    
-    if (D==0 ||(fabs(D) < ICS_MAX_DOUBLE && fabs(D) >= ICS_MIN_DOUBLE)) {
-        sprintf(dStr, "%f%c", D, ICS_EOL);
+
+    if (d == 0 || (fabs(d) < ICS_MAX_DOUBLE && fabs(d) >= ICS_MIN_DOUBLE)) {
+        sprintf(dStr, "%f%c", d, ICS_EOL);
     } else {
-        sprintf(dStr, "%e%c", D, ICS_EOL);
+        sprintf(dStr, "%e%c", d, ICS_EOL);
     }
-    ICSTR(strlen(Line) + strlen(dStr) + 1 > ICS_LINE_LENGTH,
+    ICSTR(strlen(line) + strlen(dStr) + 1 > ICS_LINE_LENGTH,
           IcsErr_LineOverflow);
-    strcat(Line, dStr);
+    strcat(line, dStr);
 
     return error;
 }
 
 
-static Ics_Error IcsAddLine(char *Line,
+static Ics_Error icsAddLine(char *line,
                             FILE *fp)
 {
     ICSINIT;
 
-    
-    ICSTR(fputs(Line, fp) == EOF, IcsErr_FWriteIcs);
+
+    ICSTR(fputs(line, fp) == EOF, IcsErr_FWriteIcs);
 
     return error;
 }
 
 
-static Ics_Error WriteIcsSource(Ics_Header *IcsStruct,
+static Ics_Error writeIcsSource(Ics_Header *icsStruct,
                                 FILE       *fp)
 {
     ICSINIT;
     int  problem;
     char line[ICS_LINE_LENGTH];
 
-    
-    if ((IcsStruct->Version >= 2) &&(IcsStruct->SrcFile[0] != '\0')) {
+
+    if ((icsStruct->Version >= 2) &&(icsStruct->SrcFile[0] != '\0')) {
             /* Write the source filename to the file */
-        problem = IcsFirstToken(line, ICSTOK_SOURCE);
-        problem |= IcsAddToken(line, ICSTOK_FILE);
-        problem |= IcsAddLastText(line, IcsStruct->SrcFile);
+        problem = icsFirstToken(line, ICSTOK_SOURCE);
+        problem |= icsAddToken(line, ICSTOK_FILE);
+        problem |= icsAddLastText(line, icsStruct->SrcFile);
         ICSTR(problem, IcsErr_FailWriteLine);
-        ICSXR(IcsAddLine(line, fp));
+        ICSXR(icsAddLine(line, fp));
 
             /* Now write the source file offset to the file */
-        problem = IcsFirstToken(line, ICSTOK_SOURCE);
-        problem |= IcsAddToken(line, ICSTOK_OFFSET);
-        problem |= IcsAddLastInt(line,(long int)IcsStruct->SrcOffset);
+        problem = icsFirstToken(line, ICSTOK_SOURCE);
+        problem |= icsAddToken(line, ICSTOK_OFFSET);
+        problem |= icsAddLastInt(line,(long int)icsStruct->SrcOffset);
         ICSTR(problem, IcsErr_FailWriteLine);
-        ICSXR(IcsAddLine(line, fp));
+        ICSXR(icsAddLine(line, fp));
     }
 
     return error;
 }
 
 
-static Ics_Error WriteIcsLayout(Ics_Header *IcsStruct,
+static Ics_Error writeIcsLayout(Ics_Header *icsStruct,
                                 FILE       *fp)
 {
     ICSDECL;
@@ -303,442 +304,445 @@ static Ics_Error WriteIcsLayout(Ics_Header *IcsStruct,
     char   line[ICS_LINE_LENGTH];
     size_t size;
 
-    
+
         /* Write the number of parameters to the buffer: */
-    ICSTR(IcsStruct->Dimensions < 1, IcsErr_NoLayout);
-    ICSTR(IcsStruct->Dimensions > ICS_MAXDIM, IcsErr_TooManyDims);
-    problem = IcsFirstToken(line, ICSTOK_LAYOUT);
-    problem |= IcsAddToken(line, ICSTOK_PARAMS);
-    problem |= IcsAddLastInt(line, IcsStruct->Dimensions + 1);
+    ICSTR(icsStruct->Dimensions < 1, IcsErr_NoLayout);
+    ICSTR(icsStruct->Dimensions > ICS_MAXDIM, IcsErr_TooManyDims);
+    problem = icsFirstToken(line, ICSTOK_LAYOUT);
+    problem |= icsAddToken(line, ICSTOK_PARAMS);
+    problem |= icsAddLastInt(line, icsStruct->Dimensions + 1);
     ICSTR(problem, IcsErr_FailWriteLine);
-    ICSXR(IcsAddLine(line, fp));
+    ICSXR(icsAddLine(line, fp));
 
         /* Now write the order identifiers to the buffer: */
-    problem = IcsFirstToken(line, ICSTOK_LAYOUT);
-    problem |= IcsAddToken(line, ICSTOK_ORDER);
-    problem |= IcsAddText(line, ICS_ORDER_BITS);
-    for (i = 0; i < IcsStruct->Dimensions-1; i++) {
-        ICSTR(*(IcsStruct->Dim[i].Order) == '\0', IcsErr_NoLayout);
-        problem |= IcsAddText(line, IcsStruct->Dim[i].Order);
+    problem = icsFirstToken(line, ICSTOK_LAYOUT);
+    problem |= icsAddToken(line, ICSTOK_ORDER);
+    problem |= icsAddText(line, ICS_ORDER_BITS);
+    for (i = 0; i < icsStruct->Dimensions-1; i++) {
+        ICSTR(*(icsStruct->Dim[i].Order) == '\0', IcsErr_NoLayout);
+        problem |= icsAddText(line, icsStruct->Dim[i].Order);
     }
-    ICSTR(*(IcsStruct->Dim[i].Order) == '\0', IcsErr_NoLayout);
-    problem |= IcsAddLastText(line, IcsStruct->Dim[i].Order);
+    ICSTR(*(icsStruct->Dim[i].Order) == '\0', IcsErr_NoLayout);
+    problem |= icsAddLastText(line, icsStruct->Dim[i].Order);
     ICSTR(problem, IcsErr_FailWriteLine);
-    ICSXR(IcsAddLine(line, fp));
+    ICSXR(icsAddLine(line, fp));
 
         /* Write the sizes: */
-    problem = IcsFirstToken(line, ICSTOK_LAYOUT);
-    problem |= IcsAddToken(line, ICSTOK_SIZES);
-    size = IcsGetDataTypeSize(IcsStruct->Imel.DataType);
-    problem |= IcsAddInt(line,(long int)size * 8);
-    for (i = 0; i < IcsStruct->Dimensions-1; i++) {
-        ICSTR(IcsStruct->Dim[i].Size == 0, IcsErr_NoLayout);
-        problem |= IcsAddInt(line,(long int) IcsStruct->Dim[i].Size);
+    problem = icsFirstToken(line, ICSTOK_LAYOUT);
+    problem |= icsAddToken(line, ICSTOK_SIZES);
+    size = IcsGetDataTypeSize(icsStruct->Imel.DataType);
+    problem |= icsAddInt(line,(long int)size * 8);
+    for (i = 0; i < icsStruct->Dimensions-1; i++) {
+        ICSTR(icsStruct->Dim[i].Size == 0, IcsErr_NoLayout);
+        problem |= icsAddInt(line,(long int) icsStruct->Dim[i].Size);
     }
-    ICSTR(IcsStruct->Dim[i].Size == 0, IcsErr_NoLayout);
-    problem |= IcsAddLastInt(line,(long int) IcsStruct->Dim[i].Size);
+    ICSTR(icsStruct->Dim[i].Size == 0, IcsErr_NoLayout);
+    problem |= icsAddLastInt(line,(long int) icsStruct->Dim[i].Size);
     ICSTR(problem, IcsErr_FailWriteLine);
-    ICSXR(IcsAddLine(line, fp));
+    ICSXR(icsAddLine(line, fp));
 
         /* Coordinates class. Video(default) means 0,0 corresponds with
            top-left. */
-    if (*(IcsStruct->Coord) == '\0') {
-        strcpy(IcsStruct->Coord, ICS_COORD_VIDEO);
+    if (*(icsStruct->Coord) == '\0') {
+        strcpy(icsStruct->Coord, ICS_COORD_VIDEO);
     }
-    problem = IcsFirstToken(line, ICSTOK_LAYOUT);
-    problem |= IcsAddToken(line, ICSTOK_COORD);
-    problem |= IcsAddLastText(line, IcsStruct->Coord);
+    problem = icsFirstToken(line, ICSTOK_LAYOUT);
+    problem |= icsAddToken(line, ICSTOK_COORD);
+    problem |= icsAddLastText(line, icsStruct->Coord);
     ICSTR(problem, IcsErr_FailWriteLine);
-    ICSXR(IcsAddLine(line, fp));
+    ICSXR(icsAddLine(line, fp));
 
         /* Number of significant bits, default is the number of bits/sample: */
-    if (IcsStruct->Imel.SigBits == 0) {
-        size = IcsGetDataTypeSize(IcsStruct->Imel.DataType);
-        IcsStruct->Imel.SigBits = size * 8;
+    if (icsStruct->Imel.SigBits == 0) {
+        size = IcsGetDataTypeSize(icsStruct->Imel.DataType);
+        icsStruct->Imel.SigBits = size * 8;
     }
-    problem = IcsFirstToken(line, ICSTOK_LAYOUT);
-    problem |= IcsAddToken(line, ICSTOK_SIGBIT);
-    problem |= IcsAddLastInt(line,(long int)IcsStruct->Imel.SigBits);
+    problem = icsFirstToken(line, ICSTOK_LAYOUT);
+    problem |= icsAddToken(line, ICSTOK_SIGBIT);
+    problem |= icsAddLastInt(line,(long int)icsStruct->Imel.SigBits);
     ICSTR(problem, IcsErr_FailWriteLine);
-    ICSXR(IcsAddLine(line, fp));
+    ICSXR(icsAddLine(line, fp));
 
     return error;
 }
 
 
-static Ics_Error WriteIcsRep(Ics_Header *IcsStruct,
+static Ics_Error writeIcsRep(Ics_Header *icsStruct,
                              FILE       *fp)
 {
     ICSDECL;
     int        problem, empty, i;
     char       line[ICS_LINE_LENGTH];
-    Ics_Format Format;
-    int        Sign;
-    size_t     Bits;
+    Ics_Format format;
+    int        sign;
+    size_t     bits;
 
-    
-    IcsGetPropsDataType(IcsStruct->Imel.DataType, &Format, &Sign, &Bits);
+
+    IcsGetPropsDataType(icsStruct->Imel.DataType, &format, &sign, &bits);
 
         /* Write basic format, i.e. integer, float or complex, default is
            integer: */
-    problem = IcsFirstToken(line, ICSTOK_REPRES);
-    problem |= IcsAddToken(line, ICSTOK_FORMAT);
-    switch(Format) {
+    problem = icsFirstToken(line, ICSTOK_REPRES);
+    problem |= icsAddToken(line, ICSTOK_FORMAT);
+    switch(format) {
         case IcsForm_integer:
-            problem |= IcsAddLastToken(line, ICSTOK_FORMAT_INTEGER);
+            problem |= icsAddLastToken(line, ICSTOK_FORMAT_INTEGER);
             break;
         case IcsForm_real:
-            problem |= IcsAddLastToken(line, ICSTOK_FORMAT_REAL);
+            problem |= icsAddLastToken(line, ICSTOK_FORMAT_REAL);
             break;
         case IcsForm_complex:
-            problem |= IcsAddLastToken(line, ICSTOK_FORMAT_COMPLEX);
+            problem |= icsAddLastToken(line, ICSTOK_FORMAT_COMPLEX);
             break;
         default:
             return IcsErr_UnknownDataType;
     }
     ICSTR(problem, IcsErr_FailWriteLine);
-    ICSXR(IcsAddLine(line, fp));
+    ICSXR(icsAddLine(line, fp));
 
         /* Signal whether the 'basic format' is signed or unsigned. Rubbish for
            float or complex, but this seems to be the definition. */
-    problem = IcsFirstToken(line, ICSTOK_REPRES);
-    problem |= IcsAddToken(line, ICSTOK_SIGN);
-    if (Sign == 1) {
-        problem |= IcsAddLastToken(line, ICSTOK_SIGN_SIGNED);
+    problem = icsFirstToken(line, ICSTOK_REPRES);
+    problem |= icsAddToken(line, ICSTOK_SIGN);
+    if (sign == 1) {
+        problem |= icsAddLastToken(line, ICSTOK_SIGN_SIGNED);
     } else {
-        problem |= IcsAddLastToken(line, ICSTOK_SIGN_UNSIGNED);
+        problem |= icsAddLastToken(line, ICSTOK_SIGN_UNSIGNED);
     }
     ICSTR(problem, IcsErr_FailWriteLine);
-    ICSXR(IcsAddLine(line, fp));
+    ICSXR(icsAddLine(line, fp));
 
         /* Signal whether the entire data array is compressed and if so by what
            compression technique: */
-    problem = IcsFirstToken(line, ICSTOK_REPRES);
-    problem |= IcsAddToken(line, ICSTOK_COMPR);
-    switch(IcsStruct->Compression) {
+    problem = icsFirstToken(line, ICSTOK_REPRES);
+    problem |= icsAddToken(line, ICSTOK_COMPR);
+    switch(icsStruct->Compression) {
         case IcsCompr_uncompressed:
-            problem |= IcsAddLastToken(line, ICSTOK_COMPR_UNCOMPRESSED);
+            problem |= icsAddLastToken(line, ICSTOK_COMPR_UNCOMPRESSED);
             break;
         case IcsCompr_compress:
-            problem |= IcsAddLastToken(line, ICSTOK_COMPR_COMPRESS);
+            problem |= icsAddLastToken(line, ICSTOK_COMPR_COMPRESS);
             break;
         case IcsCompr_gzip:
-            problem |= IcsAddLastToken(line, ICSTOK_COMPR_GZIP);
+            problem |= icsAddLastToken(line, ICSTOK_COMPR_GZIP);
             break;
         default:
             return IcsErr_UnknownCompression;
     }
     ICSTR(problem, IcsErr_FailWriteLine);
-    ICSXR(IcsAddLine(line, fp));
+    ICSXR(icsAddLine(line, fp));
 
         /* Define the byteorder. This is supposed to resolve little/big endian
            problems. If the calling function put something here, we'll keep
            it. Otherwise we fill in the machine's byte order. */
     empty = 0;
-    for (i = 0; i <(int)IcsGetDataTypeSize(IcsStruct->Imel.DataType); i++) {
-        empty |= !(IcsStruct->ByteOrder[i]);
+    for (i = 0; i <(int)IcsGetDataTypeSize(icsStruct->Imel.DataType); i++) {
+        empty |= !(icsStruct->ByteOrder[i]);
     }
     if (empty) {
-        IcsFillByteOrder(IcsGetDataTypeSize(IcsStruct->Imel.DataType),
-                         IcsStruct->ByteOrder);
+        IcsFillByteOrder(IcsGetDataTypeSize(icsStruct->Imel.DataType),
+                         icsStruct->ByteOrder);
     }
-    problem = IcsFirstToken(line, ICSTOK_REPRES);
-    problem |= IcsAddToken(line, ICSTOK_BYTEO);
-    for (i = 0; i <(int)IcsGetDataTypeSize(IcsStruct->Imel.DataType) - 1; i++) {
-        problem |= IcsAddInt(line, IcsStruct->ByteOrder[i]);
+    problem = icsFirstToken(line, ICSTOK_REPRES);
+    problem |= icsAddToken(line, ICSTOK_BYTEO);
+    for (i = 0; i <(int)IcsGetDataTypeSize(icsStruct->Imel.DataType) - 1; i++) {
+        problem |= icsAddInt(line, icsStruct->ByteOrder[i]);
     }
-    problem |= IcsAddLastInt(line, IcsStruct->ByteOrder[i]);
+    problem |= icsAddLastInt(line, icsStruct->ByteOrder[i]);
     ICSTR(problem, IcsErr_FailWriteLine);
-    ICSXR(IcsAddLine(line, fp));
+    ICSXR(icsAddLine(line, fp));
 
         /* SCIL_Image compatability stuff: SCIL_TYPE */
-    if (IcsStruct->ScilType[0] != '\0') {
-        problem = IcsFirstToken(line, ICSTOK_REPRES);
-        problem |= IcsAddToken(line, ICSTOK_SCILT);
-        problem |= IcsAddLastText(line, IcsStruct->ScilType);
+    if (icsStruct->ScilType[0] != '\0') {
+        problem = icsFirstToken(line, ICSTOK_REPRES);
+        problem |= icsAddToken(line, ICSTOK_SCILT);
+        problem |= icsAddLastText(line, icsStruct->ScilType);
         ICSTR(problem, IcsErr_FailWriteLine);
-        ICSXR(IcsAddLine(line, fp));
+        ICSXR(icsAddLine(line, fp));
     }
 
     return error;
 }
 
 
-static Ics_Error WriteIcsParam(Ics_Header *IcsStruct,
+static Ics_Error writeIcsParam(Ics_Header *icsStruct,
                                FILE       *fp)
 {
     ICSINIT;
     int  problem, i;
     char line[ICS_LINE_LENGTH];
 
-    
+
         /* Define the origin, scaling factors and the units */
-    problem = IcsFirstToken(line, ICSTOK_PARAM);
-    problem |= IcsAddToken(line, ICSTOK_ORIGIN);
-    problem |= IcsAddDouble(line, IcsStruct->Imel.Origin);
-    for (i = 0; i < IcsStruct->Dimensions-1; i++) {
-        problem |= IcsAddDouble(line, IcsStruct->Dim[i].Origin);
+    problem = icsFirstToken(line, ICSTOK_PARAM);
+    problem |= icsAddToken(line, ICSTOK_ORIGIN);
+    problem |= icsAddDouble(line, icsStruct->Imel.Origin);
+    for (i = 0; i < icsStruct->Dimensions-1; i++) {
+        problem |= icsAddDouble(line, icsStruct->Dim[i].Origin);
     }
-    problem |= IcsAddLastDouble(line, IcsStruct->Dim[i].Origin);
+    problem |= icsAddLastDouble(line, icsStruct->Dim[i].Origin);
     ICSTR(problem, IcsErr_FailWriteLine);
-    ICSXR(IcsAddLine(line, fp));
+    ICSXR(icsAddLine(line, fp));
 
-    problem = IcsFirstToken(line, ICSTOK_PARAM);
-    problem |= IcsAddToken(line, ICSTOK_SCALE);
-    problem |= IcsAddDouble(line, IcsStruct->Imel.Scale);
-    for (i = 0; i < IcsStruct->Dimensions-1; i++) {
-        problem |= IcsAddDouble(line, IcsStruct->Dim[i].Scale);
+    problem = icsFirstToken(line, ICSTOK_PARAM);
+    problem |= icsAddToken(line, ICSTOK_SCALE);
+    problem |= icsAddDouble(line, icsStruct->Imel.Scale);
+    for (i = 0; i < icsStruct->Dimensions-1; i++) {
+        problem |= icsAddDouble(line, icsStruct->Dim[i].Scale);
     }
-    problem |= IcsAddLastDouble(line, IcsStruct->Dim[i].Scale);
+    problem |= icsAddLastDouble(line, icsStruct->Dim[i].Scale);
     ICSTR(problem, IcsErr_FailWriteLine);
-    ICSXR(IcsAddLine(line, fp));
+    ICSXR(icsAddLine(line, fp));
 
-    problem = IcsFirstToken(line, ICSTOK_PARAM);
-    problem |= IcsAddToken(line, ICSTOK_UNITS);
-    if (IcsStruct->Imel.Unit[0] == '\0') {
-        problem |= IcsAddText(line, ICS_UNITS_RELATIVE);
+    problem = icsFirstToken(line, ICSTOK_PARAM);
+    problem |= icsAddToken(line, ICSTOK_UNITS);
+    if (icsStruct->Imel.Unit[0] == '\0') {
+        problem |= icsAddText(line, ICS_UNITS_RELATIVE);
     } else {
-        problem |= IcsAddText(line, IcsStruct->Imel.Unit);
+        problem |= icsAddText(line, icsStruct->Imel.Unit);
     }
-    for (i = 0; i < IcsStruct->Dimensions-1; i++) {
-        if (IcsStruct->Dim[i].Unit[0] == '\0') {
-            problem |= IcsAddText(line, ICS_UNITS_UNDEFINED);
+    for (i = 0; i < icsStruct->Dimensions-1; i++) {
+        if (icsStruct->Dim[i].Unit[0] == '\0') {
+            problem |= icsAddText(line, ICS_UNITS_UNDEFINED);
         } else {
-            problem |= IcsAddText(line, IcsStruct->Dim[i].Unit);
+            problem |= icsAddText(line, icsStruct->Dim[i].Unit);
         }
     }
-    if (IcsStruct->Dim[i].Unit[0] == '\0') {
-        problem |= IcsAddLastText(line, ICS_UNITS_UNDEFINED);
+    if (icsStruct->Dim[i].Unit[0] == '\0') {
+        problem |= icsAddLastText(line, ICS_UNITS_UNDEFINED);
     } else {
-        problem |= IcsAddLastText(line, IcsStruct->Dim[i].Unit);
+        problem |= icsAddLastText(line, icsStruct->Dim[i].Unit);
     }
     ICSTR(problem, IcsErr_FailWriteLine);
-    ICSXR(IcsAddLine(line, fp));
+    ICSXR(icsAddLine(line, fp));
 
         /* Write labels associated with the dimensions to the .ics file, if
            any: */
     problem = 0;
-    for (i = 0; i <(int)IcsStruct->Dimensions; i++) {
-        problem |= *(IcsStruct->Dim[i].Label) == '\0';
+    for (i = 0; i <(int)icsStruct->Dimensions; i++) {
+        problem |= *(icsStruct->Dim[i].Label) == '\0';
     }
     if (!problem) {
-        problem = IcsFirstToken(line, ICSTOK_PARAM);
-        problem |= IcsAddToken(line, ICSTOK_LABELS);
-        problem |= IcsAddText(line, ICS_LABEL_BITS);
-        for (i = 0; i < IcsStruct->Dimensions-1; i++) {
-            problem |= IcsAddText(line, IcsStruct->Dim[i].Label);
+        problem = icsFirstToken(line, ICSTOK_PARAM);
+        problem |= icsAddToken(line, ICSTOK_LABELS);
+        problem |= icsAddText(line, ICS_LABEL_BITS);
+        for (i = 0; i < icsStruct->Dimensions-1; i++) {
+            problem |= icsAddText(line, icsStruct->Dim[i].Label);
         }
-        problem |= IcsAddLastText(line, IcsStruct->Dim[i].Label);
+        problem |= icsAddLastText(line, icsStruct->Dim[i].Label);
         ICSTR(problem, IcsErr_FailWriteLine);
-        ICSXR(IcsAddLine(line, fp));
+        ICSXR(icsAddLine(line, fp));
     }
 
     return error;
 }
 
 
-static Ics_Error WriteIcsSensorData(Ics_Header *IcsStruct,
+static Ics_Error writeIcsSensorData(Ics_Header *icsStruct,
                                     FILE       *fp)
 {
     ICSINIT;
     int  problem, i, chans;
     char line[ICS_LINE_LENGTH];
 
-    
-    if (IcsStruct->WriteSensor) {
 
-        chans = IcsStruct->SensorChannels;
+    if (icsStruct->WriteSensor) {
+
+        chans = icsStruct->SensorChannels;
         ICSTR(chans > ICS_MAX_LAMBDA, IcsErr_TooManyChans);
 
-        problem = IcsFirstToken(line, ICSTOK_SENSOR);
-        problem |= IcsAddToken(line, ICSTOK_TYPE);
-        for (i = 0; i < chans-1; i++) {
-            problem |= IcsAddText(line, IcsStruct->Type[i]);
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_TYPE);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddText(line, icsStruct->Type[i]);
         }
-        problem |= IcsAddLastText(line, IcsStruct->Type[chans-1]);
+        problem |= icsAddLastText(line, icsStruct->Type[chans - 1]);
         if (!problem) {
-            ICSXR(IcsAddLine(line, fp));
+            ICSXR(icsAddLine(line, fp));
         }
 
-        problem = IcsFirstToken(line, ICSTOK_SENSOR);
-        problem |= IcsAddToken(line, ICSTOK_MODEL);
-        problem |= IcsAddLastText(line, IcsStruct->Model);
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_MODEL);
+        problem |= icsAddLastText(line, icsStruct->Model);
         if (!problem) {
-            ICSXR(IcsAddLine(line, fp));
+            ICSXR(icsAddLine(line, fp));
         }
 
-        problem = IcsFirstToken(line, ICSTOK_SENSOR);
-        problem |= IcsAddToken(line, ICSTOK_SPARAMS);
-        problem |= IcsAddToken(line, ICSTOK_CHANS);
-        problem |= IcsAddLastInt(line, chans);
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_CHANS);
+        problem |= icsAddLastInt(line, chans);
         if (!problem) {
-            ICSXR(IcsAddLine(line, fp));
+            ICSXR(icsAddLine(line, fp));
         }
 
-        problem = IcsFirstToken(line, ICSTOK_SENSOR);
-        problem |= IcsAddToken(line, ICSTOK_SPARAMS);
-        problem |= IcsAddToken(line, ICSTOK_PINHRAD);
-        for (i = 0; i < chans-1; i++) {
-            problem |= IcsAddDouble(line, IcsStruct->PinholeRadius[i]);
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_PINHRAD);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddDouble(line, icsStruct->PinholeRadius[i]);
         }
-        problem |= IcsAddLastDouble(line, IcsStruct->PinholeRadius[chans-1]);
+        problem |= icsAddLastDouble(line, icsStruct->PinholeRadius[chans - 1]);
         if (!problem) {
-            ICSXR(IcsAddLine(line, fp));
+            ICSXR(icsAddLine(line, fp));
         }
 
-        problem = IcsFirstToken(line, ICSTOK_SENSOR);
-        problem |= IcsAddToken(line, ICSTOK_SPARAMS);
-        problem |= IcsAddToken(line, ICSTOK_LAMBDEX);
-        for (i = 0; i < chans-1; i++) {
-            problem |= IcsAddDouble(line, IcsStruct->LambdaEx[i]);
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_LAMBDEX);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddDouble(line, icsStruct->LambdaEx[i]);
         }
-        problem |= IcsAddLastDouble(line, IcsStruct->LambdaEx[chans-1]);
+        problem |= icsAddLastDouble(line, icsStruct->LambdaEx[chans - 1]);
         if (!problem) {
-            ICSXR(IcsAddLine(line, fp));
+            ICSXR(icsAddLine(line, fp));
         }
 
-        problem = IcsFirstToken(line, ICSTOK_SENSOR);
-        problem |= IcsAddToken(line, ICSTOK_SPARAMS);
-        problem |= IcsAddToken(line, ICSTOK_LAMBDEM);
-        for (i = 0; i < chans-1; i++) {
-            problem |= IcsAddDouble(line, IcsStruct->LambdaEm[i]);
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_LAMBDEM);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddDouble(line, icsStruct->LambdaEm[i]);
         }
-        problem |= IcsAddLastDouble(line, IcsStruct->LambdaEm[chans-1]);
+        problem |= icsAddLastDouble(line, icsStruct->LambdaEm[chans - 1]);
         if (!problem) {
-            ICSXR(IcsAddLine(line, fp));
+            ICSXR(icsAddLine(line, fp));
         }
 
-        problem = IcsFirstToken(line, ICSTOK_SENSOR);
-        problem |= IcsAddToken(line, ICSTOK_SPARAMS);
-        problem |= IcsAddToken(line, ICSTOK_PHOTCNT);
-        for (i = 0; i < chans-1; i++) {
-            problem |= IcsAddInt(line, IcsStruct->ExPhotonCnt[i]);
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_PHOTCNT);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddInt(line, icsStruct->ExPhotonCnt[i]);
         }
-        problem |= IcsAddLastInt(line, IcsStruct->ExPhotonCnt[chans-1]);
+        problem |= icsAddLastInt(line, icsStruct->ExPhotonCnt[chans - 1]);
         if (!problem) {
-            ICSXR(IcsAddLine(line, fp));
-        }
-
-        problem = IcsFirstToken(line, ICSTOK_SENSOR);
-        problem |= IcsAddToken(line, ICSTOK_SPARAMS);
-        problem |= IcsAddToken(line, ICSTOK_REFRIME);
-        problem |= IcsAddLastDouble(line, IcsStruct->RefrInxMedium);
-        if (!problem) {
-            ICSXR(IcsAddLine(line, fp));
+            ICSXR(icsAddLine(line, fp));
         }
 
-        problem = IcsFirstToken(line, ICSTOK_SENSOR);
-        problem |= IcsAddToken(line, ICSTOK_SPARAMS);
-        problem |= IcsAddToken(line, ICSTOK_NUMAPER);
-        problem |= IcsAddLastDouble(line, IcsStruct->NumAperture);
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_REFRIME);
+        problem |= icsAddLastDouble(line, icsStruct->RefrInxMedium);
         if (!problem) {
-            ICSXR(IcsAddLine(line, fp));
+            ICSXR(icsAddLine(line, fp));
         }
 
-        problem = IcsFirstToken(line, ICSTOK_SENSOR);
-        problem |= IcsAddToken(line, ICSTOK_SPARAMS);
-        problem |= IcsAddToken(line, ICSTOK_REFRILM);
-        problem |= IcsAddLastDouble(line, IcsStruct->RefrInxLensMedium);
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_NUMAPER);
+        problem |= icsAddLastDouble(line, icsStruct->NumAperture);
         if (!problem) {
-            ICSXR(IcsAddLine(line, fp));
+            ICSXR(icsAddLine(line, fp));
         }
 
-        problem = IcsFirstToken(line, ICSTOK_SENSOR);
-        problem |= IcsAddToken(line, ICSTOK_SPARAMS);
-        problem |= IcsAddToken(line, ICSTOK_PINHSPA);
-        problem |= IcsAddLastDouble(line, IcsStruct->PinholeSpacing);
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_REFRILM);
+        problem |= icsAddLastDouble(line, icsStruct->RefrInxLensMedium);
         if (!problem) {
-            ICSXR(IcsAddLine(line, fp));
+            ICSXR(icsAddLine(line, fp));
+        }
+
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_PINHSPA);
+        problem |= icsAddLastDouble(line, icsStruct->PinholeSpacing);
+        if (!problem) {
+            ICSXR(icsAddLine(line, fp));
         }
 
             /* Add STED parameters */
-        problem = IcsFirstToken(line, ICSTOK_SENSOR);
-        problem |= IcsAddToken(line, ICSTOK_SPARAMS);
-        problem |= IcsAddToken(line, ICSTOK_STEDDEPLMODE);
-        for (i = 0; i < chans-1; i++) {
-            problem |= IcsAddText(line, IcsStruct->StedDepletionMode[i]);
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_STEDDEPLMODE);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddText(line, icsStruct->StedDepletionMode[i]);
         }
-        problem |= IcsAddLastText(line, IcsStruct->StedDepletionMode[i]);
+        problem |= icsAddLastText(line, icsStruct->StedDepletionMode[i]);
         if (!problem) {
-            ICSXR(IcsAddLine(line, fp));
+            ICSXR(icsAddLine(line, fp));
         }
 
-        problem = IcsFirstToken(line, ICSTOK_SENSOR);
-        problem |= IcsAddToken(line, ICSTOK_SPARAMS);
-        problem |= IcsAddToken(line, ICSTOK_STEDLAMBDA);
-        for (i = 0; i < chans-1; i++) {
-            problem |= IcsAddDouble(line, IcsStruct->StedLambda[i]);
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_STEDLAMBDA);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddDouble(line, icsStruct->StedLambda[i]);
         }
-        problem |= IcsAddLastDouble(line, IcsStruct->StedLambda[chans-1]);
+        problem |= icsAddLastDouble(line, icsStruct->StedLambda[chans - 1]);
         if (!problem) {
-            ICSXR(IcsAddLine(line, fp));
+            ICSXR(icsAddLine(line, fp));
         }
 
-        problem = IcsFirstToken(line, ICSTOK_SENSOR);
-        problem |= IcsAddToken(line, ICSTOK_SPARAMS);
-        problem |= IcsAddToken(line, ICSTOK_STEDSATFACTOR);
-        for (i = 0; i < chans-1; i++) {
-            problem |= IcsAddDouble(line, IcsStruct->StedSatFactor[i]);
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_STEDSATFACTOR);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddDouble(line, icsStruct->StedSatFactor[i]);
         }
-        problem |= IcsAddLastDouble(line, IcsStruct->StedSatFactor[chans-1]);
+        problem |= icsAddLastDouble(line, icsStruct->StedSatFactor[chans - 1]);
         if (!problem) {
-            ICSXR(IcsAddLine(line, fp));
+            ICSXR(icsAddLine(line, fp));
         }
 
-        problem = IcsFirstToken(line, ICSTOK_SENSOR);
-        problem |= IcsAddToken(line, ICSTOK_SPARAMS);
-        problem |= IcsAddToken(line, ICSTOK_STEDIMMFRACTION);
-        for (i = 0; i < chans-1; i++) {
-            problem |= IcsAddDouble(line, IcsStruct->StedImmFraction[i]);
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_STEDIMMFRACTION);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddDouble(line, icsStruct->StedImmFraction[i]);
         }
-        problem |= IcsAddLastDouble(line, IcsStruct->StedImmFraction[chans-1]);
+        problem |= icsAddLastDouble(line,
+                                    icsStruct->StedImmFraction[chans - 1]);
         if (!problem) {
-            ICSXR(IcsAddLine(line, fp));
+            ICSXR(icsAddLine(line, fp));
         }
 
-        problem = IcsFirstToken(line, ICSTOK_SENSOR);
-        problem |= IcsAddToken(line, ICSTOK_SPARAMS);
-        problem |= IcsAddToken(line, ICSTOK_STEDVPPM);
-        for (i = 0; i < chans-1; i++) {
-            problem |= IcsAddDouble(line, IcsStruct->StedVPPM[i]);
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_STEDVPPM);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddDouble(line, icsStruct->StedVPPM[i]);
         }
-        problem |= IcsAddLastDouble(line, IcsStruct->StedVPPM[chans-1]);
+        problem |= icsAddLastDouble(line, icsStruct->StedVPPM[chans - 1]);
         if (!problem) {
-            ICSXR(IcsAddLine(line, fp));
+            ICSXR(icsAddLine(line, fp));
         }
 
             /* Add detector parameters. */
-        problem = IcsFirstToken(line, ICSTOK_SENSOR);
-        problem |= IcsAddToken(line, ICSTOK_SPARAMS);
-        problem |= IcsAddToken(line, ICSTOK_DETPPU);
-        for (i = 0; i < chans-1; i++) {
-            problem |= IcsAddDouble(line, IcsStruct->DetectorPPU[i]);
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_DETPPU);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddDouble(line, icsStruct->DetectorPPU[i]);
         }
-        problem |= IcsAddLastDouble(line, IcsStruct->DetectorPPU[chans-1]);
+        problem |= icsAddLastDouble(line, icsStruct->DetectorPPU[chans - 1]);
         if (!problem) {
-            ICSXR(IcsAddLine(line, fp));
+            ICSXR(icsAddLine(line, fp));
         }
 
-        problem = IcsFirstToken(line, ICSTOK_SENSOR);
-        problem |= IcsAddToken(line, ICSTOK_SPARAMS);
-        problem |= IcsAddToken(line, ICSTOK_DETBASELINE);
-        for (i = 0; i < chans-1; i++) {
-            problem |= IcsAddDouble(line, IcsStruct->DetectorBaseline[i]);
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_DETBASELINE);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddDouble(line, icsStruct->DetectorBaseline[i]);
         }
-        problem |= IcsAddLastDouble(line, IcsStruct->DetectorBaseline[chans-1]);
+        problem |= icsAddLastDouble(line,
+                                    icsStruct->DetectorBaseline[chans - 1]);
         if (!problem) {
-            ICSXR(IcsAddLine(line, fp));
+            ICSXR(icsAddLine(line, fp));
         }
 
-        problem = IcsFirstToken(line, ICSTOK_SENSOR);
-        problem |= IcsAddToken(line, ICSTOK_SPARAMS);
-        problem |= IcsAddToken(line, ICSTOK_DETLNAVGCNT);
-        for (i = 0; i < chans-1; i++) {
-            problem |= IcsAddDouble(line, IcsStruct->DetectorLineAvgCnt[i]);
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_DETLNAVGCNT);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddDouble(line, icsStruct->DetectorLineAvgCnt[i]);
         }
-        problem |= IcsAddLastDouble(line, IcsStruct->DetectorLineAvgCnt[chans-1]);
+        problem |= icsAddLastDouble(line,
+                                    icsStruct->DetectorLineAvgCnt[chans - 1]);
         if (!problem) {
-            ICSXR(IcsAddLine(line, fp));
+            ICSXR(icsAddLine(line, fp));
         }
 
 
@@ -748,22 +752,22 @@ static Ics_Error WriteIcsSensorData(Ics_Header *IcsStruct,
 }
 
 
-static Ics_Error WriteIcsHistory(Ics_Header *IcsStruct,
+static Ics_Error writeIcsHistory(Ics_Header *icsStruct,
                                  FILE       *fp)
 {
     ICSINIT;
     int          problem, i;
     char         line[ICS_LINE_LENGTH];
-    Ics_History* hist = (Ics_History*)IcsStruct->History;
+    Ics_History* hist = (Ics_History*)icsStruct->History;
 
 
     if (hist != NULL) {
         for (i = 0; i < hist->NStr; i++) {
             if (hist->Strings[i] != NULL) {
-                problem = IcsFirstToken(line, ICSTOK_HISTORY);
-                problem |= IcsAddLastText(line, hist->Strings[i]);
+                problem = icsFirstToken(line, ICSTOK_HISTORY);
+                problem |= icsAddLastText(line, hist->Strings[i]);
                 if (!problem) {
-                    ICSXR(IcsAddLine(line, fp));
+                    ICSXR(icsAddLine(line, fp));
                 }
             }
         }
@@ -773,25 +777,25 @@ static Ics_Error WriteIcsHistory(Ics_Header *IcsStruct,
 }
 
 
-static Ics_Error MarkEndOfFile(Ics_Header *IcsStruct,
+static Ics_Error markEndOfFile(Ics_Header *icsStruct,
                                FILE       *fp)
 {
     ICSINIT;
     char line[ICS_LINE_LENGTH];
 
-    
-    if ((IcsStruct->Version != 1) &&(IcsStruct->SrcFile[0] == '\0')) {
-        error = IcsFirstToken(line, ICSTOK_END);
+
+    if ((icsStruct->Version != 1) &&(icsStruct->SrcFile[0] == '\0')) {
+        error = icsFirstToken(line, ICSTOK_END);
         ICSTR(error, IcsErr_FailWriteLine);
         IcsAppendChar(line, ICS_EOL);
-        ICSXR(IcsAddLine(line, fp));
+        ICSXR(icsAddLine(line, fp));
     }
 
     return error;
 }
 
 
-Ics_Error IcsWriteIcs(Ics_Header *IcsStruct,
+Ics_Error IcsWriteIcs(Ics_Header *icsStruct,
                       const char *filename)
 {
     ICSDECL;
@@ -800,17 +804,17 @@ Ics_Error IcsWriteIcs(Ics_Header *IcsStruct,
     char  buf[ICS_MAXPATHLEN];
     FILE *fp;
 
-    
+
     if ((filename != NULL) &&(filename[0] != '\0')) {
-        IcsGetIcsName(IcsStruct->Filename, filename, 0);
-    } else if (IcsStruct->Filename[0] != '\0') {
-        IcsStrCpy(buf, IcsStruct->Filename, ICS_MAXPATHLEN);
-        IcsGetIcsName(IcsStruct->Filename, buf, 0);
+        IcsGetIcsName(icsStruct->Filename, filename, 0);
+    } else if (icsStruct->Filename[0] != '\0') {
+        IcsStrCpy(buf, icsStruct->Filename, ICS_MAXPATHLEN);
+        IcsGetIcsName(icsStruct->Filename, buf, 0);
     } else {
         return IcsErr_FOpenIcs;
     }
 
-    fp = IcsFOpen(IcsStruct->Filename, "wb");
+    fp = IcsFOpen(icsStruct->Filename, "wb");
     ICSTR(fp == NULL, IcsErr_FOpenIcs);
 
     ICS_SET_LOCALE;
@@ -818,35 +822,35 @@ Ics_Error IcsWriteIcs(Ics_Header *IcsStruct,
     line[0] = ICS_FIELD_SEP;
     line[1] = ICS_EOL;
     line[2] = '\0';
-    error = IcsAddLine(line, fp);
+    error = icsAddLine(line, fp);
 
         /* Which ICS version is this file? */
     if (!error) {
-        IcsFirstText(line, ICS_VERSION);
-        if (IcsStruct->Version == 1) {
-            IcsAddLastText(line, "1.0");
+        icsFirstText(line, ICS_VERSION);
+        if (icsStruct->Version == 1) {
+            icsAddLastText(line, "1.0");
         } else {
-            IcsAddLastText(line, "2.0");
+            icsAddLastText(line, "2.0");
         }
-        ICSCX(IcsAddLine(line, fp));
+        ICSCX(icsAddLine(line, fp));
     }
 
         /* Write the root of the filename: */
     if (!error) {
-        IcsGetFileName(buf, IcsStruct->Filename);
-        IcsFirstText(line, ICS_FILENAME);
-        IcsAddLastText(line, buf);
-        ICSCX(IcsAddLine(line, fp));
+        IcsGetFileName(buf, icsStruct->Filename);
+        icsFirstText(line, ICS_FILENAME);
+        icsAddLastText(line, buf);
+        ICSCX(icsAddLine(line, fp));
     }
 
         /* Write all image descriptors: */
-    ICSCX(WriteIcsSource(IcsStruct, fp));
-    ICSCX(WriteIcsLayout(IcsStruct, fp));
-    ICSCX(WriteIcsRep(IcsStruct, fp));
-    ICSCX(WriteIcsParam(IcsStruct, fp));
-    ICSCX(WriteIcsSensorData(IcsStruct, fp));
-    ICSCX(WriteIcsHistory(IcsStruct, fp));
-    ICSCX(MarkEndOfFile(IcsStruct, fp));
+    ICSCX(writeIcsSource(icsStruct, fp));
+    ICSCX(writeIcsLayout(icsStruct, fp));
+    ICSCX(writeIcsRep(icsStruct, fp));
+    ICSCX(writeIcsParam(icsStruct, fp));
+    ICSCX(writeIcsSensorData(icsStruct, fp));
+    ICSCX(writeIcsHistory(icsStruct, fp));
+    ICSCX(markEndOfFile(icsStruct, fp));
 
     ICS_REVERT_LOCALE;
 

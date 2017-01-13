@@ -1,11 +1,12 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013 Cris Luengo and others
  * Copyright 2015-2017:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
+ *
+ * Copyright (C) 2000-2013 Cris Luengo and others
  *
  * Large chunks of this library written by
  *    Bert Gijsbers
@@ -47,14 +48,14 @@
    set to the image size. The data type is always uint8. You need to free() the
    data block when you're done. */
 Ics_Error IcsLoadPreview(const char  *filename,
-                         size_t       planenumber,
+                         size_t       planeNumber,
                          void       **dest,
                          size_t      *xsize,
                          size_t      *ysize)
 {
     ICSDECL;
     ICS    *ics;
-    size_t  bufsize;
+    size_t  bufSize;
     size_t  xs, ys;
     void *  buf;
 
@@ -62,10 +63,10 @@ Ics_Error IcsLoadPreview(const char  *filename,
     ICSXR(IcsOpen (&ics, filename, "r"));
     xs = ics->Dim[0].Size;
     ys = ics->Dim[1].Size;
-    bufsize = xs*ys;
-    buf = malloc(bufsize);
+    bufSize = xs*ys;
+    buf = malloc(bufSize);
     ICSTR(buf == NULL, IcsErr_Alloc);
-    error = IcsGetPreviewData (ics, buf, bufsize, planenumber);
+    error = IcsGetPreviewData (ics, buf, bufSize, planeNumber);
     ICSXA(IcsClose(ics));
 
     if (error == IcsErr_Ok) {
@@ -85,43 +86,43 @@ Ics_Error IcsLoadPreview(const char  *filename,
 Ics_Error IcsGetPreviewData(ICS    *ics,
                             void   *dest,
                             size_t  n,
-                            size_t  planenumber)
+                            size_t  planeNumber)
 {
     ICSINIT;
     void   *buf;
-    size_t  bps, i, nplanes, roisize;
-    int     jj, sizeconflict = 0;
+    size_t  bps, i, nPlanes, roiSize;
+    int     j, sizeConflict = 0;
 
 
     ICS_FM_RD(ics);
 
     ICSTR((n == 0) || (dest == NULL), IcsErr_Ok);
-    nplanes = 1;
-    for (jj=2; jj<ics->Dimensions; jj++) {
-        nplanes *= ics->Dim[jj].Size;
+    nPlanes = 1;
+    for (j = 2; j< ics->Dimensions; j++) {
+        nPlanes *= ics->Dim[j].Size;
     }
-    ICSTR(planenumber > nplanes, IcsErr_IllegalROI);
+    ICSTR(planeNumber > nPlanes, IcsErr_IllegalROI);
     if (ics->BlockRead != NULL) {
         ICSXR(IcsCloseIds (ics));
     }
     ICSXR(IcsOpenIds (ics));
-    roisize = ics->Dim[0].Size * ics->Dim[1].Size;
-    if (n != roisize) {
-        sizeconflict = 1;
-        ICSTR(n < roisize, IcsErr_BufferTooSmall);
+    roiSize = ics->Dim[0].Size * ics->Dim[1].Size;
+    if (n != roiSize) {
+        sizeConflict = 1;
+        ICSTR(n < roiSize, IcsErr_BufferTooSmall);
     }
     bps = IcsGetBytesPerSample (ics);
     if (bps > 1) {
-        buf = malloc (roisize*bps);
+        buf = malloc (roiSize*bps);
         ICSTR(buf == NULL, IcsErr_Alloc);
     }
     else {
         buf = dest;
     }
-    if (planenumber > 0) {
-        ICSCX(IcsSkipIdsBlock (ics, planenumber*roisize*bps));
+    if (planeNumber > 0) {
+        ICSCX(IcsSkipIdsBlock (ics, planeNumber * roiSize*bps));
     }
-    ICSCX(IcsReadIdsBlock (ics, buf, roisize*bps));
+    ICSCX(IcsReadIdsBlock (ics, buf, roiSize*bps));
     ICSCX(IcsCloseIds (ics));
     if (error != IcsErr_Ok &&
         error != IcsErr_FSizeConflict &&
@@ -141,14 +142,14 @@ Ics_Error IcsGetPreviewData(ICS    *ics,
             int          max = *in, min = *in;
 
             in++;
-            for (i = 1; i < roisize; i++, in++) {
+            for (i = 1; i < roiSize; i++, in++) {
                 if (max < *in) max = *in;
                 if (min > *in) min = *in;
             }
             in = buf;
             offset = min;
             gain = 255.0 / (max - min);
-            for (i = 0; i < roisize; i++, in++, out++) {
+            for (i = 0; i < roiSize; i++, in++, out++) {
                 *out = (ics_t_uint8)((*in - offset) * gain);
             }
         }
@@ -162,14 +163,14 @@ Ics_Error IcsGetPreviewData(ICS    *ics,
             int          max = *in, min = *in;
 
             in++;
-            for (i = 1; i < roisize; i++, in++) {
+            for (i = 1; i < roiSize; i++, in++) {
                 if (max < *in) max = *in;
                 if (min > *in) min = *in;
             }
             in = buf;
             offset = min;
             gain = 255.0 / (max - min);
-            for (i = 0; i < roisize; i++, in++, out++) {
+            for (i = 0; i < roiSize; i++, in++, out++) {
                 *out = (ics_t_uint8)((*in - offset) * gain);
             }
         }
@@ -183,14 +184,14 @@ Ics_Error IcsGetPreviewData(ICS    *ics,
             int           max = *in, min = *in;
 
             in++;
-            for (i = 1; i < roisize; i++, in++) {
+            for (i = 1; i < roiSize; i++, in++) {
                 if (max < *in) max = *in;
                 if (min > *in) min = *in;
             }
             in = buf;
             offset = min;
             gain = 255.0 / (max - min);
-            for (i = 0; i < roisize; i++, in++, out++) {
+            for (i = 0; i < roiSize; i++, in++, out++) {
                 *out = (ics_t_uint8)((*in - offset) * gain);
             }
         }
@@ -204,14 +205,14 @@ Ics_Error IcsGetPreviewData(ICS    *ics,
             int           max = *in, min = *in;
 
             in++;
-            for (i = 1; i < roisize; i++, in++) {
+            for (i = 1; i < roiSize; i++, in++) {
                 if (max < *in) max = *in;
                 if (min > *in) min = *in;
             }
             in = buf;
             offset = min;
             gain = 255.0 / (max - min);
-            for (i = 0; i < roisize; i++, in++, out++) {
+            for (i = 0; i < roiSize; i++, in++, out++) {
                 *out = (ics_t_uint8)((*in - offset) * gain);
             }
         }
@@ -223,14 +224,14 @@ Ics_Error IcsGetPreviewData(ICS    *ics,
             int offset; double gain;
             ics_t_uint32 max = *in, min = *in;
             in++;
-            for (i = 1; i < roisize; i++, in++) {
+            for (i = 1; i < roiSize; i++, in++) {
                 if (max < *in) max = *in;
                 if (min > *in) min = *in;
             }
             in = buf;
             offset = min;
             gain = 255.0 / (max - min);
-            for (i = 0; i < roisize; i++, in++, out++) {
+            for (i = 0; i < roiSize; i++, in++, out++) {
                 *out = (ics_t_uint8)((*in - offset) * gain);
             }
         }
@@ -244,14 +245,14 @@ Ics_Error IcsGetPreviewData(ICS    *ics,
             int           max = *in, min = *in;
 
             in++;
-            for (i = 1; i < roisize; i++, in++) {
+            for (i = 1; i < roiSize; i++, in++) {
                 if (max < *in) max = *in;
                 if (min > *in) min = *in;
             }
             in = buf;
             offset = min;
             gain = 255.0 / (max - min);
-            for (i = 0; i < roisize; i++, in++, out++) {
+            for (i = 0; i < roiSize; i++, in++, out++) {
                 *out = (ics_t_uint8)((*in - offset) * gain);
             }
         }
@@ -264,14 +265,14 @@ Ics_Error IcsGetPreviewData(ICS    *ics,
             float         max = *in, min = *in;
 
             in++;
-            for (i = 1; i < roisize; i++, in++) {
+            for (i = 1; i < roiSize; i++, in++) {
                 if (max < *in) max = *in;
                 if (min > *in) min = *in;
             }
             in = buf;
             offset = min;
             gain = 255.0 / (max - min);
-            for (i = 0; i < roisize; i++, in++, out++) {
+            for (i = 0; i < roiSize; i++, in++, out++) {
                 *out = (ics_t_uint8)((*in - offset) * gain);
             }
         }
@@ -284,14 +285,14 @@ Ics_Error IcsGetPreviewData(ICS    *ics,
             double        max = *in, min = *in;
 
             in++;
-            for (i = 1; i < roisize; i++, in++) {
+            for (i = 1; i < roiSize; i++, in++) {
                 if (max < *in) max = *in;
                 if (min > *in) min = *in;
             }
             in = buf;
             offset = min;
             gain = 255.0 / (max - min);
-            for (i = 0; i < roisize; i++, in++, out++) {
+            for (i = 0; i < roiSize; i++, in++, out++) {
                 *out = (ics_t_uint8)((*in - offset) * gain);
             }
         }
@@ -308,7 +309,7 @@ Ics_Error IcsGetPreviewData(ICS    *ics,
             mod *= *in * *in;
             in++;
             max = mod; min = mod;
-            for (i = 1; i < roisize; i++) {
+            for (i = 1; i < roiSize; i++) {
                 mod = *in * *in;
                 in++;
                 mod *= *in * *in;
@@ -321,7 +322,7 @@ Ics_Error IcsGetPreviewData(ICS    *ics,
             max = sqrt(max);
             offset = min;
             gain = 255.0 / (max - min);
-            for (i = 0; i < roisize; i++, out++) {
+            for (i = 0; i < roiSize; i++, out++) {
                 mod = *in * *in;
                 in++;
                 mod *= *in * *in;
@@ -342,7 +343,7 @@ Ics_Error IcsGetPreviewData(ICS    *ics,
             mod *= *in * *in;
             in++;
             max = mod; min = mod;
-            for (i = 1; i < roisize; i++) {
+            for (i = 1; i < roiSize; i++) {
                 mod = *in * *in;
                 in++;
                 mod *= *in * *in;
@@ -355,7 +356,7 @@ Ics_Error IcsGetPreviewData(ICS    *ics,
             max = sqrt(max);
             offset = min;
             gain = 255.0 / (max - min);
-            for (i = 0; i < roisize; i++, out++) {
+            for (i = 0; i < roiSize; i++, out++) {
                 mod = *in * *in;
                 in++;
                 mod *= *in * *in;
@@ -371,7 +372,7 @@ Ics_Error IcsGetPreviewData(ICS    *ics,
         free (buf);
     }
 
-    if ((error == IcsErr_Ok) && sizeconflict) {
+    if ((error == IcsErr_Ok) && sizeConflict) {
         error = IcsErr_OutputNotFilled;
     }
     return error;

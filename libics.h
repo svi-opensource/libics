@@ -1,13 +1,14 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013 Cris Luengo and others
  * Copyright 2015-2017:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
  *
  * Contact: libics@svi.nl
+ *
+ * Copyright (C) 2000-2013 Cris Luengo and others
  *
  * Large chunks of this library written by
  *    Bert Gijsbers
@@ -84,12 +85,12 @@ extern "C" {
 
 
 /* These determine the sizes of static arrays and strings: */
-#define ICS_MAXDIM 10        /* maximum number of image dimensions            */
-#define ICS_MAX_LAMBDA 32    /* maximum number of channels                    */
-#define ICS_STRLEN_TOKEN 20  /* length of a token string                      */
-#define ICS_STRLEN_OTHER 128 /* length of other strings                       */
+#define ICS_MAXDIM 10        /* maximum number of image dimensions.           */
+#define ICS_MAX_LAMBDA 32    /* maximum number of channels.                   */
+#define ICS_STRLEN_TOKEN 20  /* length of a token string.                     */
+#define ICS_STRLEN_OTHER 128 /* length of other strings.                      */
 #define ICS_LINE_LENGTH 256  /* maximum length of the lines in the .ics file. */
-#define ICS_MAXPATHLEN 512   /* maximum length of the file names              */
+#define ICS_MAXPATHLEN 512   /* maximum length of the file names.             */
 
 
 /* These are the known data types for imels. If you use another type, you can't
@@ -362,17 +363,17 @@ ICSEXPORT const char* IcsGetLibVersion(void);
 /* Returns 0 if it is not an ICS file, or the version number if it is.  If
   forcename is non-zero, no extension is appended. */
 ICSEXPORT int IcsVersion(const char *filename,
-                          int         forcename);
+                         int         forceName);
 
 
 /* Read a preview (2D) image out of an ICS file. The buffer is malloc'd, xsize
    and ysize are set to the image size. The data type is always uint8. You need
    to free() the data block when you're done. */
 ICSEXPORT Ics_Error IcsLoadPreview(const char  *filename,
-                                    size_t       planenumber,
-                                    void       **dest,
-                                    size_t      *xsize,
-                                    size_t      *ysize);
+                                   size_t       planeNumber,
+                                   void       **dest,
+                                   size_t      *xsize,
+                                   size_t      *ysize);
 
 
 /* Open an ICS file for reading (mode = "r") or writing (mode = "w"). When
@@ -382,8 +383,8 @@ ICSEXPORT Ics_Error IcsLoadPreview(const char  *filename,
    you don't want the locale forced to "C" (to read ICS files written with some
    other locale, set the locale properly then open the file with "rl") */
 ICSEXPORT Ics_Error IcsOpen(ICS        **ics,
-                             const char  *filename,
-                             const char  *mode);
+                            const char  *filename,
+                            const char  *mode);
 
 
 /* Close the ICS file. The ics 'stream' is no longer valid after this.  No files
@@ -393,16 +394,16 @@ ICSEXPORT Ics_Error IcsClose(ICS* ics);
 
 /* Retrieve the layout of an ICS image. Only valid if reading. */
 ICSEXPORT Ics_Error IcsGetLayout(const ICS    *ics,
-                                  Ics_DataType *dt,
-                                  int          *ndims,
-                                  size_t       *dims);
+                                 Ics_DataType *dt,
+                                 int          *nDims,
+                                 size_t       *dims);
 
 
 /* Set the layout for an ICS image. Only valid if writing. */
 ICSEXPORT Ics_Error IcsSetLayout(ICS*          ics,
-                                  Ics_DataType  dt,
-                                  int           ndims,
-                                  const size_t *dims);
+                                 Ics_DataType  dt,
+                                 int           nDims,
+                                 const size_t *dims);
 
 
 /* These three functions retrieve info from the ICS file.  IcsGetDataSize(ics)
@@ -435,7 +436,7 @@ ICSEXPORT Ics_Error IcsGetDataWithStrides(ICS          *ics,
                                           void         *dest,
                                           size_t        n,
                                           const size_t *stride,
-                                          int           ndims);
+                                          int           nDims);
 
 
 /* Read a portion of the image data from an ICS file. Only valid if reading. */
@@ -454,7 +455,7 @@ ICSEXPORT Ics_Error IcsSkipDataBlock(ICS   *ics,
 ICSEXPORT Ics_Error IcsGetPreviewData(ICS    *ics,
                                       void   *dest,
                                       size_t  n,
-                                      size_t  planenumber);
+                                      size_t  planeNumber);
 
 
 /* Set the image data for an ICS image. The pointer to this data must be
@@ -470,7 +471,7 @@ ICSEXPORT Ics_Error IcsSetDataWithStrides(ICS          *ics,
                                           const void   *src,
                                           size_t        n,
                                           const size_t *strides,
-                                          int           ndims);
+                                          int           nDims);
 
 /* Set the image source parameter for an ICS version 2.0 file. Only valid if
    writing. */
@@ -540,13 +541,13 @@ ICSEXPORT Ics_Error IcsSetCoordinateSystem(ICS        *ics,
 
 /* Get the number of significant bits. Only valid if reading. */
 ICSEXPORT Ics_Error IcsGetSignificantBits(const ICS *ics,
-                                          size_t    *nbits);
+                                          size_t    *nBits);
 
 
 
 /* Set the number of significant bits. Only valid if writing. */
 ICSEXPORT Ics_Error IcsSetSignificantBits(ICS   *ics,
-                                          size_t nbits);
+                                          size_t nBits);
 
 
 /* Set the position of the pixel values: the offset and scaling, and the units
@@ -570,14 +571,14 @@ ICSEXPORT Ics_Error IcsSetImelUnits(ICS        *ics,
 /* Get the string for the SCIL_TYPE parameter. This string is used only by
    SCIL_Image. Only valid if reading. */
 ICSEXPORT Ics_Error IcsGetScilType(const ICS *ics,
-                                   char      *sciltype);
+                                   char      *scilType);
 
 
 /* Set the string for the SCIL_TYPE parameter. This string is used only by
    SCIL_Image. It is required if you want to read the image using
    SCIL_Image. Only valid if writing. */
 ICSEXPORT Ics_Error IcsSetScilType(ICS        *ics,
-                                   const char *sciltype);
+                                   const char *scilType);
 
 
 /* As IcsSetScilType, but creates a string according to the DataType in the ICS
@@ -625,7 +626,7 @@ ICSEXPORT Ics_Error IcsGetHistoryKeyValue(ICS*             ics,
 
 
 /* Initializes history iterator. key can be NULL. */
-ICSEXPORT Ics_Error IcsNewHistoryIterator(ICS             *ics,
+ICSEXPORT Ics_Error IcsNewHistoryIterator(ICS                 *ics,
                                           Ics_HistoryIterator *it,
                                           const char          *key);
 
@@ -664,4 +665,4 @@ ICSEXPORT Ics_Error IcsReplaceHistoryStringI(ICS                 *ics,
 }
 #endif
 
-#endif /* LIBICS_H */
+#endif

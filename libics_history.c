@@ -1,13 +1,14 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013 Cris Luengo and others
  * Copyright 2015, 2017:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
  *
  * Contact: libics@svi.nl
+ *
+ * Copyright (C) 2000-2013 Cris Luengo and others
  *
  * Large chunks of this library written by
  *    Bert Gijsbers
@@ -76,12 +77,13 @@
 
 
 /* Add HISTORY line to the ICS file. key can be NULL. */
-Ics_Error IcsAddHistoryString(ICS *ics,
-                               const char *key,
-                               const char *value)
+Ics_Error IcsAddHistoryString(ICS        *ics,
+                              const char *key,
+                              const char *value)
 {
     ICSDECL;
     static char const seps[3] = {ICS_FIELD_SEP,ICS_EOL,'\0'};
+
 
     ICS_FM_WMD(ics);
 
@@ -96,9 +98,9 @@ Ics_Error IcsAddHistoryString(ICS *ics,
 
 /* Add HISTORY lines to the ICS file (key can be "", value shouldn't). */
 Ics_Error IcsInternAddHistory(Ics_Header *ics,
-                               const char *key,
-                               const char *value,
-                               const char *seps)
+                              const char *key,
+                              const char *value,
+                              const char *seps)
 {
     ICSINIT;
     size_t       len;
@@ -230,8 +232,7 @@ Ics_Error IcsNewHistoryIterator(ICS                 *ics,
     } else {
         int n;
         IcsStrCpy(it->key, key, ICS_STRLEN_TOKEN);
-            /* Append a \t, so that the search for the key only finds whole
-               words */
+            /* Append a \t, so that the search for the key finds whole words */
         n = strlen(it->key);
         it->key[n] = ICS_FIELD_SEP;
         it->key[n+1] = '\0';
@@ -382,8 +383,7 @@ Ics_Error IcsDeleteHistory(ICS        *ics,
             hist->Strings[it.previous] = NULL;
             IcsIteratorNext(hist, &it);
         }
-            /* If we just deleted strings at the end of the array, recover those
-               spots. */
+            /* If we deleted strings at the end, recover those spots. */
         hist->NStr--;
         while ((hist->NStr >= 0) &&(hist->Strings[hist->NStr] == NULL)) {
             hist->NStr--;
@@ -402,6 +402,7 @@ Ics_Error IcsDeleteHistoryStringI(ICS                 *ics,
     ICSINIT;
     Ics_History *hist = (Ics_History*)ics->History;
 
+
     ICS_FM_RMD(ics);
 
     ICSTR(hist == NULL, IcsErr_Ok);      /* give error message? */
@@ -411,7 +412,7 @@ Ics_Error IcsDeleteHistoryStringI(ICS                 *ics,
     free(hist->Strings[it->previous]);
     hist->Strings[it->previous] = NULL;
     if (it->previous == hist->NStr-1) {
-            /* We just deleted the last string. Let's recover that spot... */
+            /* We just deleted the last string. Let's recover that spot. */
         hist->NStr--;
     }
     it->previous = -1;
@@ -469,6 +470,8 @@ void IcsFreeHistory(Ics_Header *ics)
 {
     int          i;
     Ics_History *hist = (Ics_History*)ics->History;
+
+
     if (hist != NULL) {
         for (i = 0; i < hist->NStr; i++) {
             if (hist->Strings[i] != NULL) {
