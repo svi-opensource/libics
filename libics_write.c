@@ -269,11 +269,14 @@ static Ics_Error icsAddSensorState(char            *line,
         case IcsSensorState_default:
             error = icsAddToken(line, ICSTOK_STATE_DEFAULT);
             break;
+        case IcsSensorState_estimated:
+            error = icsAddToken(line, ICSTOK_STATE_ESTIMATED);
+            break;
         case IcsSensorState_reported:
             error = icsAddToken(line, ICSTOK_STATE_REPORTED);
             break;
-        case IcsSensorState_estimated:
-            error = icsAddToken(line, ICSTOK_STATE_ESTIMATED);
+        case IcsSensorState_verified:
+            error = icsAddToken(line, ICSTOK_STATE_VERIFIED);
             break;
         default:
             error = IcsErr_UnknownSensorState;
@@ -294,11 +297,14 @@ static Ics_Error icsAddLastSensorState(char            *line,
         case IcsSensorState_default:
             error = icsAddLastToken(line, ICSTOK_STATE_DEFAULT);
             break;
+        case IcsSensorState_estimated:
+            error = icsAddLastToken(line, ICSTOK_STATE_ESTIMATED);
+            break;
         case IcsSensorState_reported:
             error = icsAddLastToken(line, ICSTOK_STATE_REPORTED);
             break;
-        case IcsSensorState_estimated:
-            error = icsAddLastToken(line, ICSTOK_STATE_ESTIMATED);
+        case IcsSensorState_verified:
+            error = icsAddLastToken(line, ICSTOK_STATE_VERIFIED);
             break;
         default:
             error = IcsErr_UnknownSensorState;

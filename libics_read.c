@@ -275,6 +275,9 @@ static Ics_Error getIcsSensorState(char            *str,
         case ICSTOK_STATE_REPORTED:
             *state = IcsSensorState_reported;
             break;
+        case ICSTOK_STATE_VERIFIED:
+            *state = IcsSensorState_verified;
+            break;
         default:
              error = IcsErr_UnknownSensorState;
              break;

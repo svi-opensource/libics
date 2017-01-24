@@ -179,7 +179,8 @@ typedef enum {
 typedef enum {
     IcsSensorState_default,
     IcsSensorState_estimated,
-    IcsSensorState_reported
+    IcsSensorState_reported,
+    IcsSensorState_verified
 } Ics_SensorState;
 
 

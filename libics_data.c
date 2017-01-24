@@ -115,8 +115,10 @@ Ics_Symbol G_ValueSymbols[] =
     {"unsigned",          ICSTOK_SIGN_UNSIGNED},
 
     {"default",           ICSTOK_STATE_DEFAULT},
+    {"estimated",         ICSTOK_STATE_ESTIMATED},
     {"reported",          ICSTOK_STATE_REPORTED},
-    {"estimated",         ICSTOK_STATE_ESTIMATED}    
+    {"verified",          ICSTOK_STATE_VERIFIED},
+    
 };
 
 
