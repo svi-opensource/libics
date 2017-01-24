@@ -153,7 +153,7 @@ typedef struct {
 } Ics_ImelRepresentation;
 
 
-/* A list of sensor parameters that are also equiped with a status. */
+/* A list of sensor parameters that are also equiped with a state. */
 typedef enum {
     ICS_SENSOR_FIRST,
     ICS_SENSOR_PINHOLE_RADIUS,
@@ -176,12 +176,12 @@ typedef enum {
 } Ics_SensorParameter;
 
 
-/* Supported sensor status values. */
+/* Supported sensor state values. */
 typedef enum {
-    IcsSensorStatus_default,
-    IcsSensorStatus_reported,
-    IcsSensorStatus_estimated
-} Ics_SensorStatus;
+    IcsSensorState_default,
+    IcsSensorState_reported,
+    IcsSensorState_estimated
+} Ics_SensorState;
 
 
 /* Thee data structure that holds all the information in the ICS file */
@@ -230,53 +230,53 @@ typedef struct _ICS {
     int                     sensorChannels;
         /* Backprojected microns: */
     double                  pinholeRadius[ICS_MAX_LAMBDA];
-    Ics_SensorStatus        pinholeRadiusStatus[ICS_MAX_LAMBDA];
+    Ics_SensorState         pinholeRadiusState[ICS_MAX_LAMBDA];
         /* Excitation wavelength in nanometers: */
     double                  lambdaEx[ICS_MAX_LAMBDA];
-    Ics_SensorStatus        lambdaExStatus[ICS_MAX_LAMBDA];
+    Ics_SensorState         lambdaExState[ICS_MAX_LAMBDA];
         /* Emission wavelength in nm: */
     double                  lambdaEm[ICS_MAX_LAMBDA];
-    Ics_SensorStatus        lambdaEmStatus[ICS_MAX_LAMBDA];
+    Ics_SensorState         lambdaEmState[ICS_MAX_LAMBDA];
         /* Number of excitation photons: */
     int                     exPhotonCnt[ICS_MAX_LAMBDA];
-    Ics_SensorStatus        exPhotonCntStatus[ICS_MAX_LAMBDA];
+    Ics_SensorState         exPhotonCntState[ICS_MAX_LAMBDA];
         /* Refractive index of embedding medium: */
     double                  refrInxMedium;
-    Ics_SensorStatus        refrInxMediumStatus;
+    Ics_SensorState         refrInxMediumState;
         /* Numerical Aperture: */
     double                  numAperture;
-    Ics_SensorStatus        numApertureStatus;
+    Ics_SensorState         numApertureState;
         /* Refractive index of design medium: */
     double                  refrInxLensMedium;
-    Ics_SensorStatus        refrInxLensMediumStatus;
+    Ics_SensorState         refrInxLensMediumState;
         /* Nipkow Disk pinhole spacing: */
     double                  pinholeSpacing;
-    Ics_SensorStatus        pinholeSpacingStatus;
+    Ics_SensorState         pinholeSpacingState;
         /* STED depletion mode: */
     char                    stedDepletionMode[ICS_MAX_LAMBDA][ICS_STRLEN_TOKEN];
-    Ics_SensorStatus        stedDepletionModeStatus[ICS_MAX_LAMBDA];
+    Ics_SensorState         stedDepletionModeState[ICS_MAX_LAMBDA];
         /* STED wavelength: */
     double                  stedLambda[ICS_MAX_LAMBDA];
-    Ics_SensorStatus        stedLambdaStatus[ICS_MAX_LAMBDA];
+    Ics_SensorState         stedLambdaState[ICS_MAX_LAMBDA];
         /* STED saturation factor: */
     double                  stedSatFactor[ICS_MAX_LAMBDA];
-    Ics_SensorStatus        stedSatFactorStatus[ICS_MAX_LAMBDA];
+    Ics_SensorState         stedSatFactorState[ICS_MAX_LAMBDA];
         /* STED immunity fraction: */
     double                  stedImmFraction[ICS_MAX_LAMBDA];
-    Ics_SensorStatus        stedImmFractionStatus[ICS_MAX_LAMBDA];
+    Ics_SensorState         stedImmFractionState[ICS_MAX_LAMBDA];
         /* STED vortex to phase plate mix: */
     double                  stedVPPM[ICS_MAX_LAMBDA];
-    Ics_SensorStatus        stedVPPMStatus[ICS_MAX_LAMBDA];
+    Ics_SensorState         stedVPPMState[ICS_MAX_LAMBDA];
 
         /* Detector photons per unit: */
     double                  detectorPPU[ICS_MAX_LAMBDA];
-    Ics_SensorStatus        detectorPPUStatus[ICS_MAX_LAMBDA];
+    Ics_SensorState         detectorPPUState[ICS_MAX_LAMBDA];
         /* Detector Baseline: */
     double                  detectorBaseline[ICS_MAX_LAMBDA];
-    Ics_SensorStatus        detectorBaselineStatus[ICS_MAX_LAMBDA];
+    Ics_SensorState         detectorBaselineState[ICS_MAX_LAMBDA];
         /* Averaging line count */
     double                  detectorLineAvgCnt[ICS_MAX_LAMBDA];
-    Ics_SensorStatus        detectorLineAvgCntStatus[ICS_MAX_LAMBDA];
+    Ics_SensorState         detectorLineAvgCntState[ICS_MAX_LAMBDA];
 
         /* SCIL_Image compatibility parameter: */
     char                    scilType[ICS_STRLEN_TOKEN];
