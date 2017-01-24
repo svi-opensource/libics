@@ -76,6 +76,18 @@ Ics_Error IcsEnableWriteSensor(ICS *ics,
 }
 
 
+/* This function enables writing the sensor parameter statess to disk. */
+Ics_Error IcsEnableWriteSensorStates(ICS *ics,
+                                     int  enable)
+{
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
+
+    ics->writeSensorStates = enable ? 1 : 0;
+    return IcsErr_Ok;
+}
+
+
 /* Get the sensor type string of a sensor channel. */
 char const* IcsGetSensorType(const ICS *ics,
                              int        channel)
@@ -528,7 +540,7 @@ Ics_Error IcsSetSensorDetectorLineAvgCnt(ICS    *ics,
 
 
 /* Get the state of a sensor parameter. */
-ICSEXPORT Ics_SensorState IcsGetSensorState(ICS                 *ics,
+ICSEXPORT Ics_SensorState IcsGetSensorState(const ICS           *ics,
                                             Ics_SensorParameter  parameter,
                                             int                  channel)
 {

@@ -48,9 +48,8 @@
 extern "C" {
 #endif
 
-
-#define ICSLIB_VERSION "1.5.3" /* also defined in configure.ac */
-
+/* Library versioning is in the form major, minor, patch: */
+#define ICSLIB_VERSION "1.6.0" /* also defined in configure.ac */
 
 #if defined(__WIN32__) && !defined(WIN32)
 #define WIN32
@@ -89,7 +88,7 @@ extern "C" {
 #define ICS_MAX_LAMBDA 32    /* maximum number of channels.                   */
 #define ICS_STRLEN_TOKEN 20  /* length of a token string.                     */
 #define ICS_STRLEN_OTHER 128 /* length of other strings.                      */
-#define ICS_LINE_LENGTH 256  /* maximum length of the lines in the .ics file. */
+#define ICS_LINE_LENGTH 1024 /* maximum length of the lines in the .ics file. */
 #define ICS_MAXPATHLEN 512   /* maximum length of the file names.             */
 
 
@@ -179,8 +178,8 @@ typedef enum {
 /* Supported sensor state values. */
 typedef enum {
     IcsSensorState_default,
-    IcsSensorState_reported,
-    IcsSensorState_estimated
+    IcsSensorState_estimated,
+    IcsSensorState_reported
 } Ics_SensorState;
 
 
@@ -222,6 +221,8 @@ typedef struct _ICS {
     size_t                  srcOffset;
         /* Set to 1 if the next params are needed: */
     int                     writeSensor;
+        /* Set to 1 if the next param states are needed: */
+    int                     writeSensorStates;
         /* Sensor type: */
     char                    type[ICS_MAX_LAMBDA][ICS_STRLEN_TOKEN];
         /* Model or make: */
@@ -379,6 +380,8 @@ typedef enum {
     IcsErr_UnknownCompression,
          /* The datatype is not recognized: */
     IcsErr_UnknownDataType,
+        /* The state is unknown. */
+    IcsErr_UnknownSensorState,
         /* libics is linking to a different version of zlib than used during
            compilation: */
     IcsErr_WrongZlibVersion

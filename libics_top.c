@@ -1237,6 +1237,9 @@ const char *IcsGetErrorText(Ics_Error error)
         case IcsErr_UnknownDataType:
             msg = "The datatype is not recognized";
             break;
+        case IcsErr_UnknownSensorState:
+            msg = "The state is not recognized";
+            break;
         case IcsErr_WrongZlibVersion:
             msg = "libics is linking to a different version of zlib than used "
                 "during compilation";

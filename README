@@ -143,6 +143,13 @@ Which ultimately is based upon stuff written by:
    HISTORY
 =============
 
+version 1.6.0
+   Added functionality:
+   - Read and write sensort states.
+
+version 1.5.4
+   - Small patch for supporting older Visual Studio version.
+
 version 1.5.3
    Changes / improvements / fixes:
    - Fixed documentation and made explicit the current default to version

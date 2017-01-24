@@ -55,6 +55,10 @@ extern "C" {
 ICSEXPORT Ics_Error IcsEnableWriteSensor(ICS *ics,
                                          int  enable);
 
+/* This function enables writing the sensor parameter states to disk. */
+ICSEXPORT Ics_Error IcsEnableWriteSensorStates(ICS *ics,
+                                               int  enable);
+
 /* Get the sensor type string. */
 ICSEXPORT char const* IcsGetSensorType(const ICS *ics,
                                        int        channel);
@@ -216,7 +220,7 @@ ICSEXPORT Ics_Error IcsSetSensorDetectorLineAvgCnt(ICS    *ics,
 
 
 /* Get the state of a sensor parameter. */
-ICSEXPORT Ics_SensorState IcsGetSensorState(ICS                 *ics,
+ICSEXPORT Ics_SensorState IcsGetSensorState(const ICS           *ics,
                                             Ics_SensorParameter  parameter,
                                             int                  channel);
 

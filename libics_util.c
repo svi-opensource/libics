@@ -360,6 +360,7 @@ void IcsInit(Ics_Header *icsStruct)
         icsStruct->byteOrder[i] = 0;
     }
     icsStruct->writeSensor = 0;
+    icsStruct->writeSensorStates = 0;
     icsStruct->model[0]= '\0';
     icsStruct->refrInxMedium = 0.0;
     icsStruct->refrInxMediumState = IcsSensorState_default;

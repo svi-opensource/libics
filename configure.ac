@@ -12,7 +12,7 @@ dnl Written by Peter Verveer, Cris Luengo
 dnl
 
 dnl Library version number (make sure to also change it in 'libics.h'):
-AC_INIT([libics], [1.5.3])
+AC_INIT([libics], [1.6.0])
 AC_CONFIG_SRCDIR([libics.h])
 AC_CONFIG_HEADERS([config.h libics_conf.h])
 AC_CONFIG_MACRO_DIR([m4])

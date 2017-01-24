@@ -74,7 +74,8 @@ Ics_Symbol G_SubCatSymbols[] =
     {"SCIL_TYPE",          ICSTOK_SCILT},
     {"type",               ICSTOK_TYPE},
     {"model",              ICSTOK_MODEL},
-    {"s_params",           ICSTOK_SPARAMS }
+    {"s_params",           ICSTOK_SPARAMS},
+    {"s_states",           ICSTOK_SSTATES}
 };
 
 
@@ -96,7 +97,7 @@ Ics_Symbol G_SubSubCatSymbols[] =
     {"STEDVPPM",           ICSTOK_STEDVPPM},
     {"DetectorPPU",        ICSTOK_DETPPU},
     {"DetectorBaseline",   ICSTOK_DETBASELINE},
-    {"DetectorLineAvgCnt", ICSTOK_DETLNAVGCNT }
+    {"DetectorLineAvgCnt", ICSTOK_DETLNAVGCNT}
 };
 
 
@@ -111,7 +112,11 @@ Ics_Symbol G_ValueSymbols[] =
                                                   one longer than expected */
     {"complex",           ICSTOK_FORMAT_COMPLEX},
     {"signed",            ICSTOK_SIGN_SIGNED},
-    {"unsigned",          ICSTOK_SIGN_UNSIGNED }
+    {"unsigned",          ICSTOK_SIGN_UNSIGNED},
+
+    {"default",           ICSTOK_STATE_DEFAULT},
+    {"reported",          ICSTOK_STATE_REPORTED},
+    {"estimated",         ICSTOK_STATE_ESTIMATED}    
 };
 
 
