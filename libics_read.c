@@ -239,7 +239,7 @@ static Ics_Error getIcsCat(char       *str,
         token = strtok(NULL, seps);
         *subCat = getIcsToken(token, &G_SubCategories);
         if (*subCat == ICSTOK_NONE) return IcsErr_MissSubCat;
-        if (*subCat == ICSTOK_SPARAMS) {
+        if (*subCat == ICSTOK_SPARAMS || *subCat == ICSTOK_SSTATES) {
             token = strtok(NULL, seps);
             *subSubCat = getIcsToken(token, &G_SubSubCategories);
             if (*subSubCat == ICSTOK_NONE) return IcsErr_MissSensorSubSubCat;
@@ -759,6 +759,7 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                             default:
                                 error = IcsErr_MissSensorSubSubCat;
                         }
+                        break;
                     default:
                         error = IcsErr_MissSensorSubCat;
                 }
