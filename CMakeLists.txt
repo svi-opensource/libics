@@ -9,7 +9,7 @@
 #   https://www.svi.nl
 #
 #   CMakeLists.txt
-#   Created by Paul Barber <paul.barber@oncology.ox.ac.uk>
+#   Created by Paul Barber <paul.barber@oncology.ox.ac.uk>, Feb 2017
 #
 #   To aid building on Windows 10 and with Visual Studio 2015 (VC14).
 #   Requires libics.def
@@ -25,7 +25,6 @@
 # To clean on linux:
 # 	make clean
 #
-# TODO: There may be unresolved issues with stricmp vs strcasecmp on Linux.
 #
 ##############################################################################
 cmake_minimum_required(VERSION 2.6)
@@ -38,11 +37,11 @@ if(USE_ZLIB)
     find_path(ZLIB_PATH zlib.h ${CMAKE_SOURCE_DIR}/zlib)
 	find_library(ZLIB_LIB NAMES zlib libz.so HINTS ${ZLIB_PATH} ${ZLIB_PATH}/build ${ZLIB_PATH}/build/Release)
 	find_library(ZLIB_STATIC_LIB NAMES zlibstatic libz.a HINTS ${ZLIB_PATH} ${ZLIB_PATH}/build ${ZLIB_PATH}/build/Release)
-    configure_file(libics_conf_with_zlib.h.in ${CMAKE_SOURCE_DIR}/libics_conf.h COPYONLY)
     include_directories(${ZLIB_PATH})
-else(USE_ZLIB)
-    configure_file(libics_conf.h.in ${CMAKE_SOURCE_DIR}/libics_conf.h COPYONLY)
+    add_definitions(-DICS_ZLIB)
 endif(USE_ZLIB)
+
+configure_file(libics_conf.h.in ${CMAKE_SOURCE_DIR}/libics_conf.h COPYONLY)
 
 set (SOURCES libics_read.c
           libics_write.c
@@ -61,6 +60,12 @@ set (SOURCES libics_read.c
 
 include_directories(${CMAKE_SOURCE_DIR})
 
+include(CheckFunctionExists)
+check_function_exists(strcasecmp HAVE_STRCASECMP)
+if(HAVE_STRCASECMP)
+  add_definitions(-DHAVE_STRING_STRCASECMP)
+endif(HAVE_STRCASECMP)
+  
 # Build a dll
 add_library(libics SHARED ${SOURCES})
 
