@@ -8,6 +8,7 @@ MinGW installed.
 For instructions to compile under Windows with MS Visual C++ or Borland
 compilers, see the README file.
 
+For compilation with cmake, see the README file.
 
 
 For a quick install do the following in the package directory:
@@ -27,7 +28,6 @@ Specific options of the configure script for libics are:
   --with-zlib-lib-dir=DIR location of zlib library binary
 
 --disable-zlib also implies --disable-gz-extensions.
-
 
 
 Here are the generic installation instructions:

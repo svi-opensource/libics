@@ -101,6 +101,12 @@ commands. To disable zlib support, remove the definition of ZLIB_SUPPORT
 from the file Makefile.vc.
 
 
+- Compilation with cmake.
+
+A CMakeLists.txt file present to support the use of cmake, which may work when
+the above options fail. Consult the cmake documentation for general instructions
+on how to use cmake, and read the notes in CMakeLists.txt.
+
    CREDITS
 =============
 
@@ -128,6 +134,8 @@ With help from
       (Windows make files)
    Peter Verveer, Scientific Volume Imaging BV, Hilversum, NL
       (autoconf/automake script)
+   Paul Barber, University of Oxford, Oxford, United Kingdom
+      (cmake support)
 
 Most of the code herein hasn't changed since the previous version, by
    Dr. Hans T.M. van der Voort
@@ -146,6 +154,7 @@ Which ultimately is based upon stuff written by:
 version 1.6.0
    Added functionality:
    - Read and write sensort states.
+   - Support for cmake (contributed by Paul Barber).
 
 version 1.5.4
    - Small patch for supporting older Visual Studio version.

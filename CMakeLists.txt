@@ -25,6 +25,13 @@
 # To clean on linux:
 # 	make clean
 #
+# NOTE: This cmake file does very few configuration compared to the configure
+# script. Notably, it uses hard-coded definitions in libics_conf.h.in and only
+# tests for existence of the strcascmp() function. This appears to work on
+# current versions of windows and Linux. The configure script remains the
+# recommended method for compiling libics, where-ever that is
+# feasible. Scientific Volume Image does guarantee continuing support for the
+# cmake files.
 #
 ##############################################################################
 cmake_minimum_required(VERSION 2.6)
