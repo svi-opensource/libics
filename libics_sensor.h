@@ -219,18 +219,50 @@ ICSEXPORT Ics_Error IcsSetSensorDetectorLineAvgCnt(ICS    *ics,
                                                    double  lineAvgCnt);
 
 
-/* Get the state of a sensor parameter. */
-ICSEXPORT Ics_SensorState IcsGetSensorState(const ICS           *ics,
-                                            Ics_SensorParameter  parameter,
-                                            int                  channel);
+/* Get the value and state of a sensor parameter. */
+ICSEXPORT Ics_Error IcsGetSensorParameter(const ICS           *ics,
+                                          Ics_SensorParameter  parameter,
+                                          int                  channel,
+                                          double              *value,
+                                          Ics_SensorState     *state);
+
+/* Get the value and state of a sensor parameter with an integer value. */
+ICSEXPORT Ics_Error IcsGetSensorParameterInt(const ICS           *ics,
+                                             Ics_SensorParameter  parameter,
+                                             int                  channel,
+                                             int              *value,
+                                             Ics_SensorState     *state);
+
+/* Get the value and state of a sensor parameter with a string value. */
+ICSEXPORT Ics_Error IcsGetSensorParameterString(const ICS            *ics,
+                                                Ics_SensorParameter   parameter,
+                                                int                   channel,
+                                                const char          **value,
+                                                Ics_SensorState      *state);
 
 /* Set the state of a sensor parameter. */
-ICSEXPORT Ics_Error IcsSetSensorState(ICS                 *ics,
+ICSEXPORT Ics_Error IcsSetSensorParameter(ICS                 *ics,
+                                          Ics_SensorParameter  parameter,
+                                          int                  channel,
+                                          double               value,
+                                          Ics_SensorState      state);
+
+/* Set the state of an integer sensor parameter. */
+Ics_Error IcsSetSensorParameterInt(ICS                 *ics,
+                                   Ics_SensorParameter  parameter,
+                                   int                  channel,
+                                   int                  value,
+                                   Ics_SensorState      state);
+
+
+/* Set the state of a string sensor parameter. */
+Ics_Error IcsSetSensorParameterString(ICS                 *ics,
                                       Ics_SensorParameter  parameter,
                                       int                  channel,
+                                      const char          *value,
                                       Ics_SensorState      state);
 
-    
+
 #ifdef __cplusplus
 }
 #endif
