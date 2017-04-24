@@ -86,7 +86,7 @@ extern "C" {
 /* These determine the sizes of static arrays and strings: */
 #define ICS_MAXDIM 10        /* maximum number of image dimensions.           */
 #define ICS_MAX_LAMBDA 32    /* maximum number of channels.                   */
-#define ICS_STRLEN_TOKEN 20  /* length of a token string.                     */
+#define ICS_STRLEN_TOKEN 32  /* length of a token string.                     */
 #define ICS_STRLEN_OTHER 128 /* length of other strings.                      */
 #define ICS_LINE_LENGTH 1024 /* maximum length of the lines in the .ics file. */
 #define ICS_MAXPATHLEN 512   /* maximum length of the file names.             */
@@ -168,6 +168,13 @@ typedef enum {
     ICS_SENSOR_STED_SATURATION_FACTOR,
     ICS_SENSOR_STED_IMM_FRACTION,
     ICS_SENSOR_STED_VPPM,
+    ICS_SENSOR_SPIM_EXCITATION_TYPE,
+    ICS_SENSOR_SPIM_FILL_FACTOR,
+    ICS_SENSOR_SPIM_PLANE_NA,
+    ICS_SENSOR_SPIM_PLANE_GAUSS_WIDTH,
+    ICS_SENSOR_SPIM_PLANE_PROP_DIR,
+    ICS_SENSOR_SPIM_PLANE_CENTER_OFF,
+    ICS_SENSOR_SPIM_PLANE_FOCUS_OFF,
     ICS_SENSOR_DETECTOR_PPU,
     ICS_SENSOR_DETECTOR_BASELINE,
     ICS_SENSOR_DETECTOR_LINE_AVG_COUNT,
@@ -269,7 +276,27 @@ typedef struct _ICS {
         /* STED vortex to phase plate mix: */
     double                  stedVPPM[ICS_MAX_LAMBDA];
     Ics_SensorState         stedVPPMState[ICS_MAX_LAMBDA];
-
+        /* SPIM excitation type: */
+    char                    spimExcType[ICS_MAX_LAMBDA][ICS_STRLEN_TOKEN];
+    Ics_SensorState         spimExcTypeState[ICS_MAX_LAMBDA];
+        /* SPIM fill factor: */
+    double                  spimFillFactor[ICS_MAX_LAMBDA];
+    Ics_SensorState         spimFillFactorState[ICS_MAX_LAMBDA];
+        /* SPIM plane NA: */
+    double                  spimPlaneNA[ICS_MAX_LAMBDA];
+    Ics_SensorState         spimPlaneNAState[ICS_MAX_LAMBDA];
+        /* SPIM plane Gaussian width: */
+    double                  spimPlaneGaussWidth[ICS_MAX_LAMBDA];
+    Ics_SensorState         spimPlaneGaussWidthState[ICS_MAX_LAMBDA];
+        /* SPIM plane propagation directory (a vector of 3 doubles): */
+    double                  spimPlanePropDir[ICS_MAX_LAMBDA][3];
+    Ics_SensorState         spimPlanePropDirState[ICS_MAX_LAMBDA];
+        /* SPIM plane center offset : */
+    double                  spimPlaneCenterOff[ICS_MAX_LAMBDA];
+    Ics_SensorState         spimPlaneCenterOffState[ICS_MAX_LAMBDA];
+        /* SPIM plane focus offset: */
+    double                  spimPlaneFocusOff[ICS_MAX_LAMBDA];
+    Ics_SensorState         spimPlaneFocusOffState[ICS_MAX_LAMBDA];
         /* Detector photons per unit: */
     double                  detectorPPU[ICS_MAX_LAMBDA];
     Ics_SensorState         detectorPPUState[ICS_MAX_LAMBDA];

@@ -549,8 +549,6 @@ Ics_Error IcsGetSensorParameter(const ICS           *ics,
     if (channel < 0 || channel >= ics->sensorChannels)
         return IcsErr_NotValidAction;
 
-
-
     switch (parameter) {
         case ICS_SENSOR_PINHOLE_RADIUS:
             *value = ics->pinholeRadius[channel];
@@ -600,6 +598,26 @@ Ics_Error IcsGetSensorParameter(const ICS           *ics,
             *value = ics->stedVPPM[channel];
             *state = ics->stedVPPMState[channel];
             break;
+        case ICS_SENSOR_SPIM_FILL_FACTOR:
+            *value = ics->spimFillFactor[channel];
+            *state = ics->spimFillFactorState[channel];
+            break;
+        case ICS_SENSOR_SPIM_PLANE_NA:
+            *value = ics->spimPlaneNA[channel];
+            *state = ics->spimPlaneNAState[channel];
+            break;
+        case ICS_SENSOR_SPIM_PLANE_GAUSS_WIDTH:
+            *value = ics->spimPlaneGaussWidth[channel];
+            *state = ics->spimPlaneGaussWidthState[channel];
+            break;
+        case ICS_SENSOR_SPIM_PLANE_CENTER_OFF:
+            *value = ics->spimPlaneCenterOff[channel];
+            *state = ics->spimPlaneCenterOffState[channel];
+            break;
+        case ICS_SENSOR_SPIM_PLANE_FOCUS_OFF:
+            *value = ics->spimPlaneFocusOff[channel];
+            *state = ics->spimPlaneFocusOffState[channel];
+            break;
         case ICS_SENSOR_DETECTOR_PPU:
             *value = ics->detectorPPU[channel];
             *state = ics->detectorPPUState[channel];
@@ -614,6 +632,31 @@ Ics_Error IcsGetSensorParameter(const ICS           *ics,
             break;
         default:
             *value = 0;
+            *state = IcsSensorState_default;
+            return IcsErr_NotValidAction;
+    }
+}
+
+
+/* Get the state of a vector sensor parameter. */
+Ics_Error IcsGetSensorParameterVector(const ICS            *ics,
+                                      Ics_SensorParameter   parameter,
+                                      int                   channel,
+                                      const double        **values,
+                                      Ics_SensorState      *state)
+{
+    if (channel < 0 || channel >= ics->sensorChannels)
+        return IcsErr_NotValidAction;
+
+
+
+    switch (parameter) {
+        case ICS_SENSOR_SPIM_PLANE_PROP_DIR:
+            *values = ics->spimPlanePropDir[channel];
+            *state = ics->spimPlanePropDirState[channel];
+            break;
+        default:
+            *values = NULL;
             *state = IcsSensorState_default;
             return IcsErr_NotValidAction;
     }
@@ -660,10 +703,14 @@ Ics_Error IcsGetSensorParameterString(const ICS            *ics,
         case ICS_SENSOR_STED_DEPLETION_MODE:
             *value = ics->stedDepletionMode[channel];
             *state = ics->stedDepletionModeState[channel];
-            *value = "";
-            *state = IcsSensorState_default;
+            break;
+        case ICS_SENSOR_SPIM_EXCITATION_TYPE:
+            *value = ics->spimExcType[channel];
+            *state = ics->spimExcTypeState[channel];
             break;
         default:
+            *value = "";
+            *state = IcsSensorState_default;
             return IcsErr_NotValidAction;
     }
 }
@@ -688,8 +735,8 @@ Ics_Error IcsSetSensorParameter(ICS                 *ics,
             ics->pinholeRadiusState[channel] = state;
             break;
         case ICS_SENSOR_LAMBDA_EXCITATION:
-            ics->pinholeRadius[channel] = value;
-            ics->pinholeRadiusState[channel] = state;
+            ics->lambdaEx[channel] = value;
+            ics->lambdaExState[channel] = state;
             break;
         case ICS_SENSOR_LAMBDA_EMISSION:
             ics->lambdaEm[channel] = value;
@@ -731,6 +778,26 @@ Ics_Error IcsSetSensorParameter(ICS                 *ics,
             ics->stedVPPM[channel] = value;
             ics->stedVPPMState[channel] = state;
             break;
+        case ICS_SENSOR_SPIM_FILL_FACTOR:
+            ics->spimFillFactor[channel] = value;
+            ics->spimFillFactorState[channel] = state;
+            break;
+        case ICS_SENSOR_SPIM_PLANE_NA:
+            ics->spimPlaneNA[channel] = value;
+            ics->spimPlaneNAState[channel] = state;
+            break;
+        case ICS_SENSOR_SPIM_PLANE_GAUSS_WIDTH:
+            ics->spimPlaneGaussWidth[channel] = value;
+            ics->spimPlaneGaussWidthState[channel] = state;
+            break;
+        case ICS_SENSOR_SPIM_PLANE_CENTER_OFF:
+            ics->spimPlaneCenterOff[channel] = value;
+            ics->spimPlaneCenterOffState[channel] = state;
+            break;
+        case ICS_SENSOR_SPIM_PLANE_FOCUS_OFF:
+            ics->spimPlaneFocusOff[channel] = value;
+            ics->spimPlaneFocusOffState[channel] = state;
+            break;
         case ICS_SENSOR_DETECTOR_PPU:
             ics->detectorPPU[channel] = value;
             ics->detectorPPUState[channel] = state;
@@ -742,6 +809,38 @@ Ics_Error IcsSetSensorParameter(ICS                 *ics,
         case ICS_SENSOR_DETECTOR_LINE_AVG_COUNT:
             ics->detectorLineAvgCnt[channel] = value;
             ics->detectorLineAvgCntState[channel] = state;
+            break;
+        default:
+            return IcsErr_NotValidAction;
+    }
+
+    return IcsErr_Ok;
+}
+
+
+/* Set the state of a vectgor sensor parameter. */
+Ics_Error IcsSetSensorParameterVector(ICS                 *ics,
+                                      Ics_SensorParameter  parameter,
+                                      int                  channel,
+                                      int                  nValues,
+                                      double              *values,
+                                      Ics_SensorState      state)
+{
+    int j;
+
+
+    if ((ics == NULL) || (ics->fileMode == IcsFileMode_read))
+        return IcsErr_NotValidAction;
+
+    if (channel < 0 || channel >= ics->sensorChannels)
+        return IcsErr_NotValidAction;
+
+    switch (parameter) {
+        case ICS_SENSOR_SPIM_PLANE_PROP_DIR:
+            for (j = 0; j < nValues; j++) {
+                ics->spimPlanePropDir[channel][j] = values[j];
+            }
+            ics->spimPlanePropDirState[channel] = state;
             break;
         default:
             return IcsErr_NotValidAction;
@@ -792,9 +891,12 @@ Ics_Error IcsSetSensorParameterString(ICS                 *ics,
 
     switch (parameter) {
         case ICS_SENSOR_STED_DEPLETION_MODE:
-            IcsStrCpy(ics->stedDepletionMode[channel], value,
-                      sizeof(ics->stedDepletionMode[channel]));
+            IcsStrCpy(ics->stedDepletionMode[channel], value, ICS_STRLEN_TOKEN);
             ics->stedDepletionModeState[channel] = state;
+            break;
+        case ICS_SENSOR_SPIM_EXCITATION_TYPE:
+            IcsStrCpy(ics->spimExcType[channel], value, ICS_STRLEN_TOKEN);
+            ics->spimExcTypeState[channel] = state;
             break;
         default:
             return IcsErr_NotValidAction;

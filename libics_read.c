@@ -219,16 +219,17 @@ static Ics_Token getIcsToken(char           *str,
 }
 
 
-static Ics_Error getIcsCat(char       *str,
-                           const char *seps,
-                           Ics_Token  *cat,
-                           Ics_Token  *subCat,
-                           Ics_Token  *subSubCat)
+static Ics_Error getIcsCat(char        *str,
+                           const char  *seps,
+                           Ics_Token   *cat,
+                           Ics_Token   *subCat,
+                           Ics_Token   *subSubCat,
+                           const char **index)
 {
     ICSINIT;
-    char *token, buffer[ICS_LINE_LENGTH];
+    char *token, buffer[ICS_LINE_LENGTH], *idx;
 
-
+    
     *subCat = *subSubCat = ICSTOK_NONE;
 
     IcsStrCpy(buffer, str, ICS_LINE_LENGTH);
@@ -241,6 +242,16 @@ static Ics_Error getIcsCat(char       *str,
         if (*subCat == ICSTOK_NONE) return IcsErr_MissSubCat;
         if (*subCat == ICSTOK_SPARAMS || *subCat == ICSTOK_SSTATES) {
             token = strtok(NULL, seps);
+            if (token[strlen(token) - 1] == ']') {
+                idx = strchr(token, '[');
+                if (idx) {
+                    token[strlen(token) - 1] = '\0';
+                    *idx = '\0';
+                    *index = idx + 1;
+                } else {
+                    *index = NULL;
+                }
+            }
             *subSubCat = getIcsToken(token, &G_SubSubCategories);
             if (*subSubCat == ICSTOK_NONE) return IcsErr_MissSensorSubSubCat;
         }
@@ -298,6 +309,7 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
     char             seps[3], *ptr, *data;
     char             line[ICS_LINE_LENGTH];
     Ics_Token        cat, subCat, subSubCat;
+    const char      *idx;
         /* These are temporary buffers to hold the data read until it is copied
            to the Ics_Header structure. This is needed because the Ics_Header
            structure is made to look more like we like to see images, compared
@@ -341,7 +353,7 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
 
     while (!end && !error
            && (icsFGetStr(line, ICS_LINE_LENGTH, fp, seps[1]) != NULL)) {
-        if (getIcsCat(line, seps, &cat, &subCat, &subSubCat) != IcsErr_Ok)
+        if (getIcsCat(line, seps, &cat, &subCat, &subSubCat, &idx) != IcsErr_Ok)
             continue;
         ptr = strtok(line, seps);
         i = 0;
@@ -623,6 +635,64 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
+                             case ICSTOK_SPIMEXCTYPE:
+                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                    IcsStrCpy(icsStruct->spimExcType[i++],
+                                              ptr, ICS_STRLEN_TOKEN);
+                                    ptr = strtok(NULL, seps);
+                                }
+                                break;
+                            case ICSTOK_SPIMFILLFACTOR:
+                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                    icsStruct->spimFillFactor[i++] = atof(ptr);
+                                    ptr = strtok(NULL, seps);
+                                }
+                                break;
+                            case ICSTOK_SPIMPLANENA:
+                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                    icsStruct->spimPlaneNA[i++] = atof(ptr);
+                                    ptr = strtok(NULL, seps);
+                                }
+                                break;
+                            case ICSTOK_SPIMPLANEGAUSSWIDTH:
+                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                    icsStruct->spimPlaneGaussWidth[i++] =
+                                        atof(ptr);
+                                    ptr = strtok(NULL, seps);
+                                }
+                                break;
+                            case ICSTOK_SPIMPLANEPROPDIR:
+                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                    switch (idx[0]) {
+                                        case  'X':
+                                            icsStruct->spimPlanePropDir[i++][0] = atof(ptr);
+                                            break;
+                                        case  'Y':
+                                            icsStruct->spimPlanePropDir[i++][1] = atof(ptr);
+                                            break;
+                                        case  'Z':
+                                            icsStruct->spimPlanePropDir[i++][2] = atof(ptr);
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                    ptr = strtok(NULL, seps);
+                                }
+                                break;
+                            case ICSTOK_SPIMPLANECENTEROFF:
+                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                    icsStruct->spimPlaneCenterOff[i++] =
+                                        atof(ptr);
+                                    ptr = strtok(NULL, seps);
+                                }
+                                break;
+                            case ICSTOK_SPIMPLANEFOCUSOF:
+                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                    icsStruct->spimPlaneFocusOff[i++] =
+                                        atof(ptr);
+                                    ptr = strtok(NULL, seps);
+                                }
+                                break;
                             case ICSTOK_DETPPU:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
                                     icsStruct->detectorPPU[i++] = atof(ptr);
@@ -734,6 +804,59 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
                                     error = getIcsSensorState(ptr, &state);
                                     icsStruct->stedVPPMState[i++] = state;
+                                    ptr = strtok(NULL, seps);
+                                }
+                                break;
+                             case ICSTOK_SPIMEXCTYPE:
+                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                    error = getIcsSensorState(ptr, &state);
+                                    icsStruct->spimExcTypeState[i++] = state;
+                                    ptr = strtok(NULL, seps);
+                                }
+                                break;
+                            case ICSTOK_SPIMFILLFACTOR:
+                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                    error = getIcsSensorState(ptr, &state);
+                                    icsStruct->spimFillFactorState[i++] = state;
+                                    ptr = strtok(NULL, seps);
+                                }
+                                break;
+                            case ICSTOK_SPIMPLANENA:
+                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                    error = getIcsSensorState(ptr, &state);
+                                    icsStruct->spimPlaneNAState[i++] = state;
+                                    ptr = strtok(NULL, seps);
+                                }
+                                break;
+                            case ICSTOK_SPIMPLANEGAUSSWIDTH:
+                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                    error = getIcsSensorState(ptr, &state);
+                                    icsStruct->spimPlaneGaussWidthState[i++] =
+                                        state;
+                                    ptr = strtok(NULL, seps);
+                                }
+                                break;
+                            case ICSTOK_SPIMPLANEPROPDIR:
+                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                    error = getIcsSensorState(ptr, &state);
+                                    icsStruct->spimPlanePropDirState[i++] =
+                                        state;
+                                    ptr = strtok(NULL, seps);
+                                }
+                                break;
+                            case ICSTOK_SPIMPLANECENTEROFF:
+                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                    error = getIcsSensorState(ptr, &state);
+                                    icsStruct->spimPlaneCenterOffState[i++] =
+                                        state;
+                                    ptr = strtok(NULL, seps);
+                                }
+                                break;
+                            case ICSTOK_SPIMPLANEFOCUSOF:
+                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                    error = getIcsSensorState(ptr, &state);
+                                    icsStruct->spimPlaneFocusOffState[i++] =
+                                        state;
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;

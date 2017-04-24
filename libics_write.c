@@ -140,6 +140,28 @@ static Ics_Error icsAddLastToken(char      *line,
 }
 
 
+static Ics_Error icsAddTokenWithIndex(char        *line,
+                                      Ics_Token   token,
+                                      const char *index)
+{
+    ICSINIT;
+    char tokenName[ICS_STRLEN_TOKEN];
+
+
+    error = icsToken2Str(token, tokenName);
+    if (error) return error;
+    if (strlen(line) + strlen(tokenName) + strlen(index) + 4 > ICS_LINE_LENGTH)
+        return IcsErr_LineOverflow;
+    strcat(line, tokenName);
+    strcat(line, "[");
+    strcat(line, index);
+    strcat(line, "]");
+    IcsAppendChar(line, ICS_FIELD_SEP);
+
+    return error;
+}
+
+
 static Ics_Error icsFirstText(char *line,
                               char *text)
 {
@@ -800,6 +822,121 @@ static Ics_Error writeIcsSensorData(Ics_Header *icsStruct,
             if (error) return error;
         }
 
+            /* Add  SPIM parameters */
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_SPIMEXCTYPE);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddText(line, icsStruct->spimExcType[i]);
+        }
+        problem |= icsAddLastText(line, icsStruct->spimExcType[i]);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_SPIMPLANENA);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddDouble(line, icsStruct->spimPlaneNA[i]);
+        }
+        problem |= icsAddLastDouble(line, icsStruct->spimPlaneNA[chans - 1]);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_SPIMFILLFACTOR);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddDouble(line, icsStruct->spimFillFactor[i]);
+        }
+        problem |= icsAddLastDouble(line, icsStruct->spimFillFactor[chans - 1]);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_SPIMPLANEGAUSSWIDTH);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddDouble(line, icsStruct->spimPlaneGaussWidth[i]);
+        }
+        problem |= icsAddLastDouble(line,
+                                    icsStruct->spimPlaneGaussWidth[chans - 1]);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddTokenWithIndex(line, ICSTOK_SPIMPLANEPROPDIR, "X");
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddDouble(line, icsStruct->spimPlanePropDir[i][0]);
+        }
+        problem |= icsAddLastDouble(line,
+                                    icsStruct->spimPlanePropDir[chans - 1][0]);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddTokenWithIndex(line, ICSTOK_SPIMPLANEPROPDIR, "Y");
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddDouble(line, icsStruct->spimPlanePropDir[i][1]);
+        }
+        problem |= icsAddLastDouble(line,
+                                    icsStruct->spimPlanePropDir[chans - 1][1]);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddTokenWithIndex(line, ICSTOK_SPIMPLANEPROPDIR, "Z");
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddDouble(line, icsStruct->spimPlanePropDir[i][2]);
+        }
+        problem |= icsAddLastDouble(line,
+                                    icsStruct->spimPlanePropDir[chans - 1][2]);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_SPIMPLANECENTEROFF);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddDouble(line, icsStruct->spimPlaneCenterOff[i]);
+        }
+        problem |= icsAddLastDouble(line,
+                                    icsStruct->spimPlaneCenterOff[chans - 1]);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_SPIMPLANEFOCUSOF);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddDouble(line, icsStruct->spimPlaneFocusOff[i]);
+        }
+        problem |= icsAddLastDouble(line,
+                                    icsStruct->spimPlaneFocusOff[chans - 1]);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
             /* Add detector parameters. */
         problem = icsFirstToken(line, ICSTOK_SENSOR);
         problem |= icsAddToken(line, ICSTOK_SPARAMS);
@@ -1017,6 +1154,105 @@ static Ics_Error writeIcsSensorStates(Ics_Header *icsStruct,
             problem |= icsAddSensorState(line, state);
         }
         state = icsStruct->stedVPPMState[chans - 1];
+        problem |= icsAddLastSensorState(line, state);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
+            /* Add SPIM parameters */
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SSTATES);
+        problem |= icsAddToken(line, ICSTOK_SPIMEXCTYPE);
+        for (i = 0; i < chans - 1; i++) {
+            state = icsStruct->spimExcTypeState[i];
+            problem |= icsAddSensorState(line, state);
+        }
+        state = icsStruct->spimExcTypeState[chans - 1];
+        problem |= icsAddLastSensorState(line, state);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SSTATES);
+        problem |= icsAddToken(line, ICSTOK_SPIMPLANENA);
+        for (i = 0; i < chans - 1; i++) {
+            state = icsStruct->spimPlaneNAState[i];
+            problem |= icsAddSensorState(line, state);
+        }
+        state = icsStruct->spimPlaneNAState[chans - 1];
+        problem |= icsAddLastSensorState(line, state);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SSTATES);
+        problem |= icsAddToken(line, ICSTOK_SPIMFILLFACTOR);
+        for (i = 0; i < chans - 1; i++) {
+            state = icsStruct->spimFillFactorState[i];
+            problem |= icsAddSensorState(line, state);
+        }
+        state = icsStruct->spimFillFactorState[chans - 1];
+        problem |= icsAddLastSensorState(line, state);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SSTATES);
+        problem |= icsAddToken(line, ICSTOK_SPIMPLANEGAUSSWIDTH);
+        for (i = 0; i < chans - 1; i++) {
+            state = icsStruct->spimPlaneGaussWidthState[i];
+            problem |= icsAddSensorState(line, state);
+        }
+        state = icsStruct->spimPlaneGaussWidthState[chans - 1];
+        problem |= icsAddLastSensorState(line, state);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SSTATES);
+        problem |= icsAddToken(line, ICSTOK_SPIMPLANEPROPDIR);
+        for (i = 0; i < chans - 1; i++) {
+            state = icsStruct->spimPlanePropDirState[i];
+            problem |= icsAddSensorState(line, state);
+        }
+        state = icsStruct->spimPlanePropDirState[chans - 1];
+        problem |= icsAddLastSensorState(line, state);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SSTATES);
+        problem |= icsAddToken(line, ICSTOK_SPIMPLANECENTEROFF);
+        for (i = 0; i < chans - 1; i++) {
+            state = icsStruct->spimPlaneCenterOffState[i];
+            problem |= icsAddSensorState(line, state);
+        }
+        state = icsStruct->spimPlaneCenterOffState[chans - 1];
+        problem |= icsAddLastSensorState(line, state);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SSTATES);
+        problem |= icsAddToken(line, ICSTOK_SPIMPLANEFOCUSOF);
+        for (i = 0; i < chans - 1; i++) {
+            state = icsStruct->spimPlaneFocusOffState[i];
+            problem |= icsAddSensorState(line, state);
+        }
+        state = icsStruct->spimPlaneFocusOffState[chans - 1];
         problem |= icsAddLastSensorState(line, state);
         if (!problem) {
             error = icsAddLine(line, fp);
