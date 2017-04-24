@@ -45,6 +45,10 @@ EXPORTS
     IcsGetSensorMediumRI
     IcsGetSensorModel
     IcsGetSensorNumAperture
+    IcsGetSensorParameter
+    IcsGetSensorParameterInt
+    IcsGetSensorParameterString
+    IcsGetSensorParameterVector
     IcsGetSensorPhotonCount
     IcsGetSensorPinholeRadius
     IcsGetSensorPinholeSpacing
@@ -53,7 +57,6 @@ EXPORTS
     IcsGetSensorSTEDLambda
     IcsGetSensorSTEDSatFactor
     IcsGetSensorSTEDVPPM
-    IcsGetSensorState
     IcsGetSensorType
     IcsGetSignificantBits
     IcsGuessScilType
@@ -86,6 +89,10 @@ EXPORTS
     IcsSetSensorMediumRI
     IcsSetSensorModel
     IcsSetSensorNumAperture
+    IcsSetSensorParameter
+    IcsSetSensorParameterInt
+    IcsSetSensorParameterString
+    IcsSetSensorParameterVector
     IcsSetSensorPhotonCount
     IcsSetSensorPinholeRadius
     IcsSetSensorPinholeSpacing
@@ -94,7 +101,6 @@ EXPORTS
     IcsSetSensorSTEDLambda
     IcsSetSensorSTEDSatFactor
     IcsSetSensorSTEDVPPM
-    IcsSetSensorState
     IcsSetSensorType
     IcsSetSignificantBits
     IcsSetSource
