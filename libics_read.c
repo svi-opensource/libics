@@ -231,7 +231,8 @@ static Ics_Error getIcsCat(char        *str,
 
     
     *subCat = *subSubCat = ICSTOK_NONE;
-
+    *index = NULL;
+    
     IcsStrCpy(buffer, str, ICS_LINE_LENGTH);
     token = strtok(buffer, seps);
     *cat = getIcsToken(token, &G_Categories);
@@ -248,8 +249,6 @@ static Ics_Error getIcsCat(char        *str,
                     token[strlen(token) - 1] = '\0';
                     *idx = '\0';
                     *index = idx + 1;
-                } else {
-                    *index = NULL;
                 }
             }
             *subSubCat = getIcsToken(token, &G_SubSubCategories);
