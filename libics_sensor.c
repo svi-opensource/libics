@@ -618,6 +618,18 @@ Ics_Error IcsGetSensorParameter(const ICS           *ics,
             *value = ics->spimPlaneFocusOff[channel];
             *state = ics->spimPlaneFocusOffState[channel];
             break;
+        case ICS_SENSOR_SCATTER_FREE_PATH:
+            *value = ics->scatterFreePath[channel];
+            *state = ics->scatterFreePathState[channel];
+            break;
+        case ICS_SENSOR_SCATTER_REL_CONTRIB:
+            *value = ics->scatterRelContrib[channel];
+            *state = ics->scatterRelContribState[channel];
+            break;
+        case ICS_SENSOR_SCATTER_BLURRING:
+            *value = ics->scatterBlurring[channel];
+            *state = ics->scatterBlurringState[channel];
+            break;
         case ICS_SENSOR_DETECTOR_PPU:
             *value = ics->detectorPPU[channel];
             *state = ics->detectorPPUState[channel];
@@ -708,6 +720,10 @@ Ics_Error IcsGetSensorParameterString(const ICS            *ics,
             *value = ics->spimExcType[channel];
             *state = ics->spimExcTypeState[channel];
             break;
+        case ICS_SENSOR_SCATTER_MODEL:
+            *value = ics->scatterModel[channel];
+            *state = ics->scatterModelState[channel];
+            break;
         default:
             *value = "";
             *state = IcsSensorState_default;
@@ -797,6 +813,18 @@ Ics_Error IcsSetSensorParameter(ICS                 *ics,
         case ICS_SENSOR_SPIM_PLANE_FOCUS_OFF:
             ics->spimPlaneFocusOff[channel] = value;
             ics->spimPlaneFocusOffState[channel] = state;
+            break;
+        case ICS_SENSOR_SCATTER_FREE_PATH:
+            ics->scatterFreePath[channel] = value;
+            ics->scatterFreePathState[channel] = state;
+            break;
+        case ICS_SENSOR_SCATTER_REL_CONTRIB:
+            ics->scatterRelContrib[channel] = value;
+            ics->scatterRelContribState[channel] = state;
+            break;
+        case ICS_SENSOR_SCATTER_BLURRING:
+            ics->scatterBlurring[channel] = value;
+            ics->scatterBlurringState[channel] = state;
             break;
         case ICS_SENSOR_DETECTOR_PPU:
             ics->detectorPPU[channel] = value;
@@ -897,6 +925,10 @@ Ics_Error IcsSetSensorParameterString(ICS                 *ics,
         case ICS_SENSOR_SPIM_EXCITATION_TYPE:
             IcsStrCpy(ics->spimExcType[channel], value, ICS_STRLEN_TOKEN);
             ics->spimExcTypeState[channel] = state;
+            break;
+        case ICS_SENSOR_SCATTER_MODEL:
+            IcsStrCpy(ics->scatterModel[channel], value, ICS_STRLEN_TOKEN);
+            ics->scatterModelState[channel] = state;
             break;
         default:
             return IcsErr_NotValidAction;

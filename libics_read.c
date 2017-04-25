@@ -229,10 +229,10 @@ static Ics_Error getIcsCat(char        *str,
     ICSINIT;
     char *token, buffer[ICS_LINE_LENGTH], *idx;
 
-    
+
     *subCat = *subSubCat = ICSTOK_NONE;
     *index = NULL;
-    
+
     IcsStrCpy(buffer, str, ICS_LINE_LENGTH);
     token = strtok(buffer, seps);
     *cat = getIcsToken(token, &G_Categories);
@@ -634,7 +634,7 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
-                             case ICSTOK_SPIMEXCTYPE:
+                            case ICSTOK_SPIMEXCTYPE:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
                                     IcsStrCpy(icsStruct->spimExcType[i++],
                                               ptr, ICS_STRLEN_TOKEN);
@@ -664,13 +664,16 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
                                     switch (idx[0]) {
                                         case  'X':
-                                            icsStruct->spimPlanePropDir[i++][0] = atof(ptr);
+                                            icsStruct->spimPlanePropDir[i++][0]
+                                                = atof(ptr);
                                             break;
                                         case  'Y':
-                                            icsStruct->spimPlanePropDir[i++][1] = atof(ptr);
+                                            icsStruct->spimPlanePropDir[i++][1]
+                                                = atof(ptr);
                                             break;
                                         case  'Z':
-                                            icsStruct->spimPlanePropDir[i++][2] = atof(ptr);
+                                            icsStruct->spimPlanePropDir[i++][2]
+                                                = atof(ptr);
                                             break;
                                         default:
                                             break;
@@ -688,6 +691,33 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                             case ICSTOK_SPIMPLANEFOCUSOF:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
                                     icsStruct->spimPlaneFocusOff[i++] =
+                                        atof(ptr);
+                                    ptr = strtok(NULL, seps);
+                                }
+                                break;
+                            case ICSTOK_SCATTERMODEL:
+                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                    IcsStrCpy(icsStruct->scatterModel[i++],
+                                              ptr, ICS_STRLEN_TOKEN);
+                                    ptr = strtok(NULL, seps);
+                                }
+                                break;
+                            case ICSTOK_SCATTERFREEPATH:
+                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                    icsStruct->scatterFreePath[i++] = atof(ptr);
+                                    ptr = strtok(NULL, seps);
+                                }
+                                break;
+                            case ICSTOK_SCATTERRELCONTRIB:
+                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                    icsStruct->scatterRelContrib[i++]
+                                        = atof(ptr);
+                                    ptr = strtok(NULL, seps);
+                                }
+                                break;
+                            case ICSTOK_SCATTERBLURRING:
+                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                    icsStruct->scatterBlurring[i++] =
                                         atof(ptr);
                                     ptr = strtok(NULL, seps);
                                 }
@@ -806,7 +836,7 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                                     ptr = strtok(NULL, seps);
                                 }
                                 break;
-                             case ICSTOK_SPIMEXCTYPE:
+                            case ICSTOK_SPIMEXCTYPE:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
                                     error = getIcsSensorState(ptr, &state);
                                     icsStruct->spimExcTypeState[i++] = state;
@@ -855,6 +885,37 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
                                     error = getIcsSensorState(ptr, &state);
                                     icsStruct->spimPlaneFocusOffState[i++] =
+                                        state;
+                                    ptr = strtok(NULL, seps);
+                                }
+                                break;
+                            case ICSTOK_SCATTERMODEL:
+                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                    error = getIcsSensorState(ptr, &state);
+                                    icsStruct->scatterModelState[i++] = state;
+                                    ptr = strtok(NULL, seps);
+                                }
+                                break;
+                            case ICSTOK_SCATTERFREEPATH:
+                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                    error = getIcsSensorState(ptr, &state);
+                                    icsStruct->scatterFreePathState[i++]
+                                        = state;
+                                    ptr = strtok(NULL, seps);
+                                }
+                                break;
+                            case ICSTOK_SCATTERRELCONTRIB:
+                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                    error = getIcsSensorState(ptr, &state);
+                                    icsStruct->scatterRelContribState[i++]
+                                        = state;
+                                    ptr = strtok(NULL, seps);
+                                }
+                                break;
+                            case ICSTOK_SCATTERBLURRING:
+                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                    error = getIcsSensorState(ptr, &state);
+                                    icsStruct->scatterBlurringState[i++] =
                                         state;
                                     ptr = strtok(NULL, seps);
                                 }

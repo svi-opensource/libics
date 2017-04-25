@@ -102,6 +102,10 @@ Ics_Symbol G_SubSubCatSymbols[] =
     {"SPIMPlanePropDir",    ICSTOK_SPIMPLANEPROPDIR},
     {"SPIMPlaneCenterOff",  ICSTOK_SPIMPLANECENTEROFF},
     {"SPIMPlaneFocusOff",   ICSTOK_SPIMPLANEFOCUSOF},
+    {"ScatterModel",        ICSTOK_SCATTERMODEL},
+    {"ScatterFreePath",     ICSTOK_SCATTERFREEPATH},
+    {"ScatterRelContrib",   ICSTOK_SCATTERRELCONTRIB},
+    {"ScatterBlurring",     ICSTOK_SCATTERBLURRING},
     {"DetectorPPU",         ICSTOK_DETPPU},
     {"DetectorBaseline",    ICSTOK_DETBASELINE},
     {"DetectorLineAvgCnt",  ICSTOK_DETLNAVGCNT}
@@ -125,7 +129,7 @@ Ics_Symbol G_ValueSymbols[] =
     {"estimated",         ICSTOK_STATE_ESTIMATED},
     {"reported",          ICSTOK_STATE_REPORTED},
     {"verified",          ICSTOK_STATE_VERIFIED},
-    
+
 };
 
 

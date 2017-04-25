@@ -937,6 +937,58 @@ static Ics_Error writeIcsSensorData(Ics_Header *icsStruct,
             if (error) return error;
         }
 
+            /* Add  Scatter parameters */
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_SCATTERMODEL);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddText(line, icsStruct->scatterModel[i]);
+        }
+        problem |= icsAddLastText(line, icsStruct->scatterModel[i]);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_SCATTERFREEPATH);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddDouble(line, icsStruct->scatterFreePath[i]);
+        }
+        problem |= icsAddLastDouble(line,
+                                    icsStruct->scatterFreePath[chans - 1]);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_SCATTERRELCONTRIB);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddDouble(line, icsStruct->scatterRelContrib[i]);
+        }
+        problem |= icsAddLastDouble(line,
+                                    icsStruct->scatterRelContrib[chans - 1]);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SPARAMS);
+        problem |= icsAddToken(line, ICSTOK_SCATTERBLURRING);
+        for (i = 0; i < chans - 1; i++) {
+            problem |= icsAddDouble(line, icsStruct->scatterBlurring[i]);
+        }
+        problem |= icsAddLastDouble(line,
+                                    icsStruct->scatterBlurring[chans - 1]);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
             /* Add detector parameters. */
         problem = icsFirstToken(line, ICSTOK_SENSOR);
         problem |= icsAddToken(line, ICSTOK_SPARAMS);
@@ -1253,6 +1305,49 @@ static Ics_Error writeIcsSensorStates(Ics_Header *icsStruct,
             problem |= icsAddSensorState(line, state);
         }
         state = icsStruct->spimPlaneFocusOffState[chans - 1];
+        problem |= icsAddLastSensorState(line, state);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
+            /* Add Scatter parameters */
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SSTATES);
+        problem |= icsAddToken(line, ICSTOK_SCATTERMODEL);
+        for (i = 0; i < chans - 1; i++) {
+            state = icsStruct->scatterModelState[i];
+            problem |= icsAddSensorState(line, state);
+        }
+        state = icsStruct->scatterModelState[chans - 1];
+        problem |= icsAddLastSensorState(line, state);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SSTATES);
+        problem |= icsAddToken(line, ICSTOK_SCATTERRELCONTRIB);
+        for (i = 0; i < chans - 1; i++) {
+            state = icsStruct->scatterRelContribState[i];
+            problem |= icsAddSensorState(line, state);
+        }
+        state = icsStruct->scatterRelContribState[chans - 1];
+        problem |= icsAddLastSensorState(line, state);
+        if (!problem) {
+            error = icsAddLine(line, fp);
+            if (error) return error;
+        }
+
+        problem = icsFirstToken(line, ICSTOK_SENSOR);
+        problem |= icsAddToken(line, ICSTOK_SSTATES);
+        problem |= icsAddToken(line, ICSTOK_SCATTERBLURRING);
+        for (i = 0; i < chans - 1; i++) {
+            state = icsStruct->scatterBlurring[i];
+            problem |= icsAddSensorState(line, state);
+        }
+        state = icsStruct->scatterBlurring[chans - 1];
         problem |= icsAddLastSensorState(line, state);
         if (!problem) {
             error = icsAddLine(line, fp);

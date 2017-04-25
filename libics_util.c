@@ -407,6 +407,14 @@ void IcsInit(Ics_Header *icsStruct)
         icsStruct->spimPlaneCenterOffState[i] = IcsSensorState_default;
         icsStruct->spimPlaneFocusOff[i] = 0.0;
         icsStruct->spimPlaneFocusOffState[i] = IcsSensorState_default;
+        icsStruct->scatterModel[i][0] = '\0';
+        icsStruct->scatterModelState[i] = IcsSensorState_default;
+        icsStruct->scatterFreePath[i] = 0.0;
+        icsStruct->scatterFreePathState[i] = IcsSensorState_default;
+        icsStruct->scatterRelContrib[i] = 0.0;
+        icsStruct->scatterRelContribState[i] = IcsSensorState_default;
+        icsStruct->scatterBlurring[i] = 0.0;
+        icsStruct->scatterBlurringState[i] = IcsSensorState_default;
         icsStruct->detectorPPU[i] = 1.0;
         icsStruct->detectorPPUState[i] = IcsSensorState_default;
         icsStruct->detectorBaseline[i] = 0.0;

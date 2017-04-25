@@ -175,6 +175,10 @@ typedef enum {
     ICS_SENSOR_SPIM_PLANE_PROP_DIR,
     ICS_SENSOR_SPIM_PLANE_CENTER_OFF,
     ICS_SENSOR_SPIM_PLANE_FOCUS_OFF,
+    ICS_SENSOR_SCATTER_MODEL,
+    ICS_SENSOR_SCATTER_FREE_PATH,
+    ICS_SENSOR_SCATTER_REL_CONTRIB,
+    ICS_SENSOR_SCATTER_BLURRING,
     ICS_SENSOR_DETECTOR_PPU,
     ICS_SENSOR_DETECTOR_BASELINE,
     ICS_SENSOR_DETECTOR_LINE_AVG_COUNT,
@@ -297,6 +301,18 @@ typedef struct _ICS {
         /* SPIM plane focus offset: */
     double                  spimPlaneFocusOff[ICS_MAX_LAMBDA];
     Ics_SensorState         spimPlaneFocusOffState[ICS_MAX_LAMBDA];
+        /* Scatter model: */
+    char                    scatterModel[ICS_MAX_LAMBDA][ICS_STRLEN_TOKEN];
+    Ics_SensorState         scatterModelState[ICS_MAX_LAMBDA];
+        /* Scatter free path: */
+    double                  scatterFreePath[ICS_MAX_LAMBDA];
+    Ics_SensorState         scatterFreePathState[ICS_MAX_LAMBDA];
+        /* Scatter relative contribution: */
+    double                  scatterRelContrib[ICS_MAX_LAMBDA];
+    Ics_SensorState         scatterRelContribState[ICS_MAX_LAMBDA];
+        /* Scatter blurring: */
+    double                  scatterBlurring[ICS_MAX_LAMBDA];
+    Ics_SensorState         scatterBlurringState[ICS_MAX_LAMBDA];
         /* Detector photons per unit: */
     double                  detectorPPU[ICS_MAX_LAMBDA];
     Ics_SensorState         detectorPPUState[ICS_MAX_LAMBDA];
