@@ -647,6 +647,8 @@ Ics_Error IcsGetSensorParameter(const ICS           *ics,
             *state = IcsSensorState_default;
             return IcsErr_NotValidAction;
     }
+
+    return IcsErr_Ok;
 }
 
 
@@ -672,6 +674,8 @@ Ics_Error IcsGetSensorParameterVector(const ICS            *ics,
             *state = IcsSensorState_default;
             return IcsErr_NotValidAction;
     }
+
+    return IcsErr_Ok;
 }
 
 
@@ -697,6 +701,8 @@ Ics_Error IcsGetSensorParameterInt(const ICS           *ics,
             *state = IcsSensorState_default;
             return IcsErr_NotValidAction;
     }
+
+    return IcsErr_Ok;
 }
 
 
@@ -711,7 +717,7 @@ Ics_Error IcsGetSensorParameterString(const ICS            *ics,
         return IcsErr_NotValidAction;
 
 
-        switch (parameter) {
+    switch (parameter) {
         case ICS_SENSOR_STED_DEPLETION_MODE:
             *value = ics->stedDepletionMode[channel];
             *state = ics->stedDepletionModeState[channel];
@@ -729,6 +735,8 @@ Ics_Error IcsGetSensorParameterString(const ICS            *ics,
             *state = IcsSensorState_default;
             return IcsErr_NotValidAction;
     }
+
+    return IcsErr_Ok;
 }
 
 

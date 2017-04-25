@@ -413,7 +413,7 @@ Ics_Error IcsDeleteHistoryStringI(ICS                 *ics,
 
     if (hist == NULL) return IcsErr_Ok;      /* give error message? */
     if (it->previous < 0) return IcsErr_Ok;
-    if (hist->strings[it->previous] == NULL,  IcsErr_Ok);
+    if (hist->strings[it->previous] == NULL) return IcsErr_Ok;
 
     free(hist->strings[it->previous]);
     hist->strings[it->previous] = NULL;
@@ -443,7 +443,7 @@ Ics_Error IcsReplaceHistoryStringI(ICS                 *ics,
 
     if (hist == NULL) return IcsErr_Ok;      /* give error message? */
     if (it->previous < 0) return IcsErr_Ok;
-    if (hist->strings[it->previous] == NULL) IcsErr_Ok;
+    if (hist->strings[it->previous] == NULL) return IcsErr_Ok;
 
         /* Checks */
     len = strlen(key) + strlen(value) + 2;
