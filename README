@@ -1,5 +1,5 @@
 
-                             libics v.1.5.3
+                             libics v.1.6.1
           Image Cytometry Standard file reading and writing.
 
 This is the reference library for ICS (Image Cytometry Standard), an
@@ -151,9 +151,13 @@ Which ultimately is based upon stuff written by:
    HISTORY
 =============
 
+version 1.6.1
+   - Added SPIM parameters.
+   - Added scattering parameters.
+
 version 1.6.0
    Added functionality:
-   - Read and write sensort states.
+   - Read and write sensor states.
    - Support for cmake (contributed by Paul Barber).
 
 version 1.5.4
