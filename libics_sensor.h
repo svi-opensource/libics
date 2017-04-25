@@ -264,10 +264,10 @@ ICSEXPORT Ics_Error IcsSetSensorParameterVector(ICS                 *ics,
 
 /* Set the state of an integer sensor parameter. */
 ICSEXPORT Ics_Error IcsSetSensorParameterInt(ICS                 *ics,
-                                   Ics_SensorParameter  parameter,
-                                   int                  channel,
-                                   int                  value,
-                                   Ics_SensorState      state);
+                                             Ics_SensorParameter  parameter,
+                                             int                  channel,
+                                             int                  value,
+                                             Ics_SensorState      state);
 
 
 /* Set the state of a string sensor parameter. */
