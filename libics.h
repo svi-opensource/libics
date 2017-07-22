@@ -43,6 +43,7 @@
 #ifndef LIBICS_H
 #define LIBICS_H
 
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -211,7 +212,7 @@ typedef struct _ICS {
     char                    filename[ICS_MAXPATHLEN];
         /* Number of elements in each dim: */
     int                     dimensions;
-        /* Image representaion: */
+        /* Image representation: */
     Ics_DataRepresentation  dim[ICS_MAXDIM];
         /* Pixel representation: */
     Ics_ImelRepresentation  imel;
