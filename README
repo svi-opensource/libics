@@ -100,12 +100,26 @@ libics.dll.lib. To make a debug version add '/D DEBUG' to these
 commands. To disable zlib support, remove the definition of ZLIB_SUPPORT
 from the file Makefile.vc.
 
+ - Compilation with CMake under UNIX / Linux / Mac OS X / Cygwin
 
-- Compilation with cmake.
+Run the following commands from outside the source directory
+   cmake <path/to/libics/sources>
+   make
+   make install
 
-A CMakeLists.txt file present to support the use of cmake, which may work when
-the above options fail. Consult the cmake documentation for general instructions
-on how to use cmake, and read the notes in CMakeLists.txt.
+The library can be tested for problems using
+   make test
+
+CMake can be used with the following options:
+   cmake ... -DCMAKE_BUILD_TYPE=Debug
+   cmake ... -DUSE_ZLIB=Off
+
+ - Compilation with cmake on Windows:
+
+Type on the command line
+   cmake CMakeLists.txt
+or use cmake GUI. Next, open sln file in Visual Studio and build solution.
+
 
    CREDITS
 =============
