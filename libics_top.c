@@ -51,14 +51,17 @@
  *   IcsSetSource()
  *   IcsSetCompression()
  *   IcsGetPosition()
+ *   IcsGetPositionF()
  *   IcsSetPosition()
  *   IcsGetOrder()
+ *   IcsGetOrderF()
  *   IcsSetOrder()
  *   IcsGetCoordinateSystem()
  *   IcsSetCoordinateSystem()
  *   IcsGetSignificantBits()
  *   IcsSetSignificantBits()
  *   IcsGetImelUnits()
+ *   IcsGetImelUnitsF()
  *   IcsSetImelUnits()
  *   IcsGetScilType()
  *   IcsSetScilType()
@@ -531,28 +534,28 @@ Ics_Error IcsGetROIData(ICS          *ics,
 
 
 /* Read the image data into a region of your buffer. */
-Ics_Error IcsGetDataWithStrides(ICS          *ics,
-                                void         *destPtr,
-                                size_t        n,
-                                const size_t *stridePtr,
-                                int           nDims)
+Ics_Error IcsGetDataWithStrides(ICS             *ics,
+                                void            *destPtr,
+                                size_t           n, // ignored
+                                const ptrdiff_t *stridePtr,
+                                int              nDims)
 {
     ICSINIT;
-    int           i, p;
-    size_t        j;
-    size_t        imelSize, lastpixel, bufSize;
-    size_t        curPos[ICS_MAXDIM];
-    size_t        b_stride[ICS_MAXDIM];
-    size_t const *stride;
-    char         *buf;
-    char         *dest = (char*)destPtr;
-    char         *out;
+    int              i, p;
+    size_t           j;
+    size_t           imelSize, bufSize;
+    size_t           curPos[ICS_MAXDIM];
+    ptrdiff_t        b_stride[ICS_MAXDIM];
+    ptrdiff_t const *stride;
+    char            *buf;
+    char            *dest = (char*)destPtr;
+    char            *out;
 
 
     if ((ics == NULL) || (ics->fileMode == IcsFileMode_write))
         return IcsErr_NotValidAction;
 
-    if ((n == 0) ||(dest == NULL)) return IcsErr_Ok;
+    if (dest == NULL) return IcsErr_Ok;
     p = ics->dimensions;
     if (nDims != p) return IcsErr_IllParameter;
     if (stridePtr != NULL) {
@@ -560,23 +563,18 @@ Ics_Error IcsGetDataWithStrides(ICS          *ics,
     } else {
         b_stride[0] = 1;
         for (i = 1; i < p; i++) {
-            b_stride[i] = b_stride[i - 1] * ics->dim[i - 1].size;
+            b_stride[i] = b_stride[i - 1] * (ptrdiff_t)ics->dim[i - 1].size;
         }
         stride = b_stride;
     }
     imelSize = IcsGetBytesPerSample(ics);
-    lastpixel = 0;
-    for (i = 0; i < p; i++) {
-        lastpixel +=(ics->dim[i].size - 1) * stride[i];
-    }
-    if (lastpixel * imelSize > n) return IcsErr_IllParameter;
 
     error = IcsOpenIds(ics);
     if (error) return error;
-    bufSize = imelSize*ics->dim[0].size;
-    if (stride[0] > 1) {
+    bufSize = imelSize * ics->dim[0].size;
+    if (stride[0] != 1) {
             /* We read a line in a buffer, and then copy the imels to dest */
-        buf =(char*)malloc(bufSize);
+        buf = (char*)malloc(bufSize);
         if (buf == NULL) return IcsErr_Alloc;
         for (i = 0; i < p; i++) {
             curPos[i] = 0;
@@ -584,7 +582,7 @@ Ics_Error IcsGetDataWithStrides(ICS          *ics,
         while (1) {
             out = dest;
             for (i = 1; i < p; i++) {
-                out += curPos[i] * stride[i] * imelSize;
+                out += (ptrdiff_t)curPos[i] * stride[i] * (ptrdiff_t)imelSize;
             }
             if (!error) error = IcsReadIdsBlock(ics, buf, bufSize);
             if (error != IcsErr_Ok) {
@@ -592,7 +590,7 @@ Ics_Error IcsGetDataWithStrides(ICS          *ics,
             }
             for (j = 0; j < ics->dim[0].size; j++) {
                 memcpy(out, buf + j * imelSize, imelSize);
-                out += stride[0]*imelSize;
+                out += stride[0] * (ptrdiff_t)imelSize;
             }
             for (i = 1; i < p; i++) {
                 curPos[i]++;
@@ -614,7 +612,7 @@ Ics_Error IcsGetDataWithStrides(ICS          *ics,
         while (1) {
             out = dest;
             for (i = 1; i < p; i++) {
-                out += curPos[i] * stride[i] * imelSize;
+                out += (ptrdiff_t)curPos[i] * stride[i] * (ptrdiff_t)imelSize;
             }
             if (!error) error = IcsReadIdsBlock(ics, out, bufSize);
             if (error != IcsErr_Ok) {
@@ -671,15 +669,13 @@ Ics_Error IcsSetData(ICS        *ics,
    dimension. Use this is your image data is not in one contiguous block or you
    want to swap some dimensions in the file. nDims is the length of the strides
    array and should match the dimensionality previously given. */
-Ics_Error IcsSetDataWithStrides(ICS          *ics,
-                                const void   *src,
-                                size_t        n,
-                                const size_t *strides,
-                                int           nDims)
+Ics_Error IcsSetDataWithStrides(ICS             *ics,
+                                const void      *src,
+                                size_t           n,
+                                const ptrdiff_t *strides,
+                                int              nDims)
 {
     ICSINIT;
-    size_t lastpixel;
-    int    i;
 
 
     if ((ics == NULL) || (ics->fileMode != IcsFileMode_write))
@@ -689,15 +685,6 @@ Ics_Error IcsSetDataWithStrides(ICS          *ics,
     if (ics->data != NULL) return IcsErr_DuplicateData;
     if (ics->dimensions == 0) return IcsErr_NoLayout;
     if (nDims != ics->dimensions) return IcsErr_IllParameter;
-    lastpixel = 0;
-    for (i = 0; i < nDims; i++) {
-        lastpixel +=(ics->dim[i].size-1) * strides[i];
-    }
-    if (lastpixel * IcsGetDataTypeSize(ics->imel.dataType) > n)
-        return IcsErr_IllParameter;
-    if (n != IcsGetDataSize(ics)) {
-        error = IcsErr_FSizeConflict;
-    }
     ics->data = src;
     ics->dataLength = n;
     ics->dataStrides = strides;
@@ -759,6 +746,27 @@ Ics_Error IcsGetPosition(const ICS *ics,
                          char      *units)
 {
     ICSINIT;
+    const char* ptr;
+
+    error = IcsGetPositionF(ics, dimension, origin, scale, &ptr);
+    if (!error) {
+        if (units) {
+            strcpy(units, ptr);
+        }
+    }
+
+    return error;
+}
+
+/* Idem, but without copying the strings. Output pointer `units` set to internal
+   buffer, which will be valid until IcsClose is called. */
+Ics_Error IcsGetPositionF(const ICS   *ics,
+                          int          dimension,
+                          double      *origin,
+                          double      *scale,
+                          const char **units)
+{
+    ICSINIT;
 
 
     if (ics == NULL) return IcsErr_NotValidAction;
@@ -773,15 +781,14 @@ Ics_Error IcsGetPosition(const ICS *ics,
     }
     if (units) {
         if (ics->dim[dimension].unit[0] != '\0') {
-            strcpy(units, ics->dim[dimension].unit);
+            *units = ics->dim[dimension].unit;
         } else {
-            strcpy(units, ICS_UNITS_UNDEFINED);
+            *units = ICS_UNITS_UNDEFINED;
         }
     }
 
     return error;
 }
-
 
 /* Set the position of the image in the real world: the origin of the first
    pixel, the distances between pixels and the units in which to measure. If
@@ -821,16 +828,40 @@ Ics_Error IcsGetOrder(const ICS *ics,
                       char      *label)
 {
     ICSINIT;
+    const char *order_ptr;
+    const char *label_ptr;
+
+    error = IcsGetOrderF(ics, dimension, &order_ptr, &label_ptr);
+    if (!error) {
+        if (order) {
+            strcpy(order, order_ptr);
+        }
+        if (label) {
+            strcpy(label, label_ptr);
+        }
+    }
+
+    return error;
+}
+
+/* Idem, but without copying the strings. Output pointers `order` and `label` set
+   to internal buffer, which will be valid until IcsClose is called. */
+Ics_Error IcsGetOrderF(const ICS   *ics,
+                       int          dimension,
+                       const char **order,
+                       const char **label)
+{
+    ICSINIT;
 
 
     if (ics == NULL) return IcsErr_NotValidAction;
 
     if (dimension >= ics->dimensions) return IcsErr_NotValidAction;
     if (order) {
-        strcpy(order, ics->dim[dimension].order);
+        *order = ics->dim[dimension].order;
     }
     if (label) {
-        strcpy(label, ics->dim[dimension].label);
+        *label = ics->dim[dimension].label;
     }
 
     return error;
@@ -959,6 +990,26 @@ Ics_Error IcsGetImelUnits(const ICS *ics,
                           char      *units)
 {
     ICSINIT;
+    const char* ptr;
+
+    error = IcsGetImelUnitsF(ics, origin, scale, &ptr);
+    if (!error) {
+        if (units) {
+            strcpy(units, ptr);
+        }
+    }
+
+    return error;
+}
+
+/* Idem, but without copying the strings. Output pointer `units` set to internal
+   buffer, which will be valid until IcsClose is called. */
+Ics_Error IcsGetImelUnitsF(const ICS   *ics,
+                           double      *origin,
+                           double      *scale,
+                           const char **units)
+{
+    ICSINIT;
 
 
     if (ics == NULL) return IcsErr_NotValidAction;
@@ -971,9 +1022,9 @@ Ics_Error IcsGetImelUnits(const ICS *ics,
     }
     if (units) {
         if (ics->imel.unit[0] != '\0') {
-            strcpy(units, ics->imel.unit);
+            *units = ics->imel.unit;
         } else {
-            strcpy(units, ICS_UNITS_RELATIVE);
+            *units = ICS_UNITS_RELATIVE;
         }
     }
 
@@ -1122,7 +1173,7 @@ const char *IcsGetErrorText(Ics_Error error)
             msg = "Some error occurred during compression";
             break;
         case IcsErr_CorruptedStream:
-            msg = "The compressed input stream is currupted";
+            msg = "The compressed input stream is corrupted";
             break;
         case IcsErr_DecompressionProblem:
             msg = "Some error occurred during decompression";
@@ -1165,7 +1216,7 @@ const char *IcsGetErrorText(Ics_Error error)
             msg = "File read error on .ids file";
             break;
         case IcsErr_FTempMoveIcs:
-            msg = "Failed to remane .ics file opened for updating";
+            msg = "Failed to rename .ics file opened for updating";
             break;
         case IcsErr_FWriteIcs:
             msg = "File write error on .ics file";
@@ -1235,7 +1286,7 @@ const char *IcsGetErrorText(Ics_Error error)
             msg = "Unknown compression type";
             break;
         case IcsErr_UnknownDataType:
-            msg = "The datatype is not recognized";
+            msg = "The data type is not recognized";
             break;
         case IcsErr_UnknownSensorState:
             msg = "The state is not recognized";

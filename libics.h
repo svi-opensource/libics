@@ -43,6 +43,7 @@
 #ifndef LIBICS_H
 #define LIBICS_H
 
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -206,12 +207,12 @@ typedef struct _ICS {
         /* Size of the data buffer: */
     size_t                  dataLength;
         /* Pixel strides (writing only): */
-    const size_t           *dataStrides;
+    const ptrdiff_t        *dataStrides;
         /* '.ics' path/filename: */
     char                    filename[ICS_MAXPATHLEN];
         /* Number of elements in each dim: */
     int                     dimensions;
-        /* Image representaion: */
+        /* Image representation: */
     Ics_DataRepresentation  dim[ICS_MAXDIM];
         /* Pixel representation: */
     Ics_ImelRepresentation  imel;
@@ -526,11 +527,11 @@ ICSEXPORT Ics_Error IcsGetROIData(ICS          *ics,
 /* Read the image from an ICS file into a sub-block of a memory block. To use
    the defaults in one of the parameters, set the pointer to NULL. Only valid if
    reading. */
-ICSEXPORT Ics_Error IcsGetDataWithStrides(ICS          *ics,
-                                          void         *dest,
-                                          size_t        n,
-                                          const size_t *stride,
-                                          int           nDims);
+ICSEXPORT Ics_Error IcsGetDataWithStrides(ICS             *ics,
+                                          void            *dest,
+                                          size_t           n, // ignored
+                                          const ptrdiff_t *stride,
+                                          int              nDims);
 
 
 /* Read a portion of the image data from an ICS file. Only valid if reading. */
@@ -561,11 +562,11 @@ ICSEXPORT Ics_Error IcsSetData(ICS        *ics,
 
 /* Set the image data for an ICS image. The pointer to this data must be
    accessible until IcsClose has been called. Only valid if writing. */
-ICSEXPORT Ics_Error IcsSetDataWithStrides(ICS          *ics,
-                                          const void   *src,
-                                          size_t        n,
-                                          const size_t *strides,
-                                          int           nDims);
+ICSEXPORT Ics_Error IcsSetDataWithStrides(ICS             *ics,
+                                          const void      *src,
+                                          size_t           n,
+                                          const ptrdiff_t *strides,
+                                          int              nDims);
 
 /* Set the image source parameter for an ICS version 2.0 file. Only valid if
    writing. */
@@ -591,6 +592,14 @@ ICSEXPORT Ics_Error IcsGetPosition(const ICS *ics,
                                    double    *scale,
                                    char*      units);
 
+/* Idem, but without copying the strings. Output pointer `units` set to internal
+   buffer, which will be valid until IcsClose is called. */
+ICSEXPORT Ics_Error IcsGetPositionF(const ICS   *ics,
+                                    int          dimension,
+                                    double      *origin,
+                                    double      *scale,
+                                    const char **units);
+
 
 /* Set the position of the image in the real world: the origin of the first
    pixel, the distances between pixels and the units in which to measure.  If
@@ -610,6 +619,13 @@ ICSEXPORT Ics_Error IcsGetOrder(const ICS *ics,
                                 int        dimension,
                                 char      *order,
                                 char      *label);
+
+/* Idem, but without copying the strings. Output pointers `order` and `label` set
+   to internal buffer, which will be valid until IcsClose is called. */
+ICSEXPORT Ics_Error IcsGetOrderF(const ICS   *ics,
+                                 int          dimension,
+                                 const char **order,
+                                 const char **label);
 
 
 /* Set the ordering of the dimensions in the image. The ordering is defined by
@@ -651,6 +667,13 @@ ICSEXPORT Ics_Error IcsGetImelUnits(const ICS *ics,
                                     double    *origin,
                                     double    *scale,
                                     char      *units);
+
+/* Idem, but without copying the strings. Output pointer `units` set to internal
+   buffer, which will be valid until IcsClose is called. */
+ICSEXPORT Ics_Error IcsGetImelUnitsF(const ICS   *ics,
+                                     double      *origin,
+                                     double      *scale,
+                                     const char **units);
 
 
 /* Set the position of the pixel values: the offset and scaling, and the units
@@ -731,6 +754,12 @@ ICSEXPORT Ics_Error IcsGetHistoryStringI(ICS                 *ics,
                                          Ics_HistoryIterator *it,
                                          char                *string);
 
+/* Idem, but without copying the string. Output pointer `string` set to internal
+   buffer, which will be valid until IcsClose or IcsFreeHistory is called. */
+ICSEXPORT Ics_Error IcsGetHistoryStringIF(ICS                 *ics,
+                                          Ics_HistoryIterator *it,
+                                          const char         **string);
+
 
 /* Get history line from the ICS file as key/value pair using iterator.  key
    must have ICS_STRLEN_TOKEN characters allocated, and value
@@ -739,6 +768,13 @@ ICSEXPORT Ics_Error IcsGetHistoryKeyValueI(ICS                 *ics,
                                            Ics_HistoryIterator *it,
                                            char                *key,
                                            char                *value);
+
+/* Idem, but without copying the string. Output pointer `value` set to internal
+   buffer, which will be valid until IcsClose or IcsFreeHistory is called. */
+ICSEXPORT Ics_Error IcsGetHistoryKeyValueIF(ICS                 *ics,
+                                            Ics_HistoryIterator *it,
+                                            char                *key,
+                                            const char         **value);
 
 
 /* Delete last retrieved history line (iterator still points to the same
