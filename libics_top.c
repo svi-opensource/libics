@@ -1122,7 +1122,7 @@ const char *IcsGetErrorText(Ics_Error error)
             msg = "Some error occurred during compression";
             break;
         case IcsErr_CorruptedStream:
-            msg = "The compressed input stream is currupted";
+            msg = "The compressed input stream is corrupted";
             break;
         case IcsErr_DecompressionProblem:
             msg = "Some error occurred during decompression";
@@ -1165,7 +1165,7 @@ const char *IcsGetErrorText(Ics_Error error)
             msg = "File read error on .ids file";
             break;
         case IcsErr_FTempMoveIcs:
-            msg = "Failed to remane .ics file opened for updating";
+            msg = "Failed to rename .ics file opened for updating";
             break;
         case IcsErr_FWriteIcs:
             msg = "File write error on .ics file";
@@ -1235,7 +1235,7 @@ const char *IcsGetErrorText(Ics_Error error)
             msg = "Unknown compression type";
             break;
         case IcsErr_UnknownDataType:
-            msg = "The datatype is not recognized";
+            msg = "The data type is not recognized";
             break;
         case IcsErr_UnknownSensorState:
             msg = "The state is not recognized";
