@@ -60,13 +60,10 @@
 #include <windows.h>
 #endif
 
-#ifdef HAVE_STRINGS_STRCASECMP
-   #include <strings.h>   /* For strcasecmp() */
-#endif
-#ifndef HAVE_STRING_STRCASECMP
-#ifndef HAVE_STRINGS_STRCASECMP
-   #define strcasecmp stricmp
-#endif
+#ifdef HAVE_STRCASECMP
+#include <strings.h>
+#else
+#define strcasecmp stricmp
 #endif
 
 const char ICSEXT[] = ".ics";

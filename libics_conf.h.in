@@ -113,9 +113,7 @@ typedef double ics_t_real64;
 #else
 
 /* Define if your system has strcasecmp() in strings.h */
-#undef HAVE_STRINGS_STRCASECMP
-/* Define if your system has strcasecmp() in string.h */
-#undef HAVE_STRING_STRCASECMP
+#undef HAVE_STRCASECMP
 
 /* If we should force the c locale. */
 #undef ICS_FORCE_C_LOCALE

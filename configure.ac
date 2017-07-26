@@ -54,10 +54,7 @@ AC_TYPE_SIZE_T
 AC_DEFINE([ICS_USING_CONFIGURE], [], [Using the configure script.])
 
 dnl Check for proper include file for strcasecmp
-ETR_STRING_STRCASECMP
-if test x"$ac_cv_string_strcasecmp" = "xno" ; then
-   ETR_STRINGS_STRCASECMP
-fi
+AC_CHECK_FUNCS([strcasecmp])
 
 dnl Check if you want to use .ids.gz and .ids.Z extensions
 AC_ARG_ENABLE(gzext, AS_HELP_STRING([--disable-gz-extensions], [disable .ids.gz and .ids.Z extensions (enabled by default)]),,)
