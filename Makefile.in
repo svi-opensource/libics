@@ -103,7 +103,7 @@ build_triplet = @build@
 host_triplet = @host@
 check_PROGRAMS = test_ics1$(EXEEXT) test_ics2a$(EXEEXT) \
 	test_ics2b$(EXEEXT) test_compress$(EXEEXT) test_gzip$(EXEEXT) \
-	test_strides$(EXEEXT) test_strides2$(EXEEXT) \
+	test_strides$(EXEEXT) test_strides2$(EXEEXT) test_strides3$(EXEEXT) \
 	test_metadata$(EXEEXT) test_history$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -159,7 +159,7 @@ libics_la_OBJECTS = $(am_libics_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
-am__v_lt_1 = 
+am__v_lt_1 =
 libics_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(libics_la_LDFLAGS) $(LDFLAGS) -o $@
@@ -190,6 +190,9 @@ test_strides_DEPENDENCIES = libics.la
 am_test_strides2_OBJECTS = test_strides2.$(OBJEXT)
 test_strides2_OBJECTS = $(am_test_strides2_OBJECTS)
 test_strides2_DEPENDENCIES = libics.la
+am_test_strides3_OBJECTS = test_strides3.$(OBJEXT)
+test_strides3_OBJECTS = $(am_test_strides3_OBJECTS)
+test_strides3_DEPENDENCIES = libics.la
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -197,11 +200,11 @@ am__v_P_1 = :
 AM_V_GEN = $(am__v_GEN_@AM_V@)
 am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
 am__v_GEN_0 = @echo "  GEN     " $@;
-am__v_GEN_1 = 
+am__v_GEN_1 =
 AM_V_at = $(am__v_at_@AM_V@)
 am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
-am__v_at_1 = 
+am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -215,7 +218,7 @@ LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 AM_V_CC = $(am__v_CC_@AM_V@)
 am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
 am__v_CC_0 = @echo "  CC      " $@;
-am__v_CC_1 = 
+am__v_CC_1 =
 CCLD = $(CC)
 LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -223,17 +226,17 @@ LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
-am__v_CCLD_1 = 
+am__v_CCLD_1 =
 SOURCES = $(libics_la_SOURCES) $(test_compress_SOURCES) \
 	$(test_gzip_SOURCES) $(test_history_SOURCES) \
 	$(test_ics1_SOURCES) $(test_ics2a_SOURCES) \
 	$(test_ics2b_SOURCES) $(test_metadata_SOURCES) \
-	$(test_strides_SOURCES) $(test_strides2_SOURCES)
+	$(test_strides_SOURCES) $(test_strides2_SOURCES) $(test_strides3_SOURCES)
 DIST_SOURCES = $(libics_la_SOURCES) $(test_compress_SOURCES) \
 	$(test_gzip_SOURCES) $(test_history_SOURCES) \
 	$(test_ics1_SOURCES) $(test_ics2a_SOURCES) \
 	$(test_ics2b_SOURCES) $(test_metadata_SOURCES) \
-	$(test_strides_SOURCES) $(test_strides2_SOURCES)
+	$(test_strides_SOURCES) $(test_strides2_SOURCES) $(test_strides3_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -613,6 +616,7 @@ test_compress_SOURCES = test_compress.c
 test_gzip_SOURCES = test_gzip.c
 test_strides_SOURCES = test_strides.c
 test_strides2_SOURCES = test_strides2.c
+test_strides3_SOURCES = test_strides3.c
 test_metadata_SOURCES = test_metadata.c
 test_history_SOURCES = test_history.c
 test_ics1_LDADD = libics.la
@@ -622,6 +626,7 @@ test_compress_LDADD = libics.la
 test_gzip_LDADD = libics.la
 test_strides_LDADD = libics.la
 test_strides2_LDADD = libics.la
+test_strides3_LDADD = libics.la
 test_metadata_LDADD = libics.la
 test_history_LDADD = libics.la
 TESTS = test_ics1.sh \
@@ -631,6 +636,7 @@ TESTS = test_ics1.sh \
         test_gzip.sh \
         test_strides.sh \
         test_strides2.sh \
+        test_strides3.sh \
         test_metadata.sh \
         test_history.sh
 
@@ -721,7 +727,7 @@ config.h: stamp-h1
 stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
 	@rm -f stamp-h1
 	cd $(top_builddir) && $(SHELL) ./config.status config.h
-$(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps) 
+$(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	($(am__cd) $(top_srcdir) && $(AUTOHEADER))
 	rm -f stamp-h1
 	touch $@
@@ -772,7 +778,7 @@ clean-libLTLIBRARIES:
 	  rm -f $${locs}; \
 	}
 
-libics.la: $(libics_la_OBJECTS) $(libics_la_DEPENDENCIES) $(EXTRA_libics_la_DEPENDENCIES) 
+libics.la: $(libics_la_OBJECTS) $(libics_la_DEPENDENCIES) $(EXTRA_libics_la_DEPENDENCIES)
 	$(AM_V_CCLD)$(libics_la_LINK) -rpath $(libdir) $(libics_la_OBJECTS) $(libics_la_LIBADD) $(LIBS)
 
 clean-checkPROGRAMS:
@@ -784,41 +790,45 @@ clean-checkPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
-test_compress$(EXEEXT): $(test_compress_OBJECTS) $(test_compress_DEPENDENCIES) $(EXTRA_test_compress_DEPENDENCIES) 
+test_compress$(EXEEXT): $(test_compress_OBJECTS) $(test_compress_DEPENDENCIES) $(EXTRA_test_compress_DEPENDENCIES)
 	@rm -f test_compress$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_compress_OBJECTS) $(test_compress_LDADD) $(LIBS)
 
-test_gzip$(EXEEXT): $(test_gzip_OBJECTS) $(test_gzip_DEPENDENCIES) $(EXTRA_test_gzip_DEPENDENCIES) 
+test_gzip$(EXEEXT): $(test_gzip_OBJECTS) $(test_gzip_DEPENDENCIES) $(EXTRA_test_gzip_DEPENDENCIES)
 	@rm -f test_gzip$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_gzip_OBJECTS) $(test_gzip_LDADD) $(LIBS)
 
-test_history$(EXEEXT): $(test_history_OBJECTS) $(test_history_DEPENDENCIES) $(EXTRA_test_history_DEPENDENCIES) 
+test_history$(EXEEXT): $(test_history_OBJECTS) $(test_history_DEPENDENCIES) $(EXTRA_test_history_DEPENDENCIES)
 	@rm -f test_history$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_history_OBJECTS) $(test_history_LDADD) $(LIBS)
 
-test_ics1$(EXEEXT): $(test_ics1_OBJECTS) $(test_ics1_DEPENDENCIES) $(EXTRA_test_ics1_DEPENDENCIES) 
+test_ics1$(EXEEXT): $(test_ics1_OBJECTS) $(test_ics1_DEPENDENCIES) $(EXTRA_test_ics1_DEPENDENCIES)
 	@rm -f test_ics1$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_ics1_OBJECTS) $(test_ics1_LDADD) $(LIBS)
 
-test_ics2a$(EXEEXT): $(test_ics2a_OBJECTS) $(test_ics2a_DEPENDENCIES) $(EXTRA_test_ics2a_DEPENDENCIES) 
+test_ics2a$(EXEEXT): $(test_ics2a_OBJECTS) $(test_ics2a_DEPENDENCIES) $(EXTRA_test_ics2a_DEPENDENCIES)
 	@rm -f test_ics2a$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_ics2a_OBJECTS) $(test_ics2a_LDADD) $(LIBS)
 
-test_ics2b$(EXEEXT): $(test_ics2b_OBJECTS) $(test_ics2b_DEPENDENCIES) $(EXTRA_test_ics2b_DEPENDENCIES) 
+test_ics2b$(EXEEXT): $(test_ics2b_OBJECTS) $(test_ics2b_DEPENDENCIES) $(EXTRA_test_ics2b_DEPENDENCIES)
 	@rm -f test_ics2b$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_ics2b_OBJECTS) $(test_ics2b_LDADD) $(LIBS)
 
-test_metadata$(EXEEXT): $(test_metadata_OBJECTS) $(test_metadata_DEPENDENCIES) $(EXTRA_test_metadata_DEPENDENCIES) 
+test_metadata$(EXEEXT): $(test_metadata_OBJECTS) $(test_metadata_DEPENDENCIES) $(EXTRA_test_metadata_DEPENDENCIES)
 	@rm -f test_metadata$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_metadata_OBJECTS) $(test_metadata_LDADD) $(LIBS)
 
-test_strides$(EXEEXT): $(test_strides_OBJECTS) $(test_strides_DEPENDENCIES) $(EXTRA_test_strides_DEPENDENCIES) 
+test_strides$(EXEEXT): $(test_strides_OBJECTS) $(test_strides_DEPENDENCIES) $(EXTRA_test_strides_DEPENDENCIES)
 	@rm -f test_strides$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_strides_OBJECTS) $(test_strides_LDADD) $(LIBS)
 
-test_strides2$(EXEEXT): $(test_strides2_OBJECTS) $(test_strides2_DEPENDENCIES) $(EXTRA_test_strides2_DEPENDENCIES) 
+test_strides2$(EXEEXT): $(test_strides2_OBJECTS) $(test_strides2_DEPENDENCIES) $(EXTRA_test_strides2_DEPENDENCIES)
 	@rm -f test_strides2$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_strides2_OBJECTS) $(test_strides2_LDADD) $(LIBS)
+
+test_strides3$(EXEEXT): $(test_strides3_OBJECTS) $(test_strides3_DEPENDENCIES) $(EXTRA_test_strides3_DEPENDENCIES)
+	@rm -f test_strides3$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_strides3_OBJECTS) $(test_strides3_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -847,6 +857,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_metadata.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_strides.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_strides2.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_strides3.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -1144,6 +1155,13 @@ test_strides.sh.log: test_strides.sh
 test_strides2.sh.log: test_strides2.sh
 	@p='test_strides2.sh'; \
 	b='test_strides2.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test_strides3.sh.log: test_strides3.sh
+	@p='test_strides3.sh'; \
+	b='test_strides3.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
