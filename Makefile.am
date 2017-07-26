@@ -47,6 +47,7 @@ check_PROGRAMS = test_ics1 \
                  test_gzip \
                  test_strides \
                  test_strides2 \
+                 test_strides3 \
                  test_metadata \
                  test_history
 
@@ -57,6 +58,7 @@ test_compress_SOURCES = test_compress.c
 test_gzip_SOURCES = test_gzip.c
 test_strides_SOURCES = test_strides.c
 test_strides2_SOURCES = test_strides2.c
+test_strides3_SOURCES = test_strides3.c
 test_metadata_SOURCES = test_metadata.c
 test_history_SOURCES = test_history.c
 
@@ -67,6 +69,7 @@ test_compress_LDADD = libics.la
 test_gzip_LDADD = libics.la
 test_strides_LDADD = libics.la
 test_strides2_LDADD = libics.la
+test_strides3_LDADD = libics.la
 test_metadata_LDADD = libics.la
 test_history_LDADD = libics.la
 
@@ -77,6 +80,7 @@ TESTS = test_ics1.sh \
         test_gzip.sh \
         test_strides.sh \
         test_strides2.sh \
+        test_strides3.sh \
         test_metadata.sh \
         test_history.sh
 
