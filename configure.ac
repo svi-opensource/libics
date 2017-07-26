@@ -53,9 +53,6 @@ AC_TYPE_SIZE_T
 # If this variable is not defined, libics_conf.h will revert to the old version.
 AC_DEFINE([ICS_USING_CONFIGURE], [], [Using the configure script.])
 
-dnl Check for proper include file for strcasecmp
-AC_CHECK_FUNCS([strcasecmp])
-
 dnl Check if you want to use .ids.gz and .ids.Z extensions
 AC_ARG_ENABLE(gzext, AS_HELP_STRING([--disable-gz-extensions], [disable .ids.gz and .ids.Z extensions (enabled by default)]),,)
 
@@ -112,18 +109,6 @@ dnl ---------------------------------------------------------------------------
 
 dnl Check for -lm:
 AC_CHECK_LIB(m, sqrt, [], [AC_MSG_ERROR([math lib is required])])
-
-dnl Get the sizes of the types in bytes:
-AC_CHECK_SIZEOF(char, 0)
-AC_CHECK_SIZEOF(unsigned char, 0)
-AC_CHECK_SIZEOF(short, 0)
-AC_CHECK_SIZEOF(unsigned short, 0)
-AC_CHECK_SIZEOF(int, 0)
-AC_CHECK_SIZEOF(unsigned int, 0)
-AC_CHECK_SIZEOF(long, 0)
-AC_CHECK_SIZEOF(unsigned long, 0)
-AC_CHECK_SIZEOF(float, 0)
-AC_CHECK_SIZEOF(double, 0)
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
