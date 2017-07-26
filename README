@@ -152,8 +152,11 @@ Which ultimately is based upon stuff written by:
 =============
 
 version 1.6.1
+   - Various bug-fixes.
    - Added SPIM parameters.
    - Added scattering parameters.
+   - New functions that return ICS string properties without string copying.
+   - Enable the use of negative strides.
 
 version 1.6.0
    Added functionality:
