@@ -147,7 +147,7 @@ Ics_Error IcsInternAddHistory(Ics_Header *ics,
         char** tmp = (char**)realloc(hist->strings, n * sizeof(char*));
         if (tmp == NULL) return IcsErr_Alloc;
         hist->strings = tmp;
-        hist->length += ICS_HISTARRAY_INCREMENT;
+        hist->length = n;
     }
 
         /* Create line */
@@ -181,9 +181,12 @@ Ics_Error IcsGetNumHistoryStrings(ICS *ics,
 {
     ICSINIT;
     int          i, count = 0;
-    Ics_History *hist      = (Ics_History*)ics->history;
+    Ics_History *hist;
 
     if (ics == NULL) return IcsErr_NotValidAction;
+
+    hist = (Ics_History*)ics->history;
+
     *num = 0;
     if (hist == NULL) return IcsErr_Ok;
     for (i = 0; i < hist->nStr; i++) {
@@ -222,9 +225,11 @@ Ics_Error IcsNewHistoryIterator(ICS                 *ics,
                                 char const          *key)
 {
     ICSINIT;
-    Ics_History *hist = (Ics_History*)ics->history;
+    Ics_History *hist;
 
     if (ics == NULL) return IcsErr_NotValidAction;
+
+    hist = (Ics_History*)ics->history;
 
     it->next = -1;
     it->previous = -1;
@@ -301,9 +306,11 @@ Ics_Error IcsGetHistoryStringI(ICS                 *ics,
                                char                *string)
 {
     ICSINIT;
-    Ics_History *hist = (Ics_History*)ics->history;
+    Ics_History *hist;
 
     if (ics == NULL) return IcsErr_NotValidAction;
+
+    hist = (Ics_History*)ics->history;
 
     if (hist == NULL) return IcsErr_EndOfHistory;
     if ((it->next >= 0) &&(hist->strings[it->next] == NULL)) {
@@ -361,13 +368,14 @@ Ics_Error IcsDeleteHistory(ICS        *ics,
                            const char *key)
 {
     ICSINIT;
-    Ics_History *hist = (Ics_History*)ics->history;
+    Ics_History *hist;
 
+    if (ics == NULL) return IcsErr_NotValidAction;
+
+    hist = (Ics_History*)ics->history;
 
     if (hist == NULL) return IcsErr_Ok;
     if (hist->nStr == 0) return IcsErr_Ok;
-
-    if (ics == NULL) return IcsErr_NotValidAction;
 
     if ((key == NULL) ||(key[0] == '\0')) {
         int i;
@@ -406,10 +414,11 @@ Ics_Error IcsDeleteHistoryStringI(ICS                 *ics,
                                   Ics_HistoryIterator *it)
 {
     ICSINIT;
-    Ics_History *hist = (Ics_History*)ics->history;
-
+    Ics_History *hist;
 
     if (ics == NULL) return IcsErr_NotValidAction;
+
+    hist = (Ics_History*)ics->history;
 
     if (hist == NULL) return IcsErr_Ok;      /* give error message? */
     if (it->previous < 0) return IcsErr_Ok;
@@ -426,7 +435,7 @@ Ics_Error IcsDeleteHistoryStringI(ICS                 *ics,
     return error;
 }
 
-/* Delete last retrieved history line(iterator still points to the same
+/* Delete last retrieved history line (iterator still points to the same
    string). Contains code duplicated from IcsInternAddHistory(). */
 Ics_Error IcsReplaceHistoryStringI(ICS                 *ics,
                                    Ics_HistoryIterator *it,
@@ -436,10 +445,11 @@ Ics_Error IcsReplaceHistoryStringI(ICS                 *ics,
     ICSINIT;
     size_t       len;
     char        *line;
-    Ics_History *hist = (Ics_History*)ics->history;
-
+    Ics_History *hist;
 
     if (ics == NULL) return IcsErr_NotValidAction;
+
+    hist = (Ics_History*)ics->history;
 
     if (hist == NULL) return IcsErr_Ok;      /* give error message? */
     if (it->previous < 0) return IcsErr_Ok;
