@@ -110,17 +110,5 @@ dnl ---------------------------------------------------------------------------
 dnl Check for -lm:
 AC_CHECK_LIB(m, sqrt, [], [AC_MSG_ERROR([math lib is required])])
 
-dnl Get the sizes of the types in bytes:
-AC_CHECK_SIZEOF(char, 0)
-AC_CHECK_SIZEOF(unsigned char, 0)
-AC_CHECK_SIZEOF(short, 0)
-AC_CHECK_SIZEOF(unsigned short, 0)
-AC_CHECK_SIZEOF(int, 0)
-AC_CHECK_SIZEOF(unsigned int, 0)
-AC_CHECK_SIZEOF(long, 0)
-AC_CHECK_SIZEOF(unsigned long, 0)
-AC_CHECK_SIZEOF(float, 0)
-AC_CHECK_SIZEOF(double, 0)
-
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
