@@ -1,41 +1,3 @@
-m4trace:/usr/share/aclocal/ax_string_strcasecmp.m4:36: -1- AU_DEFUN([ETR_STRING_STRCASECMP], [m4_if($#, 0, [AX_STRING_STRCASECMP], [AX_STRING_STRCASECMP($@)])])
-m4trace:/usr/share/aclocal/ax_string_strcasecmp.m4:36: -1- AC_DEFUN([ETR_STRING_STRCASECMP], [AC_DIAGNOSE([obsolete], [The macro `ETR_STRING_STRCASECMP' is obsolete.
-You should run autoupdate.])dnl
-m4_if($#, 0, [AX_STRING_STRCASECMP], [AX_STRING_STRCASECMP($@)])])
-m4trace:/usr/share/aclocal/ax_string_strcasecmp.m4:37: -1- AC_DEFUN([AX_STRING_STRCASECMP], [
-AC_CACHE_CHECK([for strcasecmp() in string.h], ac_cv_string_strcasecmp, [
-        AC_TRY_LINK(
-                [ #include <string.h> ],
-                [ strcasecmp("foo", "bar"); ],
-                ac_cv_string_strcasecmp=yes,
-                ac_cv_string_strcasecmp=no)
-])
-
-        if test x"$ac_cv_string_strcasecmp" = "xyes"
-        then
-                AC_DEFINE(HAVE_STRING_STRCASECMP, 1,
-                        [ Define if your system has strcasecmp() in string.h ])
-        fi
-])
-m4trace:/usr/share/aclocal/ax_strings_strcasecmp.m4:25: -1- AU_DEFUN([ETR_STRINGS_STRCASECMP], [m4_if($#, 0, [AX_STRINGS_STRCASECMP], [AX_STRINGS_STRCASECMP($@)])])
-m4trace:/usr/share/aclocal/ax_strings_strcasecmp.m4:25: -1- AC_DEFUN([ETR_STRINGS_STRCASECMP], [AC_DIAGNOSE([obsolete], [The macro `ETR_STRINGS_STRCASECMP' is obsolete.
-You should run autoupdate.])dnl
-m4_if($#, 0, [AX_STRINGS_STRCASECMP], [AX_STRINGS_STRCASECMP($@)])])
-m4trace:/usr/share/aclocal/ax_strings_strcasecmp.m4:26: -1- AC_DEFUN([AX_STRINGS_STRCASECMP], [ AC_CACHE_CHECK([for strcasecmp() in strings.h], ac_cv_strings_strcasecmp, [
-
-        AC_TRY_LINK(
-                [ #include <strings.h> ],
-                [ strcasecmp("foo", "bar"); ],
-                ac_cv_strings_strcasecmp=yes,
-                ac_cv_strings_strcasecmp=no)
-])
-
-        if test x"$ac_cv_strings_strcasecmp" = "xyes"
-        then
-                AC_DEFINE(HAVE_STRINGS_STRCASECMP, 1,
-                        [ Define if your system has strcasecmp() in strings.h ])
-        fi
-])
 m4trace:/usr/share/aclocal/libtool.m4:61: -1- AC_DEFUN([LT_INIT], [AC_PREREQ([2.62])dnl We use AC_PATH_PROGS_FEATURE_CHECK
 AC_REQUIRE([AC_CONFIG_AUX_DIR_DEFAULT])dnl
 AC_BEFORE([$0], [LT_LANG])dnl
@@ -2756,55 +2718,17 @@ m4trace:configure.ac:49: -1- m4_pattern_allow([^STDC_HEADERS$])
 m4trace:configure.ac:50: -1- m4_pattern_allow([^const$])
 m4trace:configure.ac:51: -1- m4_pattern_allow([^size_t$])
 m4trace:configure.ac:54: -1- m4_pattern_allow([^ICS_USING_CONFIGURE$])
-m4trace:configure.ac:57: -1- ETR_STRING_STRCASECMP
-m4trace:configure.ac:57: -1- _m4_warn([obsolete], [The macro `ETR_STRING_STRCASECMP' is obsolete.
-You should run autoupdate.], [/usr/share/aclocal/ax_string_strcasecmp.m4:36: ETR_STRING_STRCASECMP is expanded from...
-configure.ac:57: the top level])
-m4trace:configure.ac:57: -1- AX_STRING_STRCASECMP
-m4trace:configure.ac:57: -1- _m4_warn([obsolete], [The macro `AC_TRY_LINK' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2698: AC_TRY_LINK is expanded from...
-../../lib/m4sugar/m4sh.m4:639: AS_IF is expanded from...
-../../lib/autoconf/general.m4:2042: AC_CACHE_VAL is expanded from...
-../../lib/autoconf/general.m4:2063: AC_CACHE_CHECK is expanded from...
-/usr/share/aclocal/ax_string_strcasecmp.m4:37: AX_STRING_STRCASECMP is expanded from...
-/usr/share/aclocal/ax_string_strcasecmp.m4:36: ETR_STRING_STRCASECMP is expanded from...
-configure.ac:57: the top level])
-m4trace:configure.ac:57: -1- m4_pattern_allow([^HAVE_STRING_STRCASECMP$])
-m4trace:configure.ac:59: -1- ETR_STRINGS_STRCASECMP
-m4trace:configure.ac:59: -1- _m4_warn([obsolete], [The macro `ETR_STRINGS_STRCASECMP' is obsolete.
-You should run autoupdate.], [/usr/share/aclocal/ax_strings_strcasecmp.m4:25: ETR_STRINGS_STRCASECMP is expanded from...
-configure.ac:59: the top level])
-m4trace:configure.ac:59: -1- AX_STRINGS_STRCASECMP
-m4trace:configure.ac:59: -1- _m4_warn([obsolete], [The macro `AC_TRY_LINK' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2698: AC_TRY_LINK is expanded from...
-../../lib/m4sugar/m4sh.m4:639: AS_IF is expanded from...
-../../lib/autoconf/general.m4:2042: AC_CACHE_VAL is expanded from...
-../../lib/autoconf/general.m4:2063: AC_CACHE_CHECK is expanded from...
-/usr/share/aclocal/ax_strings_strcasecmp.m4:26: AX_STRINGS_STRCASECMP is expanded from...
-/usr/share/aclocal/ax_strings_strcasecmp.m4:25: ETR_STRINGS_STRCASECMP is expanded from...
-configure.ac:59: the top level])
-m4trace:configure.ac:59: -1- m4_pattern_allow([^HAVE_STRINGS_STRCASECMP$])
-m4trace:configure.ac:103: -1- m4_pattern_allow([^ICS_ZLIB$])
-m4trace:configure.ac:106: -1- m4_pattern_allow([^ICS_DO_GZEXT$])
-m4trace:configure.ac:111: -1- m4_pattern_allow([^ICS_FORCE_C_LOCALE$])
-m4trace:configure.ac:117: -1- m4_pattern_allow([^HAVE_LIBM$])
-m4trace:configure.ac:120: -1- m4_pattern_allow([^SIZEOF_CHAR$])
-m4trace:configure.ac:121: -1- m4_pattern_allow([^SIZEOF_UNSIGNED_CHAR$])
-m4trace:configure.ac:122: -1- m4_pattern_allow([^SIZEOF_SHORT$])
-m4trace:configure.ac:123: -1- m4_pattern_allow([^SIZEOF_UNSIGNED_SHORT$])
-m4trace:configure.ac:124: -1- m4_pattern_allow([^SIZEOF_INT$])
-m4trace:configure.ac:125: -1- m4_pattern_allow([^SIZEOF_UNSIGNED_INT$])
-m4trace:configure.ac:126: -1- m4_pattern_allow([^SIZEOF_LONG$])
-m4trace:configure.ac:127: -1- m4_pattern_allow([^SIZEOF_UNSIGNED_LONG$])
-m4trace:configure.ac:128: -1- m4_pattern_allow([^SIZEOF_FLOAT$])
-m4trace:configure.ac:129: -1- m4_pattern_allow([^SIZEOF_DOUBLE$])
-m4trace:configure.ac:132: -1- m4_pattern_allow([^LIB@&t@OBJS$])
-m4trace:configure.ac:132: -1- m4_pattern_allow([^LTLIBOBJS$])
-m4trace:configure.ac:132: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
-m4trace:configure.ac:132: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
-m4trace:configure.ac:132: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
-m4trace:configure.ac:132: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
-m4trace:configure.ac:132: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
-m4trace:configure.ac:132: -1- _AC_AM_CONFIG_HEADER_HOOK(["$ac_file"])
-m4trace:configure.ac:132: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
-m4trace:configure.ac:132: -1- _LT_PROG_LTMAIN
+m4trace:configure.ac:97: -1- m4_pattern_allow([^ICS_ZLIB$])
+m4trace:configure.ac:100: -1- m4_pattern_allow([^ICS_DO_GZEXT$])
+m4trace:configure.ac:105: -1- m4_pattern_allow([^ICS_FORCE_C_LOCALE$])
+m4trace:configure.ac:111: -1- m4_pattern_allow([^HAVE_LIBM$])
+m4trace:configure.ac:114: -1- m4_pattern_allow([^LIB@&t@OBJS$])
+m4trace:configure.ac:114: -1- m4_pattern_allow([^LTLIBOBJS$])
+m4trace:configure.ac:114: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
+m4trace:configure.ac:114: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
+m4trace:configure.ac:114: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
+m4trace:configure.ac:114: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
+m4trace:configure.ac:114: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
+m4trace:configure.ac:114: -1- _AC_AM_CONFIG_HEADER_HOOK(["$ac_file"])
+m4trace:configure.ac:114: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
+m4trace:configure.ac:114: -1- _LT_PROG_LTMAIN
