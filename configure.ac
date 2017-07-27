@@ -53,9 +53,6 @@ AC_TYPE_SIZE_T
 # If this variable is not defined, libics_conf.h will revert to the old version.
 AC_DEFINE([ICS_USING_CONFIGURE], [], [Using the configure script.])
 
-dnl Check for proper include file for strcasecmp
-AC_CHECK_FUNCS([strcasecmp])
-
 dnl Check if you want to use .ids.gz and .ids.Z extensions
 AC_ARG_ENABLE(gzext, AS_HELP_STRING([--disable-gz-extensions], [disable .ids.gz and .ids.Z extensions (enabled by default)]),,)
 
