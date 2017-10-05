@@ -75,9 +75,15 @@ include_directories(${PROJECT_SOURCE_DIR})
 add_library(libics SHARED ${SOURCES} ${HEADERS})
 target_compile_definitions(libics PRIVATE BUILD_ICSLIB) # For Windows, when compiling DLL
 target_compile_definitions(libics INTERFACE USE_ICSLIB_DLL) # For Windows, when linking against DLL
+if (UNIX)
+    set_target_properties(libics PROPERTIES OUTPUT_NAME "ics")
+endif (UNIX)
 
 # Build a static library
 add_library(libics_static STATIC ${SOURCES} ${HEADERS})
+if (UNIX)
+    set_target_properties(libics_static PROPERTIES OUTPUT_NAME "ics")
+endif (UNIX)
 
 # Link against zlib
 if(USE_ZLIB)
