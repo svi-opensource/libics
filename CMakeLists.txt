@@ -44,7 +44,7 @@ if(USE_ZLIB)
 endif()
 
 # ICS
-configure_file(libics_conf.h.in ${CMAKE_SOURCE_DIR}/libics_conf.h COPYONLY)
+configure_file(libics_conf.h.in ${PROJECT_SOURCE_DIR}/libics_conf.h COPYONLY)
 set(SOURCES
       libics_binary.c
       libics_compress.c
@@ -69,7 +69,7 @@ set(HEADERS
       libics_test.h
       )
 
-include_directories(${CMAKE_SOURCE_DIR})
+include_directories(${PROJECT_SOURCE_DIR})
 
 # Build a dll
 add_library(libics SHARED ${SOURCES} ${HEADERS})
@@ -123,22 +123,22 @@ add_custom_target(all_tests DEPENDS
       test_metadata
       test_history
       )
-add_test(ctest_build_test_code "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --target all_tests)
-add_test(NAME test_ics1 COMMAND test_ics1 ${CMAKE_SOURCE_DIR}/test/testim.ics result_v1.ics)
+add_test(ctest_build_test_code "${CMAKE_COMMAND}" --build ${PROJECT_BINARY_DIR} --target all_tests)
+add_test(NAME test_ics1 COMMAND test_ics1 ${PROJECT_SOURCE_DIR}/test/testim.ics result_v1.ics)
 set_tests_properties(test_ics1 PROPERTIES DEPENDS ctest_build_test_code)
-add_test(NAME test_ics2a COMMAND test_ics2a ${CMAKE_SOURCE_DIR}/test/testim.ics result_v2a.ics)
+add_test(NAME test_ics2a COMMAND test_ics2a ${PROJECT_SOURCE_DIR}/test/testim.ics result_v2a.ics)
 set_tests_properties(test_ics2a PROPERTIES DEPENDS ctest_build_test_code)
-add_test(NAME test_ics2b COMMAND test_ics2b ${CMAKE_SOURCE_DIR}/test/testim.ics result_v2b.ics)
+add_test(NAME test_ics2b COMMAND test_ics2b ${PROJECT_SOURCE_DIR}/test/testim.ics result_v2b.ics)
 set_tests_properties(test_ics2b PROPERTIES DEPENDS ctest_build_test_code)
-add_test(NAME test_gzip COMMAND test_gzip ${CMAKE_SOURCE_DIR}/test/testim.ics result_v2z.ics)
+add_test(NAME test_gzip COMMAND test_gzip ${PROJECT_SOURCE_DIR}/test/testim.ics result_v2z.ics)
 set_tests_properties(test_gzip PROPERTIES DEPENDS ctest_build_test_code)
-add_test(NAME test_compress COMMAND test_compress ${CMAKE_SOURCE_DIR}/test/testim.ics ${CMAKE_SOURCE_DIR}/test/testim_c.ics)
+add_test(NAME test_compress COMMAND test_compress ${PROJECT_SOURCE_DIR}/test/testim.ics ${PROJECT_SOURCE_DIR}/test/testim_c.ics)
 set_tests_properties(test_compress PROPERTIES DEPENDS ctest_build_test_code)
-add_test(NAME test_strides COMMAND test_strides ${CMAKE_SOURCE_DIR}/test/testim.ics result_s.ics)
+add_test(NAME test_strides COMMAND test_strides ${PROJECT_SOURCE_DIR}/test/testim.ics result_s.ics)
 set_tests_properties(test_strides PROPERTIES DEPENDS ctest_build_test_code)
-add_test(NAME test_strides2 COMMAND test_strides2 ${CMAKE_SOURCE_DIR}/test/testim.ics result_s2.ics)
+add_test(NAME test_strides2 COMMAND test_strides2 ${PROJECT_SOURCE_DIR}/test/testim.ics result_s2.ics)
 set_tests_properties(test_strides2 PROPERTIES DEPENDS ctest_build_test_code)
-add_test(NAME test_strides3 COMMAND test_strides3 ${CMAKE_SOURCE_DIR}/test/testim.ics result_s3.ics)
+add_test(NAME test_strides3 COMMAND test_strides3 ${PROJECT_SOURCE_DIR}/test/testim.ics result_s3.ics)
 set_tests_properties(test_strides3 PROPERTIES DEPENDS ctest_build_test_code)
 add_test(NAME test_metadata1 COMMAND test_metadata result_v1.ics)
 set_tests_properties(test_metadata1 PROPERTIES DEPENDS test_ics1)
