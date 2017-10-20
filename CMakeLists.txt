@@ -15,7 +15,7 @@
 ##############################################################################
 cmake_minimum_required(VERSION 3.0)
 
-project(libics VERSION 1.6.1)
+project(libics VERSION 1.6.2)
 
 # Note: the version number above is not yet used anywhere.
 # TODO: rewrite the header file with this version number.
