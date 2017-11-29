@@ -31,8 +31,8 @@ int main(int argc, const char* argv[]) {
    }
    IcsGetLayout(ip, &dt, &ndims, dims);
    strides[0] = -1;
-   strides[1] = -(ptrdiff_t)dims[0];
-strides[2] = -(ptrdiff_t)(dims[0]*dims[1]);
+   strides[1] = -(ptrdiff_t)(dims[0]*dims[2]);
+   strides[2] = -(ptrdiff_t)(dims[0]);
    imelsize = IcsGetImelSize(ip);
    bufsize = IcsGetDataSize(ip);
    buf1 = malloc(bufsize);
