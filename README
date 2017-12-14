@@ -113,7 +113,15 @@ The library can be tested for problems using
 
 CMake can be used with the following options:
    cmake ... -DCMAKE_BUILD_TYPE=Debug
-   cmake ... -DUSE_ZLIB=Off
+   cmake ... -DLIBICS_USE_ZLIB=Off
+
+CMake projects using libics as a subproject can do
+   add_subdirectory(<path/to/libics/sources>)
+   target_link_libraries(target PRIVATE libics)
+or
+   target_link_libraries(target PRIVATE libics_static)
+The include directory for libics will be automatically set, and the ZLib
+library will be linked if necessary.
 
  - Compilation with cmake on Windows:
 

@@ -25,22 +25,26 @@ project(libics VERSION 1.6.2)
 # Compiler flags
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED on)
-# TODO: This flags works for GCC and CLang, not sure about other compilers
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall")
+
+if (CMAKE_C_COMPILER_ID MATCHES "Clang") # also matchs "AppleClang"
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wall -Wconversion -Wsign-conversion")
+elseif (CMAKE_C_COMPILER_ID STREQUAL "GNU")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wconversion -Wsign-conversion -Wno-unused-parameter")
+elseif (CMAKE_C_COMPILER_ID STREQUAL "Intel")
+    # TODO: compiler flags for Intel compiler
+elseif (CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+    # TODO: compiler flags for MSVC compiler
+endif()
 
 # Debug or Release?
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
-   set(CMAKE_BUILD_TYPE Release)
+    set(CMAKE_BUILD_TYPE Release)
 endif()
 
 # Zlib
 find_package(ZLIB)
 if(ZLIB_FOUND)
-   set(USE_ZLIB TRUE CACHE BOOL "Use Zlib")
-endif()
-if(USE_ZLIB)
-   include_directories(${ZLIB_INCLUDE_DIRS})
-   add_definitions(-DICS_ZLIB)
+    set(LIBICS_USE_ZLIB TRUE CACHE BOOL "Use Zlib in libics")
 endif()
 
 # ICS
@@ -69,26 +73,30 @@ set(HEADERS
       libics_test.h
       )
 
-include_directories(${PROJECT_SOURCE_DIR})
-
 # Build a dll
 add_library(libics SHARED ${SOURCES} ${HEADERS})
 target_compile_definitions(libics PRIVATE BUILD_ICSLIB) # For Windows, when compiling DLL
 target_compile_definitions(libics INTERFACE USE_ICSLIB_DLL) # For Windows, when linking against DLL
+target_include_directories(libics PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 if (UNIX)
     set_target_properties(libics PROPERTIES OUTPUT_NAME "ics")
 endif (UNIX)
 
 # Build a static library
 add_library(libics_static STATIC ${SOURCES} ${HEADERS})
+target_include_directories(libics_static PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 if (UNIX)
     set_target_properties(libics_static PROPERTIES OUTPUT_NAME "ics")
 endif (UNIX)
 
 # Link against zlib
-if(USE_ZLIB)
-    target_link_libraries(libics ${ZLIB_LIBRARIES})
-    target_link_libraries(libics_static ${ZLIB_LIBRARIES})
+if(LIBICS_USE_ZLIB)
+    target_link_libraries(libics PUBLIC ${ZLIB_LIBRARIES})
+    target_include_directories(libics PRIVATE ${ZLIB_INCLUDE_DIRS})
+    target_compile_definitions(libics PRIVATE -DICS_ZLIB)
+    target_link_libraries(libics_static PUBLIC ${ZLIB_LIBRARIES})
+    target_include_directories(libics_static PRIVATE ${ZLIB_INCLUDE_DIRS})
+    target_compile_definitions(libics_static PRIVATE -DICS_ZLIB)
 endif()
 
 # Install
