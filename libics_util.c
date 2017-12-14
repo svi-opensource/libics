@@ -127,8 +127,8 @@ void IcsStrCpy(char       *dest,
                int         len)
 {
     if (dest != src) {
-        int nchar = strlen(src);
-        nchar =(nchar > len-1) ? len-1 : nchar;
+        size_t nchar = strlen(src);
+        nchar = (nchar > (size_t)len-1) ? (size_t)len-1 : nchar;
         memcpy(dest, src, nchar);
         dest[nchar] = 0;
     }
@@ -139,7 +139,7 @@ void IcsStrCpy(char       *dest,
 void IcsAppendChar(char *line,
                    char  ch)
 {
-    int len = strlen(line);
+    size_t len = strlen(line);
     line[len] = ch;
     line[len+1] = '\0';
 }
@@ -176,7 +176,7 @@ static char *IcsFileNameFind(const char *str)
  extension could be found. */
 char *IcsExtensionFind(const char *str)
 {
-    int         len;
+    size_t     len;
     const char *ext;
 
 
@@ -437,7 +437,7 @@ void IcsInit(Ics_Header *icsStruct)
 /* Find the number of bytes per sample. */
 int IcsGetBytesPerSample(const Ics_Header *icsStruct)
 {
-    return IcsGetDataTypeSize(icsStruct->imel.dataType);
+    return (int)IcsGetDataTypeSize(icsStruct->imel.dataType);
 }
 
 
@@ -489,6 +489,7 @@ void IcsGetPropsDataType(Ics_DataType  dataType,
         case Ics_uint16:
         case Ics_uint32:
             *sign = 0;
+            /* fallthrough */
         case Ics_sint8:
         case Ics_sint16:
         case Ics_sint32:

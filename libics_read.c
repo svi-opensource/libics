@@ -146,8 +146,8 @@ static Ics_Error getIcsSeparators(FILE *fi,
             }
         }
     }
-    seps[0] = sep1;
-    seps[1] = sep2;
+    seps[0] = (char)sep1;
+    seps[1] = (char)sep2;
     seps[2] = '\0';
 
     return IcsErr_Ok;
@@ -359,7 +359,8 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
     ICSINIT;
     ICS_INIT_LOCALE;
     FILE            *fp;
-    int              end        = 0, i, j, bits;
+    int              end        = 0, si, sj;
+    size_t           i, j;
     char             seps[3], *ptr, *data;
     char             line[ICS_LINE_LENGTH];
     Ics_Token        cat, subCat, subSubCat;
@@ -861,33 +862,33 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
            files in which a single microscope type is defined and multiple
            sensor channels, the microscope type will be duplicated to all sensor
            channels. */
-    for (j = 1; j < icsStruct->sensorChannels; j++) {
-        if (strlen(icsStruct->type[j]) == 0) {
-            IcsStrCpy(icsStruct->type[j], icsStruct->type[0],
+    for (sj = 1; sj < icsStruct->sensorChannels; sj++) {
+        if (strlen(icsStruct->type[sj]) == 0) {
+            IcsStrCpy(icsStruct->type[sj], icsStruct->type[0],
                        ICS_STRLEN_TOKEN);
         }
     }
 
     if (!error) {
-        bits = icsGetBitsParam(order, parameters);
+        int bits = icsGetBitsParam(order, parameters);
         if (bits < 0) {
             error = IcsErr_MissBits;
         } else {
             IcsGetDataTypeProps(&(icsStruct->imel.dataType), format, sign,
                                 sizes[bits]);
-            for (j = 0, i = 0; i < parameters; i++) {
-                if (i == bits) {
-                    icsStruct->imel.origin = origin[i];
+            for (sj = 0, si = 0; si < parameters; si++) {
+                if (si == bits) {
+                    icsStruct->imel.origin = origin[si];
                     icsStruct->imel.scale = scale[i];
-                    strcpy(icsStruct->imel.unit, unit[i]);
+                    strcpy(icsStruct->imel.unit, unit[si]);
                 } else {
-                    icsStruct->dim[j].size = sizes[i];
-                    icsStruct->dim[j].origin = origin[i];
-                    icsStruct->dim[j].scale = scale[i];
-                    strcpy(icsStruct->dim[j].order, order[i]);
-                    strcpy(icsStruct->dim[j].label, label[i]);
-                    strcpy(icsStruct->dim[j].unit, unit[i]);
-                    j++;
+                    icsStruct->dim[sj].size = sizes[si];
+                    icsStruct->dim[sj].origin = origin[si];
+                    icsStruct->dim[sj].scale = scale[si];
+                    strcpy(icsStruct->dim[sj].order, order[si]);
+                    strcpy(icsStruct->dim[sj].label, label[si]);
+                    strcpy(icsStruct->dim[sj].unit, unit[si]);
+                    sj++;
                 }
             }
             icsStruct->dimensions = parameters - 1;
