@@ -353,7 +353,7 @@ static Ics_Error writeIcsSource(Ics_Header *icsStruct,
                                 FILE       *fp)
 {
     ICSINIT;
-    int  problem;
+    unsigned int  problem;
     char line[ICS_LINE_LENGTH];
 
 
@@ -383,7 +383,8 @@ static Ics_Error writeIcsLayout(Ics_Header *icsStruct,
                                 FILE       *fp)
 {
     ICSINIT;
-    int    problem, i;
+    unsigned int    problem;
+    int    i;
     char   line[ICS_LINE_LENGTH];
     size_t size;
 
@@ -459,7 +460,8 @@ static Ics_Error writeIcsRep(Ics_Header *icsStruct,
                              FILE       *fp)
 {
     ICSINIT;
-    int        problem, empty, i;
+    unsigned int    problem;
+    int        empty, i;
     char       line[ICS_LINE_LENGTH];
     Ics_Format format;
     int        sign;
@@ -531,7 +533,7 @@ static Ics_Error writeIcsRep(Ics_Header *icsStruct,
         empty |= !(icsStruct->byteOrder[i]);
     }
     if (empty) {
-        IcsFillByteOrder(IcsGetDataTypeSize(icsStruct->imel.dataType),
+        IcsFillByteOrder((int)IcsGetDataTypeSize(icsStruct->imel.dataType),
                          icsStruct->byteOrder);
     }
     problem = icsFirstToken(line, ICSTOK_REPRES);
@@ -562,7 +564,8 @@ static Ics_Error writeIcsParam(Ics_Header *icsStruct,
                                FILE       *fp)
 {
     ICSINIT;
-    int  problem, i;
+    unsigned int    problem;
+    int  i;
     char line[ICS_LINE_LENGTH];
 
 
@@ -716,7 +719,8 @@ static Ics_Error writeIcsSensorData(Ics_Header *icsStruct,
                                     FILE       *fp)
 {
     ICSINIT;
-    int  problem, i, chans;
+    unsigned int    problem;
+    int  i, chans;
     char line[ICS_LINE_LENGTH];
 
 
@@ -837,7 +841,8 @@ static Ics_Error writeIcsSensorStates(Ics_Header *icsStruct,
                                       FILE       *fp)
 {
     ICSINIT;
-    int             problem, i, chans;
+    unsigned int    problem;
+    int             i, chans;
     char            line[ICS_LINE_LENGTH];
     Ics_SensorState state;
 
@@ -895,7 +900,8 @@ static Ics_Error writeIcsHistory(Ics_Header *icsStruct,
                                  FILE       *fp)
 {
     ICSINIT;
-    int          problem, i;
+    unsigned int problem;
+    int          i;
     char         line[ICS_LINE_LENGTH];
     Ics_History* hist = (Ics_History*)icsStruct->history;
 
