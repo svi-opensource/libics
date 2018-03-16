@@ -346,10 +346,10 @@ static Ics_Error IcsReorderIds(char        *buf,
 
     for (j = 0; j < imels; j++){
         for (i = 0; i < bytes; i++){
-            imel[i] = buf[srcByteOrder[i]-1];
+            imel[srcByteOrder[i]-1] = buf[i];
         }
         for (i = 0; i < bytes; i++){
-            buf[dstByteOrder[i]-1] = imel[i];
+            buf[i] = imel[dstByteOrder[i]-1];
         }
         buf += bytes;
     }
