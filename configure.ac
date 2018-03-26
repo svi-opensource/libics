@@ -50,6 +50,8 @@ AC_HEADER_STDC
 AC_C_CONST
 AC_TYPE_SIZE_T
 
+AH_TEMPLATE([HAVE_STRTOK_R], [Define to 1 if the c library provides strtok_r])
+
 # If this variable is not defined, libics_conf.h will revert to the old version.
 AC_DEFINE([ICS_USING_CONFIGURE], [], [Using the configure script.])
 
@@ -109,6 +111,8 @@ dnl ---------------------------------------------------------------------------
 
 dnl Check for -lm:
 AC_CHECK_LIB(m, sqrt, [], [AC_MSG_ERROR([math lib is required])])
+
+AC_CHECK_FUNC(strtok_r, [AC_DEFINE(HAVE_STRTOK_R, 1)], [])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
