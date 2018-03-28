@@ -1295,6 +1295,21 @@ const char *IcsGetErrorText(Ics_Error error)
             msg = "libics is linking to a different version of zlib than used "
                 "during compilation";
             break;
+        case IcsErr_FReadOnly:
+            msg = "Attempting to write in read-only mode";
+            break;
+        case IcsErr_DimensionalityMismatch:
+            msg = "Mismatch between dimensionality of ICS file and parameter";
+            break;
+        case IcsErr_Version2Required:
+            msg = "Random access requires an ICS v2 file";
+            break;
+        case IcsErr_RaSingleFileRequired:
+            msg = "Random access requires a single ics file";
+            break;
+        case IcsErr_RaOnlyUncompressedDataSupported:
+            msg = "Random access requires uncompressed ics";
+            break;
         default:
             msg = "Some error occurred I know nothing about.";
     }

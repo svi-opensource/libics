@@ -64,7 +64,8 @@ SOURCES = libics_read.obj \
           libics_history.obj \
           libics_preview.obj \
           libics_sensor.obj \
-          libics_test.obj
+          libics_test.obj \
+          libics_random_access.obj
 
 #
 # Options

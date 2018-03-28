@@ -31,13 +31,15 @@ libics_la_SOURCES = libics_binary.c \
                     libics_top.c \
                     libics_util.c \
                     libics_write.c \
+                    libics_random_access.c \
                     libics_intern.h
 
 # list all include files that must be installed and distributed:
 include_HEADERS = libics.h \
                   libics_ll.h \
                   libics_sensor.h \
-                  libics_test.h
+                  libics_test.h \
+                  libics_random_access.h
 
 # list all test programs
 check_PROGRAMS = test_ics1 \

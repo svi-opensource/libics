@@ -946,6 +946,19 @@ static Ics_Error markEndOfFile(Ics_Header *icsStruct,
 Ics_Error IcsWriteIcs(Ics_Header *icsStruct,
                       const char *filename)
 {
+  return IcsWriteIcsLow(icsStruct,filename,NULL);
+}
+
+/*
+ * The Ics_RaCreate function requires
+ * - the FILE descriptor to be returned
+ * hence the introduction of the <fpret> parameter. In ALL other use cases
+ * it must be NULL
+ */
+Ics_Error IcsWriteIcsLow(Ics_Header *icsStruct,
+                         const char *filename,
+                         FILE       **fpret)
+{
     ICSINIT;
     ICS_INIT_LOCALE;
     char  line[ICS_LINE_LENGTH];
@@ -1003,9 +1016,13 @@ Ics_Error IcsWriteIcs(Ics_Header *icsStruct,
 
     ICS_REVERT_LOCALE;
 
-    if (fclose(fp) == EOF) {
-        if (!error) error = IcsErr_FCloseIcs; /* Don't overwrite any previous
-                                                 error. */
+    if (fpret && !error) {
+        *fpret = fp;
+    } else {
+        if (fclose(fp) == EOF) {
+            if (!error) error = IcsErr_FCloseIcs; /* Don't overwrite any previous
+                                                     error. */
+        }
     }
     return error;
 }
