@@ -221,6 +221,13 @@ typedef struct {
                                       been called */
 } Ics_BlockRead;
 
+/* Passed to IcsReadIcs() to accommodate the Ics_Ra* functions.
+ */
+typedef enum {
+  IcsOpenMode_ics,          /* Used by IcsOpen(), the standard/original mode */
+  IcsOpenMode_raRead,       /* Open file in read-only mode; return FILE handle */
+  IcsOpenMode_raReadWrite   /* Open file in read-write mode; return FILE handle */
+} Ics_OpenMode;
 
 /* Assorted support functions */
 FILE *IcsFOpen(const char *path,
@@ -242,12 +249,23 @@ void IcsGetFileName(char       *dest,
 
 Ics_Error IcsOpenIcs(FILE **fpp,
                      char  *filename,
-                     int    forceName);
+                     int    forceName,
+                     char  *mode);
 
 Ics_Error IcsInternAddHistory(Ics_Header *ics,
                               const char *key,
                               const char *stuff,
                               const char *seps);
+
+Ics_Error IcsReadIcsLow(Ics_Header       *icsStruct,
+                        const char       *filename,
+                        int               forceName,
+                        int               forceLocale,
+                        Ics_OpenMode      openMode,
+                        FILE            **fpret);
+Ics_Error IcsWriteIcsLow(Ics_Header  *icsStruct,
+                         const char  *filename,
+                         FILE       **fpra);
 
 /* Binary data support functions */
 void IcsFillByteOrder(Ics_DataType dataType,

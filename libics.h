@@ -462,7 +462,18 @@ typedef enum {
     IcsErr_UnknownSensorState,
         /* libics is linking to a different version of zlib than used during
            compilation: */
-    IcsErr_WrongZlibVersion
+    IcsErr_WrongZlibVersion,
+        /* Attempting to write to a read-only file */
+    IcsErr_FReadOnly,
+        /* Mismatch between dimensionality of ICS file and parameter */
+    IcsErr_DimensionalityMismatch,
+        /* The random access functions require ics v2 or higher */
+    IcsErr_Version2Required,
+        /* The random access functions require a single ics file (no separate
+           ids and no file referral using the filename field) */
+    IcsErr_RaSingleFileRequired,
+        /* The random access function only work on uncompressed data */
+    IcsErr_RaOnlyUncompressedDataSupported
 } Ics_Error;
 
 

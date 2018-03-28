@@ -301,14 +301,15 @@ char *IcsGetIdsName(char       *dest,
 /* Open an .ics file, even if the name given end in .ids. */
 Ics_Error IcsOpenIcs(FILE **fpp,
                      char  *filename,
-                     int    forceName)
+                     int    forceName,
+                     char  *mode)
 {
     ICSINIT;
     FILE* fp;
     char FileName[ICS_MAXPATHLEN];
 
     IcsGetIcsName(FileName, filename, forceName);
-    fp = IcsFOpen(FileName, "rb");
+    fp = IcsFOpen(FileName, mode);
     if (fp == NULL) return IcsErr_FOpenIcs;
 
     *fpp = fp;

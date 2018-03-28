@@ -356,6 +356,17 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                      int         forceName,
                      int         forceLocale)
 {
+  return IcsReadIcsLow( icsStruct, filename, forceName, forceLocale,
+                        IcsOpenMode_ics, NULL );
+}
+
+Ics_Error IcsReadIcsLow(Ics_Header       *icsStruct,
+                        const char       *filename,
+                        int               forceName,
+                        int               forceLocale,
+                        Ics_OpenMode      openMode,
+                        FILE            **fpret)
+{
     ICSINIT;
     ICS_INIT_LOCALE;
     FILE            *fp;
@@ -379,7 +390,11 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
     char             label[ICS_MAXDIM+1][ICS_STRLEN_TOKEN];
     char             unit[ICS_MAXDIM+1][ICS_STRLEN_TOKEN];
     Ics_SensorState  state      = IcsSensorState_default;
+    int              raMode = 0;
 
+    if ( openMode == IcsOpenMode_raRead || openMode == IcsOpenMode_raReadWrite ) {
+        raMode = 1;
+    }
 
     for (i = 0; i < ICS_MAXDIM+1; i++) {
         sizes[i] = 1;
@@ -394,7 +409,11 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
     icsStruct->fileMode = IcsFileMode_read;
 
     IcsStrCpy(icsStruct->filename, filename, ICS_MAXPATHLEN);
-    error = IcsOpenIcs(&fp, icsStruct->filename, forceName);
+    if ( openMode == IcsOpenMode_raReadWrite ) {
+        error = IcsOpenIcs(&fp, icsStruct->filename, forceName, "rb+");
+    } else {
+        error = IcsOpenIcs(&fp, icsStruct->filename, forceName, "rb");
+    }
     if (error) return error;
 
     if (forceLocale) {
@@ -404,6 +423,10 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
     if (!error) error = getIcsSeparators(fp, seps);
 
     if (!error) error = getIcsVersion(fp, seps, &(icsStruct->version));
+    if (!error && raMode && icsStruct->version == 1) {
+      error = IcsErr_Version2Required;
+    }
+
     if (!error) error = getIcsFileName(fp, seps);
 
     while (!end && !error
@@ -419,6 +442,9 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                     icsStruct->srcOffset =(size_t) ftell(fp);
                     IcsStrCpy(icsStruct->srcFile, icsStruct->filename,
                               ICS_MAXPATHLEN);
+                } else if ( raMode ) {
+                  /* Random access: secondary file not allowed */
+                  error = IcsErr_RaSingleFileRequired;
                 }
                 break;
             case ICSTOK_SOURCE:
@@ -899,9 +925,13 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
         ICS_REVERT_LOCALE;
     }
 
-    if (fclose(fp) == EOF) {
-        if (!error) error = IcsErr_FCloseIcs; /* Don't overwrite any previous
-                                                 error. */
+    if (raMode && !error && fpret) {
+        *fpret = fp;
+    } else {
+        if (fclose(fp) == EOF) {
+            if (!error) error = IcsErr_FCloseIcs; /* Don't overwrite any previous
+                                                     error. */
+        }
     }
     return error;
 }
@@ -921,7 +951,7 @@ int IcsVersion(const char *filename,
 
 
     IcsStrCpy(FileName, filename, ICS_MAXPATHLEN);
-    error = IcsOpenIcs(&fp, FileName, forceName);
+    error = IcsOpenIcs(&fp, FileName, forceName, "rb");
     if (error) return 0;
     version = 0;
     ICS_SET_LOCALE;
