@@ -41,6 +41,7 @@ libics@svi.nl
 
    Documentation
 ==============================
+
    Online documentation can be found at: https://svi-opensource.github.io/libics
 
    Installation Instructions
@@ -100,7 +101,6 @@ libics.dll.lib. To make a debug version add '/D DEBUG' to these
 commands. To disable zlib support, remove the definition of ZLIB_SUPPORT
 from the file Makefile.vc.
 
-
  - Compilation with CMake under UNIX / Linux / Mac OS X / Cygwin
 
 Run the following commands from outside the source directory
@@ -143,7 +143,7 @@ This library was originally written and maintained by
    Centre for Image Analysis
    Swedish University of Agricultural Sciences & Uppsala University
    Uppsala, Sweden
-   
+
 With help from
    Bert Gijsbers, Scientific Volume Imaging BV, Hilversum, NL
       (Most changes for version 1.3)
@@ -169,7 +169,7 @@ Most of the code herein hasn't changed since the previous version, by
 Which ultimately is based upon stuff written by:
    Damir Sudar, Geert van Kempen, Jan Jitze Krol,
    Chiel Baarslag, Fons Laan and Hans van der Voort.
-   
+
 
    HISTORY
 =============
