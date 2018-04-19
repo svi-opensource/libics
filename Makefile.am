@@ -73,16 +73,28 @@ test_strides3_LDADD = libics.la
 test_metadata_LDADD = libics.la
 test_history_LDADD = libics.la
 
-TESTS = test_ics1.sh \
+TESTS1 = test_ics1.sh \
         test_ics2a.sh \
         test_ics2b.sh \
-        test_compress.sh \
-        test_gzip.sh \
         test_strides.sh \
         test_strides2.sh \
         test_strides3.sh \
-        test_metadata.sh \
+        test_metadata1.sh \
         test_history.sh
+
+if ICS_ZLIB
+TESTS2 = test_gzip.sh test_metadata2.sh
+else
+TESTS2 =
+endif
+
+if ICS_DO_GZEXT
+TESTS3 = test_compress.sh
+else
+TESTS3 =
+endif
+
+TESTS = $(TESTS1) $(TESTS2) $(TESTS3)
 
 # list other files that must go into the distribution:
 EXTRA_DIST = INSTALL \

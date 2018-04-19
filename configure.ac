@@ -98,10 +98,13 @@ fi
 if test "$HAVE_ZLIB" = "yes" ; then
   AC_DEFINE(ICS_ZLIB, 1, [Whether to use zlib compression.])
   LIBS="-lz $LIBS"
-  if test "x$enable_gzext" != "xno" ; then
-    AC_DEFINE(ICS_DO_GZEXT, 1, [Whether to search for files with .ids.gz or .ids.Z extension.])
-  fi
 fi
+AM_CONDITIONAL([ICS_ZLIB], [test "x$HAVE_ZLIB" = "xyes"])
+
+if test "x$enable_gz_extensions" != "xno" ; then
+  AC_DEFINE(ICS_DO_GZEXT, 1, [Whether to search for files with .ids.gz or .ids.Z extension.])
+fi
+AM_CONDITIONAL([ICS_DO_GZEXT], [test "x$enable_gz_extensions" != "xno"])
 
 if test "x$enable_c_locale" != "xno" ; then
   AC_DEFINE(ICS_FORCE_C_LOCALE, 1, [Whether to force the c locale for reading and writing.])

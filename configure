@@ -633,6 +633,10 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+ICS_DO_GZEXT_FALSE
+ICS_DO_GZEXT_TRUE
+ICS_ZLIB_FALSE
+ICS_ZLIB_TRUE
 CPP
 LT_SYS_LIBRARY_PATH
 OTOOL64
@@ -12377,12 +12381,29 @@ if test "$HAVE_ZLIB" = "yes" ; then
 $as_echo "#define ICS_ZLIB 1" >>confdefs.h
 
   LIBS="-lz $LIBS"
-  if test "x$enable_gzext" != "xno" ; then
+fi
+ if test "x$HAVE_ZLIB" = "xyes"; then
+  ICS_ZLIB_TRUE=
+  ICS_ZLIB_FALSE='#'
+else
+  ICS_ZLIB_TRUE='#'
+  ICS_ZLIB_FALSE=
+fi
+
+
+if test "x$enable_gz_extensions" != "xno" ; then
 
 $as_echo "#define ICS_DO_GZEXT 1" >>confdefs.h
 
-  fi
 fi
+ if test "x$enable_gz_extensions" != "xno"; then
+  ICS_DO_GZEXT_TRUE=
+  ICS_DO_GZEXT_FALSE='#'
+else
+  ICS_DO_GZEXT_TRUE='#'
+  ICS_DO_GZEXT_FALSE=
+fi
+
 
 if test "x$enable_c_locale" != "xno" ; then
 
@@ -12583,6 +12604,14 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCC_TRUE}" && test -z "${am__fastdepCC_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCC\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${ICS_ZLIB_TRUE}" && test -z "${ICS_ZLIB_FALSE}"; then
+  as_fn_error $? "conditional \"ICS_ZLIB\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${ICS_DO_GZEXT_TRUE}" && test -z "${ICS_DO_GZEXT_FALSE}"; then
+  as_fn_error $? "conditional \"ICS_DO_GZEXT\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 

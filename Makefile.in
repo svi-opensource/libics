@@ -106,6 +106,7 @@ check_PROGRAMS = test_ics1$(EXEEXT) test_ics2a$(EXEEXT) \
 	test_strides$(EXEEXT) test_strides2$(EXEEXT) \
 	test_strides3$(EXEEXT) test_metadata$(EXEEXT) \
 	test_history$(EXEEXT)
+TESTS = $(TESTS1) $(am__EXEEXT_1) $(am__EXEEXT_2)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
@@ -424,6 +425,8 @@ am__set_TESTS_bases = \
   bases=`for i in $$bases; do echo $$i; done | sed 's/\.log$$//'`; \
   bases=`echo $$bases`
 RECHECK_LOGS = $(TEST_LOGS)
+@ICS_ZLIB_TRUE@am__EXEEXT_1 = test_gzip.sh test_metadata2.sh
+@ICS_DO_GZEXT_TRUE@am__EXEEXT_2 = test_compress.sh
 TEST_SUITE_LOG = test-suite.log
 TEST_EXTENSIONS = @EXEEXT@ .test
 LOG_DRIVER = $(SHELL) $(top_srcdir)/test-driver
@@ -632,17 +635,19 @@ test_strides2_LDADD = libics.la
 test_strides3_LDADD = libics.la
 test_metadata_LDADD = libics.la
 test_history_LDADD = libics.la
-TESTS = test_ics1.sh \
+TESTS1 = test_ics1.sh \
         test_ics2a.sh \
         test_ics2b.sh \
-        test_compress.sh \
-        test_gzip.sh \
         test_strides.sh \
         test_strides2.sh \
         test_strides3.sh \
-        test_metadata.sh \
+        test_metadata1.sh \
         test_history.sh
 
+@ICS_ZLIB_FALSE@TESTS2 = 
+@ICS_ZLIB_TRUE@TESTS2 = test_gzip.sh test_metadata2.sh
+@ICS_DO_GZEXT_FALSE@TESTS3 = 
+@ICS_DO_GZEXT_TRUE@TESTS3 = test_compress.sh
 
 # list other files that must go into the distribution:
 EXTRA_DIST = INSTALL \
@@ -1134,20 +1139,6 @@ test_ics2b.sh.log: test_ics2b.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-test_compress.sh.log: test_compress.sh
-	@p='test_compress.sh'; \
-	b='test_compress.sh'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-test_gzip.sh.log: test_gzip.sh
-	@p='test_gzip.sh'; \
-	b='test_gzip.sh'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test_strides.sh.log: test_strides.sh
 	@p='test_strides.sh'; \
 	b='test_strides.sh'; \
@@ -1169,9 +1160,9 @@ test_strides3.sh.log: test_strides3.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-test_metadata.sh.log: test_metadata.sh
-	@p='test_metadata.sh'; \
-	b='test_metadata.sh'; \
+test_metadata1.sh.log: test_metadata1.sh
+	@p='test_metadata1.sh'; \
+	b='test_metadata1.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -1179,6 +1170,27 @@ test_metadata.sh.log: test_metadata.sh
 test_history.sh.log: test_history.sh
 	@p='test_history.sh'; \
 	b='test_history.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test_gzip.sh.log: test_gzip.sh
+	@p='test_gzip.sh'; \
+	b='test_gzip.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test_metadata2.sh.log: test_metadata2.sh
+	@p='test_metadata2.sh'; \
+	b='test_metadata2.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test_compress.sh.log: test_compress.sh
+	@p='test_compress.sh'; \
+	b='test_compress.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
