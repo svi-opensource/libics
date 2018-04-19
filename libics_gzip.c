@@ -60,14 +60,16 @@
 #include <string.h>
 #include "libics_intern.h"
 
-
-#include "zlib.h"
-
+// Include zlib.h only when available
+#ifdef ICS_ZLIB
+    #include "zlib.h"
+#endif
 
 #define DEF_MEM_LEVEL 8 /* Default value defined in zutil.h */
 
 
 /* GZIP stuff */
+#ifdef ICS_ZLIB
 #ifdef WIN32
 #define OS_CODE 0x0b
 #else
@@ -81,9 +83,10 @@ static int gz_magic[2] = {0x1f, 0x8b}; /* gzip magic header */
 #define ORIG_NAME    0x08 /* bit 3 set: original file name present */
 #define COMMENT      0x10 /* bit 4 set: file comment present */
 #define RESERVED     0xE0 /* bits 5..7: reserved */
-
+#endif // ICS_ZLIB
 
 /* Outputs a long in LSB order to the given stream */
+#ifdef ICS_ZLIB
 static void icsPutLong(FILE *file,
                        unsigned long int x)
 {
@@ -93,9 +96,11 @@ static void icsPutLong(FILE *file,
       x >>= 8;
    }
 }
+#endif
 
 
 /* Reads a long in LSB order from the given stream. */
+#ifdef ICS_ZLIB
 static unsigned long int icsGetLong(FILE *file)
 {
     unsigned long int x = (unsigned long int)getc(file);
@@ -104,6 +109,7 @@ static unsigned long int icsGetLong(FILE *file)
     x += ((unsigned long int)getc(file))<<24;
     return x;
 }
+#endif
 
 
 /* Write ZIP compressed data. This function mostly does:
@@ -201,6 +207,10 @@ Ics_Error IcsWriteZip(const void *inBuf,
 
     return err == Z_OK ? IcsErr_Ok : IcsErr_CompressionProblem;
 #else
+    (void)inBuf;
+    (void)len;
+    (void)file;
+    (void)level;
     return IcsErr_UnknownCompression;
 #endif
 }
@@ -365,6 +375,13 @@ Ics_Error IcsWriteZipWithStrides(const void      *src,
         return err == Z_OK ? IcsErr_Ok : IcsErr_CompressionProblem;
     }
 #else
+    (void)src;
+    (void)dim;
+    (void)stride;
+    (void)nDims;
+    (void)nBytes;
+    (void)file;
+    (void)level;
     return IcsErr_UnknownCompression;
 #endif
 }
@@ -449,6 +466,7 @@ Ics_Error IcsOpenZip(Ics_Header *icsStruct)
     br->zlibCRC = crc32(0L, Z_NULL, 0);
     return IcsErr_Ok;
 #else
+    (void)icsStruct;
     return IcsErr_UnknownCompression;
 #endif
 }
@@ -474,6 +492,7 @@ Ics_Error IcsCloseZip(Ics_Header *icsStruct)
     }
     return IcsErr_Ok;
 #else
+    (void)icsStruct;
     return IcsErr_UnknownCompression;
 #endif
 }
@@ -482,8 +501,8 @@ Ics_Error IcsCloseZip(Ics_Header *icsStruct)
 /* Read ZIP compressed data block. This function mostly does:
      gzread((gzFile)br->ZlibStream, outBuf, len); */
 Ics_Error IcsReadZipBlock(Ics_Header *icsStruct,
-                           void       *outBuf,
-                           size_t      len)
+                          void       *outBuf,
+                          size_t      len)
 {
 #ifdef ICS_ZLIB
     Ics_BlockRead *br      = (Ics_BlockRead*)icsStruct->blockRead;
@@ -548,6 +567,9 @@ Ics_Error IcsReadZipBlock(Ics_Header *icsStruct,
     if (err == Z_OK) return IcsErr_Ok;
     return IcsErr_DecompressionProblem;
 #else
+    (void)icsStruct;
+    (void)outBuf;
+    (void)len;
     return IcsErr_UnknownCompression;
 #endif
 }
@@ -556,8 +578,8 @@ Ics_Error IcsReadZipBlock(Ics_Header *icsStruct,
 /* Skip ZIP compressed data block. This function mostly does:
      gzseek((gzFile)br->ZlibStream, (z_off_t)offset, whence); */
 Ics_Error IcsSetZipBlock(Ics_Header *icsStruct,
-                          long        offset,
-                          int         whence)
+                         long        offset,
+                         int         whence)
 {
 #ifdef ICS_ZLIB
     ICSINIT;
@@ -601,6 +623,9 @@ Ics_Error IcsSetZipBlock(Ics_Header *icsStruct,
 
     return error;
 #else
+    (void)icsStruct;
+    (void)offset;
+    (void)whence;
     return IcsErr_UnknownCompression;
 #endif
 }
