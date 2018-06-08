@@ -80,21 +80,19 @@ set(HEADERS
       libics_test.h
       )
 
-# Build a dll
-add_library(libics SHARED ${SOURCES} ${HEADERS})
-target_compile_definitions(libics PRIVATE BUILD_ICSLIB) # For Windows, when compiling DLL
-target_compile_definitions(libics INTERFACE USE_ICSLIB_DLL) # For Windows, when linking against DLL
-target_include_directories(libics PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+add_library(libics ${SOURCES} ${HEADERS})
+
+if (BUILD_SHARED_LIBS)
+    target_compile_definitions(libics PRIVATE BUILD_ICSLIB) # For Windows, when compiling DLL
+    target_compile_definitions(libics INTERFACE USE_ICSLIB_DLL) # For Windows, when linking against DLL
+endif ()
+
+target_include_directories(libics PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+)
+
 if (UNIX)
     set_target_properties(libics PROPERTIES OUTPUT_NAME "ics")
-    target_link_libraries(libics PUBLIC m)
-endif (UNIX)
-
-# Build a static library
-add_library(libics_static STATIC ${SOURCES} ${HEADERS})
-target_include_directories(libics_static PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
-if (UNIX)
-    set_target_properties(libics_static PROPERTIES OUTPUT_NAME "ics")
     target_link_libraries(libics PUBLIC m)
 endif (UNIX)
 
@@ -103,20 +101,43 @@ if(LIBICS_USE_ZLIB)
     target_link_libraries(libics PUBLIC ${ZLIB_LIBRARIES})
     target_include_directories(libics PRIVATE ${ZLIB_INCLUDE_DIRS})
     target_compile_definitions(libics PUBLIC -DICS_ZLIB)
-    target_link_libraries(libics_static PUBLIC ${ZLIB_LIBRARIES})
-    target_include_directories(libics_static PRIVATE ${ZLIB_INCLUDE_DIRS})
-    target_compile_definitions(libics_static PUBLIC -DICS_ZLIB)
 endif()
 
 # Reentrant string tokenization
 if (HAVE_STRTOK_R)
   target_compile_definitions(libics PRIVATE -DHAVE_STRTOK_R)
-  target_compile_definitions(libics_static PRIVATE -DHAVE_STRTOK_R)
 endif()
 
 # Install
-install(TARGETS libics libics_static DESTINATION lib)
+export(TARGETS libics FILE cmake/libicsTargets.cmake)
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+    cmake/libicsConfigVersion.cmake
+    VERSION ${PACKAGE_VERSION}
+    COMPATIBILITY AnyNewerVersion)
+
+configure_package_config_file(
+    cmake/libicsConfig.cmake.in
+    cmake/libicsConfig.cmake
+    INSTALL_DESTINATION cmake/)
+
+install(TARGETS libics
+    EXPORT libicsTargets
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+    INCLUDES DESTINATION include)
+
 install(FILES ${HEADERS} DESTINATION include)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/cmake/libicsConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/cmake/libicsConfigVersion.cmake
+    DESTINATION cmake/)
+
+install(EXPORT libicsTargets DESTINATION cmake)
+
 
 # Unit tests
 enable_testing()
