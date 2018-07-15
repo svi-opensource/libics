@@ -52,10 +52,10 @@ extern "C" {
 /* Library versioning is in the form major, minor, patch: */
 #define ICSLIB_VERSION "1.6.2" /* also defined in configure.ac */
 
+
 #if defined(__WIN32__) && !defined(WIN32)
 #define WIN32
 #endif
-
 
 #ifdef WIN32
 #ifdef BUILD_ICSLIB
@@ -153,7 +153,7 @@ typedef struct {
 } Ics_ImelRepresentation;
 
 
-/* A list of sensor parameters that are also equiped with a state. */
+/* A list of sensor parameters that are also equipped with a state. */
 typedef enum {
     ICS_SENSOR_FIRST,
     ICS_SENSOR_IMAGING_DIRECTION,
@@ -456,7 +456,7 @@ typedef enum {
     IcsErr_TooManyDims,
         /* Unknown compression type: */
     IcsErr_UnknownCompression,
-         /* The datatype is not recognized: */
+         /* The data type is not recognized: */
     IcsErr_UnknownDataType,
         /* The state is unknown. */
     IcsErr_UnknownSensorState,
@@ -477,7 +477,7 @@ typedef struct {
     int  next;                    /* index into history array, pointing to next
                                      string to read, set to -1 if there's no
                                      more to read. */
-    int  previous;                /* index to previous string, useful for relace
+    int  previous;                /* index to previous string, useful for replace
                                      and delete. */
     char key[ICS_STRLEN_TOKEN+1]; /* optional key this iterator looks for. */
 } Ics_HistoryIterator;
@@ -489,7 +489,7 @@ ICSEXPORT const char* IcsGetLibVersion(void);
 
 
 /* Returns 0 if it is not an ICS file, or the version number if it is.  If
-  forcename is non-zero, no extension is appended. */
+  forceName is non-zero, no extension is appended. */
 ICSEXPORT int IcsVersion(const char *filename,
                          int         forceName);
 
@@ -816,7 +816,7 @@ ICSEXPORT Ics_Error IcsDeleteHistoryStringI(ICS                 *ics,
                                             Ics_HistoryIterator *it);
 
 
-/* Delete last retrieved history line (iterator still points to the same
+/* Replace last retrieved history line (iterator still points to the same
    string). */
 ICSEXPORT Ics_Error IcsReplaceHistoryStringI(ICS                 *ics,
                                              Ics_HistoryIterator *it,
