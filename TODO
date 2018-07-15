@@ -4,7 +4,7 @@ libics to do list
 - Add bzip2 support, or rather xz (through XZ Utils).
 
 - 1-bit-per-pixel data should be packed when written. Ics_DataType
-  should then add a Ics_uint1 or Ics_binary data type. Tom·s Majtner
+  should then add a Ics_uint1 or Ics_binary data type. Tom√°s Majtner
   submitted some code that gets us pretty close to this.
 
 - IcsGetPreviewData() should look for dimensions labelled "x" and "y".
