@@ -14,7 +14,7 @@ libtool
 Makefile
 stamp-*
 stamp-h2
-
+target*
 
 # aclocal.m4
 # autom4te.cache/

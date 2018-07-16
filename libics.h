@@ -480,7 +480,7 @@ typedef enum {
 } Ics_HistoryWhich;
 
 
-typedef struct {
+typedef struct _Ics_HistoryIterator {
     int  next;                    /* index into history array, pointing to next
                                      string to read, set to -1 if there's no
                                      more to read. */
