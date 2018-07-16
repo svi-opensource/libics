@@ -126,6 +126,13 @@ typedef enum {
 } Ics_FileMode;
 
 
+/* Byte orders. */
+typedef enum {
+    IcsByteOrder_littleEndian, /* little endian byte order */
+    IcsByteOrder_bigEndian     /* big endian byte order    */
+} Ics_ByteOrder;
+
+
 /* Structures that define the image representation. They are only used inside
    the ICS data structure. */
 typedef struct {
@@ -606,6 +613,13 @@ ICSEXPORT Ics_Error IcsSetDataWithStrides(ICS             *ics,
 ICSEXPORT Ics_Error IcsSetSource(ICS        *ics,
                                  const char *fname,
                                  size_t      offset);
+
+/* Set the image source byte order for an ICS version 2.0 file. Only valid if
+   writing, and only valid after calling IcsSetSource. If the data type is
+   changed after this call, the byte order information written to file might
+   not be correct. */
+ICSEXPORT Ics_Error IcsSetByteOrder(ICS           *ics,
+                                    Ics_ByteOrder  order);
 
 
 /* Set the compression method and compression parameter. Only valid if

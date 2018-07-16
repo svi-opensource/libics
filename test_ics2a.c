@@ -58,10 +58,7 @@ int main(int argc, const char* argv[]) {
    IcsSetLayout(ip, dt, ndims, dims);
    IcsGetIdsName(datafile, argv[1]);
    IcsSetSource(ip, datafile, 0);
-   /* Cheating a little here, to get the correct endianness on any
-      machine type. This should be fixed in the library! */
-   ip->byteOrder[0] = 1;
-   ip->byteOrder[1] = 2;
+   IcsSetByteOrder(ip, IcsByteOrder_littleEndian);
    IcsSetCompression(ip, IcsCompr_uncompressed, 0);
    retval = IcsClose(ip);
    if (retval != IcsErr_Ok) {

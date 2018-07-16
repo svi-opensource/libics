@@ -652,6 +652,24 @@
     <tt class="constant">IcsErr_DuplicateData</tt>,
     <tt class="constant">IcsErr_NotValidAction</tt>.</p>
 
+  <h3 class="ident"><a name="IcsSetByteOrder"></a>IcsSetByteOrder</h3>
+
+    <p class="synopsis">
+    <span class="typeident"><a href="Ics_Error.html">Ics_Error</a></span>&nbsp;<span class="funcident">IcsSetByteOrder</span>
+    (<span class="typeident"><a href="Ics_Header.html">ICS</a></span>*&nbsp;<span class="varident">ics</span>,
+    <span class="typeident"><a href="Enums.html#Ics_ByteOrder">Ics_ByteOrder</a></span>*&nbsp;<span class="varident">order</span>);
+    </p>
+
+    <p>Set the image source byte order for an ICS version 2.0 file. Only valid if
+    writing, and only valid after calling
+    <tt class="funcident"><a href="#IcsSetSource">IcsSetSource</a></tt>. If the data
+    type is changed after this call, the byte order information written to file might
+    not be correct.</p>
+
+    <p class="info"><span class="headtxt">errors</span>:
+    <tt class="constant">IcsErr_NotValidAction</tt>,
+    <tt class="constant">IcsErr_IllParameter</tt>.</p>
+
 <h2><a name="metadata"></a>Image metadata functions</h2>
 
   <h3 class="ident"><a name="IcsGetCoordinateSystem"></a>IcsGetCoordinateSystem</h3>
