@@ -15,7 +15,7 @@
 ##############################################################################
 cmake_minimum_required(VERSION 3.5)
 if(POLICY CMP0068)
-    cmake_policy(SET CMP0068 NEW)
+   cmake_policy(SET CMP0068 NEW)
 endif()
 
 project(libics VERSION 1.6.2)
@@ -29,30 +29,20 @@ project(libics VERSION 1.6.2)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED on)
 
-if (CMAKE_C_COMPILER_ID MATCHES "Clang") # also matchs "AppleClang"
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wconversion -Wsign-conversion")
-elseif (CMAKE_C_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wconversion -Wsign-conversion -Wno-unused-parameter")
-elseif (CMAKE_C_COMPILER_ID STREQUAL "Intel")
-    # TODO: compiler flags for Intel compiler
-elseif (CMAKE_C_COMPILER_ID STREQUAL "MSVC")
-    # TODO: compiler flags for MSVC compiler
+if(CMAKE_C_COMPILER_ID MATCHES "Clang") # also matchs "AppleClang"
+   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wconversion -Wsign-conversion -pedantic")
+elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wconversion -Wsign-conversion -Wno-unused-parameter -pedantic")
+elseif(CMAKE_C_COMPILER_ID STREQUAL "Intel")
+   # TODO: compiler flags for Intel compiler
+elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+   # TODO: compiler flags for MSVC compiler
 endif()
 
 # Debug or Release?
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release)
+   set(CMAKE_BUILD_TYPE Release)
 endif()
-
-# Zlib
-find_package(ZLIB)
-if(ZLIB_FOUND)
-    set(LIBICS_USE_ZLIB TRUE CACHE BOOL "Use Zlib in libics")
-endif()
-
-# Reentrant string tokenization
-include(CheckFunctionExists)
-check_function_exists(strtok_r HAVE_STRTOK_R)
 
 # ICS
 configure_file(libics_conf.h.in ${CMAKE_CURRENT_SOURCE_DIR}/libics_conf.h COPYONLY)
@@ -82,30 +72,34 @@ set(HEADERS
 
 add_library(libics ${SOURCES} ${HEADERS})
 
-if (BUILD_SHARED_LIBS)
-    target_compile_definitions(libics PRIVATE BUILD_ICSLIB) # For Windows, when compiling DLL
-    target_compile_definitions(libics INTERFACE USE_ICSLIB_DLL) # For Windows, when linking against DLL
-endif ()
+if(BUILD_SHARED_LIBS)
+   target_compile_definitions(libics PRIVATE BUILD_ICSLIB) # When compiling DLL/SO
+   target_compile_definitions(libics INTERFACE USE_ICSLIB_DLL) # When linking against DLL/SO
+endif()
 
-target_include_directories(libics PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-)
+target_include_directories(libics PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 
-if (UNIX)
-    set_target_properties(libics PROPERTIES OUTPUT_NAME "ics")
-    target_link_libraries(libics PUBLIC m)
-endif (UNIX)
+if(UNIX)
+   set_target_properties(libics PROPERTIES OUTPUT_NAME "ics")
+   target_link_libraries(libics PUBLIC m)
+endif(UNIX)
 
 # Link against zlib
+find_package(ZLIB)
+if(ZLIB_FOUND)
+   set(LIBICS_USE_ZLIB TRUE CACHE BOOL "Use Zlib in libics")
+endif()
 if(LIBICS_USE_ZLIB)
-    target_link_libraries(libics PUBLIC ${ZLIB_LIBRARIES})
-    target_include_directories(libics PRIVATE ${ZLIB_INCLUDE_DIRS})
-    target_compile_definitions(libics PUBLIC -DICS_ZLIB)
+   target_link_libraries(libics PUBLIC ${ZLIB_LIBRARIES})
+   target_include_directories(libics PRIVATE ${ZLIB_INCLUDE_DIRS})
+   target_compile_definitions(libics PUBLIC -DICS_ZLIB)
 endif()
 
 # Reentrant string tokenization
-if (HAVE_STRTOK_R)
-  target_compile_definitions(libics PRIVATE -DHAVE_STRTOK_R)
+include(CheckFunctionExists)
+check_function_exists(strtok_r HAVE_STRTOK_R)
+if(HAVE_STRTOK_R)
+   target_compile_definitions(libics PRIVATE -DHAVE_STRTOK_R)
 endif()
 
 # Install
@@ -113,34 +107,35 @@ export(TARGETS libics FILE cmake/libicsTargets.cmake)
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
-    cmake/libicsConfigVersion.cmake
-    VERSION ${PACKAGE_VERSION}
-    COMPATIBILITY AnyNewerVersion)
+      cmake/libicsConfigVersion.cmake
+      VERSION ${PACKAGE_VERSION}
+      COMPATIBILITY AnyNewerVersion)
 
 configure_package_config_file(
-    cmake/libicsConfig.cmake.in
-    cmake/libicsConfig.cmake
-    INSTALL_DESTINATION cmake/)
+      cmake/libicsConfig.cmake.in
+      cmake/libicsConfig.cmake
+      INSTALL_DESTINATION cmake/)
 
 install(TARGETS libics
-    EXPORT libicsTargets
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
-    RUNTIME DESTINATION bin
-    INCLUDES DESTINATION include)
+      EXPORT libicsTargets
+      ARCHIVE DESTINATION lib
+      LIBRARY DESTINATION lib
+      RUNTIME DESTINATION bin
+      INCLUDES DESTINATION include)
 
 install(FILES ${HEADERS} DESTINATION include)
 
 install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/cmake/libicsConfig.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/cmake/libicsConfigVersion.cmake
-    DESTINATION cmake/)
+      ${CMAKE_CURRENT_BINARY_DIR}/cmake/libicsConfig.cmake
+      ${CMAKE_CURRENT_BINARY_DIR}/cmake/libicsConfigVersion.cmake
+      DESTINATION cmake/)
 
 install(EXPORT libicsTargets DESTINATION cmake)
 
 
 # Unit tests
 enable_testing()
+
 add_executable(test_ics1 EXCLUDE_FROM_ALL test_ics1.c)
 target_link_libraries(test_ics1 libics)
 add_executable(test_ics2a EXCLUDE_FROM_ALL test_ics2a.c)
@@ -148,8 +143,8 @@ target_link_libraries(test_ics2a libics)
 add_executable(test_ics2b EXCLUDE_FROM_ALL test_ics2b.c)
 target_link_libraries(test_ics2b libics)
 if(LIBICS_USE_ZLIB)
-    add_executable(test_gzip EXCLUDE_FROM_ALL test_gzip.c)
-    target_link_libraries(test_gzip libics)
+   add_executable(test_gzip EXCLUDE_FROM_ALL test_gzip.c)
+   target_link_libraries(test_gzip libics)
 endif()
 add_executable(test_compress EXCLUDE_FROM_ALL test_compress.c)
 target_link_libraries(test_compress libics)
@@ -163,6 +158,7 @@ add_executable(test_metadata EXCLUDE_FROM_ALL test_metadata.c)
 target_link_libraries(test_metadata libics)
 add_executable(test_history EXCLUDE_FROM_ALL test_history.c)
 target_link_libraries(test_history libics)
+
 set(TEST_PROGRAMS
       test_ics1
       test_ics2a
@@ -178,6 +174,7 @@ if(LIBICS_USE_ZLIB)
    set(TEST_PROGRAMS ${TEST_PROGRAMS} test_gzip)
 endif()
 add_custom_target(all_tests DEPENDS ${TEST_PROGRAMS})
+
 add_test(ctest_build_test_code "${CMAKE_COMMAND}" --build "${PROJECT_BINARY_DIR}" --target all_tests)
 add_test(NAME test_ics1 COMMAND test_ics1 "${CMAKE_CURRENT_SOURCE_DIR}/test/testim.ics" result_v1.ics)
 set_tests_properties(test_ics1 PROPERTIES DEPENDS ctest_build_test_code)
@@ -186,8 +183,8 @@ set_tests_properties(test_ics2a PROPERTIES DEPENDS ctest_build_test_code)
 add_test(NAME test_ics2b COMMAND test_ics2b "${CMAKE_CURRENT_SOURCE_DIR}/test/testim.ics" result_v2b.ics)
 set_tests_properties(test_ics2b PROPERTIES DEPENDS ctest_build_test_code)
 if(LIBICS_USE_ZLIB)
-    add_test(NAME test_gzip COMMAND test_gzip "${CMAKE_CURRENT_SOURCE_DIR}/test/testim.ics" result_v2z.ics)
-    set_tests_properties(test_gzip PROPERTIES DEPENDS ctest_build_test_code)
+   add_test(NAME test_gzip COMMAND test_gzip "${CMAKE_CURRENT_SOURCE_DIR}/test/testim.ics" result_v2z.ics)
+   set_tests_properties(test_gzip PROPERTIES DEPENDS ctest_build_test_code)
 endif()
 add_test(NAME test_compress COMMAND test_compress "${CMAKE_CURRENT_SOURCE_DIR}/test/testim.ics" "${CMAKE_CURRENT_SOURCE_DIR}/test/testim_c.ics")
 set_tests_properties(test_compress PROPERTIES DEPENDS ctest_build_test_code)
@@ -204,8 +201,15 @@ set_tests_properties(test_metadata2 PROPERTIES DEPENDS test_ics2a)
 add_test(NAME test_metadata3 COMMAND test_metadata result_v2b.ics)
 set_tests_properties(test_metadata3 PROPERTIES DEPENDS test_ics2b)
 if(LIBICS_USE_ZLIB)
-    add_test(NAME test_metadata4 COMMAND test_metadata result_v2z.ics)
-    set_tests_properties(test_metadata4 PROPERTIES DEPENDS test_gzip)
+   add_test(NAME test_metadata4 COMMAND test_metadata result_v2z.ics)
+   set_tests_properties(test_metadata4 PROPERTIES DEPENDS test_gzip)
 endif()
 add_test(NAME test_history COMMAND test_history result_v1.ics)
 set_tests_properties(test_history PROPERTIES DEPENDS test_ics1)
+
+
+# Include the C++ interface?
+set(LIBICS_INCLUDE_CPP TRUE CACHE BOOL "Include the C++ interface")
+if(LIBICS_INCLUDE_CPP)
+   include(support/cpp_interface/CMakeLists.txt)
+endif()
