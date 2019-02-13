@@ -1,3 +1,13 @@
 # Fix incorrect language classifications on GitHub.com
+/aclocal.m4 linguist-vendored
 /autom4te.cache/* linguist-language=text linguist-generated=true
+/compile linguist-vendored
+/config.* linguist-vendored
 /configure linguist-vendored
+/depcomp linguist-vendored
+/install-sh linguist-vendored
+/ltmain.sh linguist-vendored
+/m4/* linguist-vendored
+/Makefile.in linguist-vendored
+/missing linguist-vendored
+/test-driver linguist-vendored
