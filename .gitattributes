@@ -1,2 +1,3 @@
 # Fix incorrect language classifications on GitHub.com
-/autom4te.cache/* linguist-language=text
+/autom4te.cache/* linguist-language=text linguist-generated=true
+/configure linguist-vendored
