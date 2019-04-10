@@ -1147,6 +1147,8 @@ Ics_Error IcsGuessScilType(ICS *ics)
             break;
         case Ics_uint32:
         case Ics_sint32:
+        case Ics_uint64:
+        case Ics_sint64:
         case Ics_real64:
         case Ics_complex64:
             return IcsErr_NoScilType;
