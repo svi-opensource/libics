@@ -78,6 +78,8 @@ enum class DataType {
    SInt16,    // integer, signed,   16 bpp
    UInt32,    // integer, unsigned, 32 bpp
    SInt32,    // integer, signed,   32 bpp
+   UInt64,    // integer, unsigned, 64 bpp
+   SInt64,    // integer, signed,   64 bpp
    Real32,    // real,    signed,   32 bpp
    Real64,    // real,    signed,   64 bpp
    Complex32, // complex, signed, 2*32 bpp

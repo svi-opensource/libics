@@ -93,6 +93,12 @@ ICS::Layout ICS::GetLayout() const {
       case Ics_sint32:
          dt = DataType::SInt32;
          break;
+      case Ics_uint64:
+         dt = DataType::UInt64;
+         break;
+      case Ics_sint64:
+         dt = DataType::SInt64;
+         break;
       case Ics_real32:
          dt = DataType::Real32;
          break;
@@ -133,6 +139,12 @@ void ICS::SetLayout(DataType dt, std::vector<std::size_t> const& dims) {
          break;
       case DataType::SInt32:
          type = Ics_sint32;
+         break;
+      case DataType::UInt64:
+         type = Ics_uint64;
+         break;
+      case DataType::SInt64:
+         type = Ics_sint64;
          break;
       case DataType::Real32:
          type = Ics_real32;

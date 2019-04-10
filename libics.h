@@ -103,6 +103,8 @@ typedef enum {
     Ics_sint16,    /* integer, signed,   16 bpp */
     Ics_uint32,    /* integer, unsigned, 32 bpp */
     Ics_sint32,    /* integer, signed,   32 bpp */
+    Ics_uint64,    /* integer, unsigned, 64 bpp */
+    Ics_sint64,    /* integer, signed,   64 bpp */
     Ics_real32,    /* real,    signed,   32 bpp */
     Ics_real64,    /* real,    signed,   64 bpp */
     Ics_complex32, /* complex, signed, 2*32 bpp */
