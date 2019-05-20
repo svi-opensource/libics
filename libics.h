@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015-2017:
+ * Copyright 2015-2018:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
@@ -50,10 +50,23 @@ extern "C" {
 #endif
 
 /* Library versioning is in the form major, minor, patch: */
-#define ICSLIB_VERSION "1.6.2" /* also defined in configure.ac */
+#define ICSLIB_VERSION "1.6.3" /* also defined in configure.ac */
 
 #if defined(__WIN32__) && !defined(WIN32)
 #define WIN32
+#endif
+
+#if defined(_WIN64) && !defined(WIN64)
+#define WIN64
+#endif
+    
+
+/* Windows platforms have a different case insensitive string comparison
+   function. */    
+#if defined(WIN32) || defined(WIN64)
+#define ICSSTRCASECMP _stricmp
+#else
+#define ICSSTRCASECMP strcasecmp
 #endif
 
 
@@ -87,6 +100,7 @@ extern "C" {
 /* These determine the sizes of static arrays and strings: */
 #define ICS_MAXDIM 10        /* maximum number of image dimensions.           */
 #define ICS_MAX_LAMBDA 32    /* maximum number of channels.                   */
+#define ICS_MAX_DETECT 32    /* maximum number of detectors.                  */
 #define ICS_STRLEN_TOKEN 32  /* length of a token string.                     */
 #define ICS_STRLEN_OTHER 128 /* length of other strings.                      */
 #define ICS_LINE_LENGTH 1024 /* maximum length of the lines in the .ics file. */
@@ -170,12 +184,23 @@ typedef enum {
     ICS_SENSOR_PHOTON_COUNT,
     ICS_SENSOR_INTERFACE_PRIMARY,
     ICS_SENSOR_INTERFACE_SECONDARY,
+    ICS_SENSOR_DESCRIPTION,
     
     ICS_SENSOR_DETECTOR_MAGN,
     ICS_SENSOR_DETECTOR_PPU,
     ICS_SENSOR_DETECTOR_BASELINE,
     ICS_SENSOR_DETECTOR_LINE_AVG_COUNT,
 
+    ICS_SENSOR_DETECTOR_OFFSET,
+    ICS_SENSOR_DETECTOR_SENSITIVITY,
+    ICS_SENSOR_DETECTOR_RADIUS,
+    ICS_SENSOR_DETECTOR_SCALE,
+    ICS_SENSOR_DETECTOR_STRETCH,
+    ICS_SENSOR_DETECTOR_ROT,
+    ICS_SENSOR_DETECTOR_MIRROR,
+    ICS_SENSOR_DETECTOR_MODEL,
+    ICS_SENSOR_DETECTOR_REDUCEHIST,
+    
     ICS_SENSOR_STED_DEPLETION_MODE,
     ICS_SENSOR_STED_LAMBDA,
     ICS_SENSOR_STED_SATURATION_FACTOR,
@@ -253,6 +278,8 @@ typedef struct _ICS {
     char                    model[ICS_STRLEN_OTHER];
         /* Number of channels: */
     int                     sensorChannels;
+        /* Number of detectors: */
+    int                     sensorDetectors;
         /* Imaging direction: */
     char                    imagingDirection[ICS_MAX_LAMBDA][ICS_STRLEN_TOKEN];
     Ics_SensorState         imagingDirectionState[ICS_MAX_LAMBDA];
@@ -295,6 +322,9 @@ typedef struct _ICS {
         /* Emission wavelength in nm: */
     double                  interfaceSecondary;
     Ics_SensorState         interfaceSecondaryState;
+        /* Additional per channel description strings: */
+    char                    description[ICS_MAX_LAMBDA][ICS_STRLEN_OTHER];
+    Ics_SensorState         descriptionState[ICS_MAX_LAMBDA];
         /* Excitation beam fill factor: */
     double                  detectorMagn[ICS_MAX_LAMBDA];
     Ics_SensorState         detectorMagnState[ICS_MAX_LAMBDA];
@@ -307,6 +337,33 @@ typedef struct _ICS {
         /* Averaging line count */
     double                  detectorLineAvgCnt[ICS_MAX_LAMBDA];
     Ics_SensorState         detectorLineAvgCntState[ICS_MAX_LAMBDA];
+        /* Detector offsets */
+    double                  detectorOffset[ICS_MAX_LAMBDA][ICS_MAX_DETECT][3];
+    Ics_SensorState         detectorOffsetState[ICS_MAX_LAMBDA];
+        /* Detector sensitivities */
+    double                  detectorSensitivity[ICS_MAX_LAMBDA][ICS_MAX_DETECT];
+    Ics_SensorState         detectorSensitivityState[ICS_MAX_LAMBDA];
+        /* Detector radius */
+    double                  detectorRadius[ICS_MAX_LAMBDA][ICS_MAX_DETECT];
+    Ics_SensorState         detectorRadiusState[ICS_MAX_LAMBDA];
+        /* Detector array scale */
+    double                  detectorScale[ICS_MAX_LAMBDA];
+    Ics_SensorState         detectorScaleState[ICS_MAX_LAMBDA];
+        /* Detector array stretch */
+    double                  detectorStretch[ICS_MAX_LAMBDA];
+    Ics_SensorState         detectorStretchState[ICS_MAX_LAMBDA];
+        /* Detector array rotation */
+    double                  detectorRot[ICS_MAX_LAMBDA];
+    Ics_SensorState         detectorRotState[ICS_MAX_LAMBDA];
+        /* Detector array mirroring */
+    char                    detectorMirror[ICS_MAX_LAMBDA][ICS_STRLEN_TOKEN];
+    Ics_SensorState         detectorMirrorState[ICS_MAX_LAMBDA];
+        /* Detector array model */
+    char                    detectorModel[ICS_MAX_LAMBDA][ICS_STRLEN_TOKEN];
+    Ics_SensorState         detectorModelState[ICS_MAX_LAMBDA];
+        /* Detector reduce hist. */
+    char                    detectorRedHist[ICS_MAX_LAMBDA][ICS_STRLEN_TOKEN];
+    Ics_SensorState         detectorRedHistState[ICS_MAX_LAMBDA];
         /* STED depletion mode: */
     char                    stedDepletionMode[ICS_MAX_LAMBDA][ICS_STRLEN_TOKEN];
     Ics_SensorState         stedDepletionModeState[ICS_MAX_LAMBDA];
@@ -450,6 +507,8 @@ typedef enum {
     IcsErr_NotIcsFile,
         /* The function won't work on the ICS given: */
     IcsErr_NotValidAction,
+        /* Too many detectors specified: */
+    IcsErr_TooManyDetectors,
         /* Too many channels specified: */
     IcsErr_TooManyChans,
         /* Data has too many dimensions: */
