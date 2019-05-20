@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015-2017:
+ * Copyright 2015-2019:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
@@ -215,13 +215,15 @@ static Ics_Error getIcsFileName(FILE       *fi,
 static Ics_Token getIcsToken(char           *str,
                              Ics_SymbolList *listSpec)
 {
-    int i;
+    int       i;
     Ics_Token token = ICSTOK_NONE;
 
-
+        /* Because some older ics versions have uncapitalized subsubcat
+           symbols (e.g. "channels" instead of the current "Channels"), do a
+           case insenstive string comparison for backward compatiblity. */
     if (str != NULL) {
         for (i = 0; i < listSpec->entries; i++) {
-            if (strcmp(listSpec->list[i].name, str) == 0) {
+            if (ICSSTRCASECMP(listSpec->list[i].name, str) == 0) {
                 token = listSpec->list[i].token;
             }
         }

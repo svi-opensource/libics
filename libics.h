@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015-2017:
+ * Copyright 2015-2019:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
@@ -56,6 +56,20 @@ extern "C" {
 #if defined(__WIN32__) && !defined(WIN32)
 #define WIN32
 #endif
+
+#if defined(_WIN64) && !defined(WIN64)
+#define WIN64
+#endif
+    
+
+/* Windows platforms have a different case insensitive string comparison
+   function. */    
+#if defined(WIN32) || defined(WIN64)
+#define ICSSTRCASECMP _stricmp
+#else
+#define ICSSTRCASECMP strcasecmp
+#endif
+    
 
 #ifdef WIN32
 #ifdef BUILD_ICSLIB
