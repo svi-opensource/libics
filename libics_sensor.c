@@ -753,7 +753,7 @@ Ics_Error IcsGetSensorParameterMatrix(const ICS             *ics,
     
     switch (parameter) {
         case ICS_SENSOR_DETECTOR_OFFSET:
-            *values = ics->detectorOffset[channel];
+            *values = (const double*)ics->detectorOffset[channel];
             *state  = ics->detectorOffsetState[channel];
             break;
         default:
