@@ -172,6 +172,16 @@ Which ultimately is based upon stuff written by:
    HISTORY
 =============
 
+version 1.6.3
+   - Add support for storing the parameters of multi-detector microscopes.
+   - Support for 64 bit integer images.
+   - C++ interface.
+   - Improved CMake support
+   - Various bug fixes.
+
+version 1.6.2
+   - Various bug fixes.
+
 version 1.6.1
    - Various bug-fixes.
    - Added SPIM parameters.
