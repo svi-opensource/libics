@@ -527,6 +527,75 @@
     <p class="info"><span class="headtxt">type</span>:
     <tt class="keyword">char</tt> [<tt class="constant">ICS_STRLEN_TOKEN</tt>]</p>
 
+<h2><a name="MicroscopyParamTokens"></a>Microscopy parameter tokens</h2>
+
+    <p>Every microscopy parameter has a token that can be used in the generic
+    <span class="typeident"><a href="TopLevelFunctions.html#sensor">Set and Get functions</a></span>
+    to change the value(s). The possible tokens are:
+
+    <tt class="constant"><br/><br/>
+    ICS_SENSOR_IMAGING_DIRECTION<br/>
+    ICS_SENSOR_NUMERICAL_APERTURE<br/>
+    ICS_SENSOR_OBJECTIVE_QUALITY<br/>
+    ICS_SENSOR_MEDIUM_REFRACTIVE_INDEX<br/>
+    ICS_SENSOR_LENS_REFRACTIVE_INDEX<br/>
+    ICS_SENSOR_PINHOLE_RADIUS<br/>
+    ICS_SENSOR_ILL_PINHOLE_RADIUS<br/>
+    ICS_SENSOR_PINHOLE_SPACING<br/>
+    ICS_SENSOR_EXCITATION_BEAM_FILL<br/>
+    ICS_SENSOR_LAMBDA_EXCITATION<br/>
+    ICS_SENSOR_LAMBDA_EMISSION<br/>
+    ICS_SENSOR_PHOTON_COUNT<br/>
+    ICS_SENSOR_INTERFACE_PRIMARY<br/>
+    ICS_SENSOR_INTERFACE_SECONDARY<br/>
+    ICS_SENSOR_DESCRIPTION<br/>
+    <br/>
+    ICS_SENSOR_DETECTOR_MAGN<br/>
+    ICS_SENSOR_DETECTOR_PPU<br/>
+    ICS_SENSOR_DETECTOR_BASELINE<br/>
+    ICS_SENSOR_DETECTOR_LINE_AVG_COUNT<br/>
+    <br/>
+    ICS_SENSOR_DETECTOR_OFFSET<br/>
+    ICS_SENSOR_DETECTOR_SENSITIVITY<br/>
+    ICS_SENSOR_DETECTOR_RADIUS<br/>
+    ICS_SENSOR_DETECTOR_SCALE<br/>
+    ICS_SENSOR_DETECTOR_STRETCH<br/>
+    ICS_SENSOR_DETECTOR_ROT<br/>
+    ICS_SENSOR_DETECTOR_MIRROR<br/>
+    ICS_SENSOR_DETECTOR_MODEL<br/>
+    ICS_SENSOR_DETECTOR_REDUCEHIST<br/>
+    <br/>
+    ICS_SENSOR_STED_DEPLETION_MODE<br/>
+    ICS_SENSOR_STED_LAMBDA<br/>
+    ICS_SENSOR_STED_SATURATION_FACTOR<br/>
+    ICS_SENSOR_STED_IMM_FRACTION<br/>
+    ICS_SENSOR_STED_VPPM<br/>
+    <br/>
+    ICS_SENSOR_SPIM_EXCITATION_TYPE<br/>
+    ICS_SENSOR_SPIM_FILL_FACTOR<br/>
+    ICS_SENSOR_SPIM_PLANE_NA<br/>
+    ICS_SENSOR_SPIM_PLANE_GAUSS_WIDTH<br/>
+    ICS_SENSOR_SPIM_PLANE_PROP_DIR<br/>
+    ICS_SENSOR_SPIM_PLANE_CENTER_OFF<br/>
+    ICS_SENSOR_SPIM_PLANE_FOCUS_OFF<br/>
+    <br/>
+    ICS_SENSOR_SCATTER_MODEL<br/>
+    ICS_SENSOR_SCATTER_FREE_PATH<br/>
+    ICS_SENSOR_SCATTER_REL_CONTRIB<br/>
+    ICS_SENSOR_SCATTER_BLURRING<br/>
+    </tt>
+    </p>
+
+<h2><a name="SensorStates"></a>Microscopy parameter states</h2>
+
+    <p>Every microscopy parameter has a state indicating where the parameter came from / 
+    the level of confidence we have in the parameter. Possible values:<br/><br/>
+    <tt class="constant">IcsSensorState_default</tt><br/>
+    <tt class="constant">IcsSensorState_estimated</tt><br/>
+    <tt class="constant">IcsSensorState_reported</tt><br/>
+    <tt class="constant">IcsSensorState_verified</tt><br/>
+    </p>
+
   </body>
 </html>
 
