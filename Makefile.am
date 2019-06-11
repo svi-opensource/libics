@@ -14,7 +14,7 @@ ACLOCAL_AMFLAGS = -I m4
 AUTOMAKE_OPTIONS = foreign
 
 lib_LTLIBRARIES = libics.la
-libics_la_LDFLAGS = -version-info $(ICS_LT_VERSION)
+libics_la_LDFLAGS = -version-info $(ICS_LT_VERSION) -no-undefined
 
 # list all sources and include files that are not installed, but are
 # distributed, except for libics_conf.h, which is generated from
