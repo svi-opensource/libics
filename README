@@ -172,6 +172,12 @@ Which ultimately is based upon stuff written by:
    HISTORY
 =============
 
+version 1.6.4
+   - Add support for the noiseGain sensor parameter.
+   - Updated documentation with a list of supported sensor parameters.
+   - Support for building shared library on Windows with MinGW (Contributed by
+     Andrew Sun).
+
 version 1.6.3
    - Add support for storing the parameters of multi-detector microscopes.
    - Support for 64 bit integer images.
