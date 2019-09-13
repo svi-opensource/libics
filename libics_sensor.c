@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015-2018:
+ * Copyright 2015-2019:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
@@ -55,6 +55,7 @@
  *   IcsSetDetectorPPU
  *   IcsSetDetectorBaseline
  *   IcsSetDetectorLineAvgCnt
+ *   IcsSetDetectorNoiseGain
  */
 
 
@@ -536,7 +537,7 @@ Ics_Error IcsSetSensorDetectorBaseline(ICS    *ics,
 
 /* Get the Detector lineAvgCnt per channel. */
 double IcsGetSensorDetectorLineAvgCnt(const ICS *ics,
- int channel)
+                                      int channel)
 {
     if (channel < 0 || channel >= ics->sensorChannels)
         return 0;
@@ -634,6 +635,10 @@ Ics_Error IcsGetSensorParameter(const ICS           *ics,
         case ICS_SENSOR_DETECTOR_LINE_AVG_COUNT:
             *value = ics->detectorLineAvgCnt[channel];
             *state = ics->detectorLineAvgCntState[channel];
+            break;
+        case ICS_SENSOR_DETECTOR_NOISE_GAIN:
+            *value = ics->detectorNoiseGain[channel];
+            *state = ics->detectorNoiseGainState[channel];
             break;
         case ICS_SENSOR_DETECTOR_SCALE:
             *value = ics->detectorScale[channel];
@@ -926,6 +931,10 @@ Ics_Error IcsSetSensorParameter(ICS                 *ics,
         case ICS_SENSOR_DETECTOR_LINE_AVG_COUNT:
             ics->detectorLineAvgCnt[channel] = value;
             ics->detectorLineAvgCntState[channel] = state;
+            break;
+        case ICS_SENSOR_DETECTOR_NOISE_GAIN:
+            ics->detectorNoiseGain[channel] = value;
+            ics->detectorNoiseGainState[channel] = state;
             break;
         case ICS_SENSOR_DETECTOR_SCALE:
             ics->detectorScale[channel] = value;

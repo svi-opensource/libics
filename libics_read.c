@@ -714,6 +714,9 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                             case ICSTOK_DETLNAVGCNT:
                                 ICS_SET_SENSOR_DOUBLE(detectorLineAvgCnt);
                                 break;
+                            case ICSTOK_DETNOISEGAIN:
+                                ICS_SET_SENSOR_DOUBLE(detectorNoiseGain);
+                                break;
                             case ICSTOK_DETOFFSET:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
                                     detID = atoi(idx1);
@@ -921,6 +924,9 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                                 break;
                             case ICSTOK_DETLNAVGCNT:
                                 ICS_SET_SENSOR_STATE(detectorLineAvgCnt);
+                                break;
+                            case ICSTOK_DETNOISEGAIN:
+                                ICS_SET_SENSOR_STATE(detectorNoiseGain);
                                 break;
                             case ICSTOK_DETOFFSET:
                                 ICS_SET_SENSOR_STATE(detectorOffset);

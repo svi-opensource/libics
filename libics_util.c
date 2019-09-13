@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015-2018:
+ * Copyright 2015-2019:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
@@ -398,6 +398,8 @@ void IcsInit(Ics_Header *icsStruct)
         icsStruct->detectorBaselineState[i] = IcsSensorState_default;
         icsStruct->detectorLineAvgCnt[i] = 1.0;
         icsStruct->detectorLineAvgCntState[i] = IcsSensorState_default;
+        icsStruct->detectorNoiseGain[i] = 1.0;
+        icsStruct->detectorNoiseGainState[i] = IcsSensorState_default;
             /* The per detector parameters must be initialized for each
                channel for each detector. */
         for (j = 0; j < ICS_MAX_DETECT; j++) {

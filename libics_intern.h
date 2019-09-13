@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015-2018:
+ * Copyright 2015-2019:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
@@ -127,6 +127,7 @@ typedef enum {
     ICSTOK_DETPPU,
     ICSTOK_DETBASELINE,
     ICSTOK_DETLNAVGCNT,
+    ICSTOK_DETNOISEGAIN,
     ICSTOK_DETOFFSET,
     ICSTOK_DETSENS,
     ICSTOK_DETRADIUS,

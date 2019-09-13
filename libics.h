@@ -199,6 +199,7 @@ typedef enum {
     ICS_SENSOR_DETECTOR_PPU,
     ICS_SENSOR_DETECTOR_BASELINE,
     ICS_SENSOR_DETECTOR_LINE_AVG_COUNT,
+    ICS_SENSOR_DETECTOR_NOISE_GAIN,
 
     ICS_SENSOR_DETECTOR_OFFSET,
     ICS_SENSOR_DETECTOR_SENSITIVITY,
@@ -346,6 +347,9 @@ typedef struct _ICS {
         /* Averaging line count */
     double                  detectorLineAvgCnt[ICS_MAX_LAMBDA];
     Ics_SensorState         detectorLineAvgCntState[ICS_MAX_LAMBDA];
+        /* Detector noise gain */
+    double                  detectorNoiseGain[ICS_MAX_LAMBDA];
+    Ics_SensorState         detectorNoiseGainState[ICS_MAX_LAMBDA];
         /* Detector offsets */
     double                  detectorOffset[ICS_MAX_LAMBDA][ICS_MAX_DETECT][3];
     Ics_SensorState         detectorOffsetState[ICS_MAX_LAMBDA];

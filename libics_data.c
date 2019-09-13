@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015-2018:
+ * Copyright 2015-2019:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
@@ -102,6 +102,7 @@ Ics_Symbol G_SubSubCatSymbols[] =
     {"DetectorPPU",         ICSTOK_DETPPU},
     {"DetectorBaseline",    ICSTOK_DETBASELINE},
     {"DetectorLineAvgCnt",  ICSTOK_DETLNAVGCNT},
+    {"DetectorNoiseGain",   ICSTOK_DETNOISEGAIN},
     {"DetectorOffset",      ICSTOK_DETOFFSET},
     {"DetectorSensitivity", ICSTOK_DETSENS},
     {"DetectorRadius",      ICSTOK_DETRADIUS},

@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015-2018:
+ * Copyright 2015-2019:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
@@ -833,6 +833,7 @@ static Ics_Error writeIcsSensorData(Ics_Header *icsStruct,
         ICS_ADD_SENSOR_DOUBLE(ICSTOK_DETPPU, detectorPPU);
         ICS_ADD_SENSOR_DOUBLE(ICSTOK_DETBASELINE, detectorBaseline);
         ICS_ADD_SENSOR_DOUBLE(ICSTOK_DETLNAVGCNT, detectorLineAvgCnt);
+        ICS_ADD_SENSOR_DOUBLE(ICSTOK_DETNOISEGAIN, detectorNoiseGain);
 
         for (j = 0; j < icsStruct->sensorDetectors; j++) {
             sprintf(tag, "%d", j);
@@ -953,6 +954,7 @@ static Ics_Error writeIcsSensorStates(Ics_Header *icsStruct,
         ICS_ADD_SENSOR_STATE(ICSTOK_DETPPU, detectorPPU);
         ICS_ADD_SENSOR_STATE(ICSTOK_DETBASELINE, detectorBaseline);
         ICS_ADD_SENSOR_STATE(ICSTOK_DETLNAVGCNT, detectorLineAvgCnt);
+        ICS_ADD_SENSOR_STATE(ICSTOK_DETNOISEGAIN, detectorNoiseGain);
 
         ICS_ADD_SENSOR_STATE(ICSTOK_DETOFFSET, detectorOffset);
         ICS_ADD_SENSOR_STATE(ICSTOK_DETSENS, detectorSensitivity);
