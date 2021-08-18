@@ -1,5 +1,5 @@
 
-                             libics v.1.6.1
+                             libics v.1.6.5
           Image Cytometry Standard file reading and writing.
 
 This is the reference library for ICS (Image Cytometry Standard), an
@@ -171,6 +171,9 @@ Which ultimately is based upon stuff written by:
 
    HISTORY
 =============
+
+version 1.6.5
+   - Fix typo that causes out-of-bounds read.
 
 version 1.6.4
    - Add support for the noiseGain sensor parameter.

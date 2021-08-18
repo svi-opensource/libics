@@ -18,7 +18,7 @@ if(POLICY CMP0068)
    cmake_policy(SET CMP0068 NEW)
 endif()
 
-project(libics VERSION 1.6.4)
+project(libics VERSION 1.6.5)
 
 # Note: the version number above is not yet used anywhere.
 # TODO: rewrite the header file with this version number.

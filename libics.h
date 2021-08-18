@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015-2019:
+ * Copyright 2015-2019, 2021:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
@@ -50,7 +50,7 @@ extern "C" {
 #endif
 
 /* Library versioning is in the form major, minor, patch: */
-#define ICSLIB_VERSION "1.6.3" /* also defined in configure.ac */
+#define ICSLIB_VERSION "1.6.5" /* also defined in configure.ac */
 
 #if defined(__WIN32__) && !defined(WIN32)
 #define WIN32
