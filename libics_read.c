@@ -242,7 +242,7 @@ static Ics_Error getIcsCat(char        *str,
                            const char **index2)
 {
     ICSINIT;
-    char *token, buffer[ICS_LINE_LENGTH], *idx1, *idx2;
+    char *token, buffer[ICS_LINE_LENGTH], *idx1, *idx2 = NULL;
 #ifdef HAVE_STRTOK_R
     char *saveptr;
 #endif
