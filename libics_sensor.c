@@ -751,7 +751,6 @@ Ics_Error IcsGetSensorParameterMatrix(const ICS             *ics,
                                       const double         **values,
                                       Ics_SensorState       *state)
 {
-    int p;
     if (channel < 0 || channel >= ics->sensorChannels) {
         return IcsErr_NotValidAction;
     }
