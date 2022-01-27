@@ -1290,6 +1290,9 @@ const char *IcsGetErrorText(Ics_Error error)
         case IcsErr_MissSensorSubSubCat:
             msg = "Missing sensor subsubcategory";
             break;
+        case IcsErr_MissSensorSubSubCatIndex:
+            msg = "Missing sensor subsubcategory index";
+            break;
         case IcsErr_MissSubCat:
             msg = "Missing sub category";
             break;
