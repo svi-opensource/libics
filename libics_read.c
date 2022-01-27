@@ -220,7 +220,7 @@ static Ics_Token getIcsToken(char           *str,
 
         /* Because some older ics versions have uncapitalized subsubcat
            symbols (e.g. "channels" instead of the current "Channels"), do a
-           case insenstive string comparison for backward compatiblity. */
+           case-insensitive string comparison for backward compatibility. */
     if (str != NULL) {
         for (i = 0; i < listSpec->entries; i++) {
             if (ICSSTRCASECMP(listSpec->list[i].name, str) == 0) {
@@ -266,16 +266,14 @@ static Ics_Error getIcsCat(char        *str,
                 idx1 = strchr(token, '[');
                 if (idx1) {
                     idx2 = strchr(idx1 + 1, '[');
-                }
-                if (idx1) {
                         /* Todo: Check that this line is indeed not
-                            //necessary. */
+                                 necessary. */
                         /* token[strlen(token) - 1] = '\0'; */
                     *idx1 = '\0';
                     *index1 = idx1 + 1;
-                }
-                if (idx2) {
-                    *index2 = idx2 + 1;
+                    if (idx2) {
+                        *index2 = idx2 + 1;
+                    }
                 }
             }
             *subSubCat = getIcsToken(token, &G_SubSubCategories);
