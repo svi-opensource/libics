@@ -220,7 +220,7 @@ static Ics_Token getIcsToken(char           *str,
 
         /* Because some older ics versions have uncapitalized subsubcat
            symbols (e.g. "channels" instead of the current "Channels"), do a
-           case insenstive string comparison for backward compatiblity. */
+           case-insensitive string comparison for backward compatibility. */
     if (str != NULL) {
         for (i = 0; i < listSpec->entries; i++) {
             if (ICSSTRCASECMP(listSpec->list[i].name, str) == 0) {
@@ -266,16 +266,14 @@ static Ics_Error getIcsCat(char        *str,
                 idx1 = strchr(token, '[');
                 if (idx1) {
                     idx2 = strchr(idx1 + 1, '[');
-                }
-                if (idx1) {
                         /* Todo: Check that this line is indeed not
-                            //necessary. */
+                                 necessary. */
                         /* token[strlen(token) - 1] = '\0'; */
                     *idx1 = '\0';
                     *index1 = idx1 + 1;
-                }
-                if (idx2) {
-                    *index2 = idx2 + 1;
+                    if (idx2) {
+                        *index2 = idx2 + 1;
+                    }
                 }
             }
             *subSubCat = getIcsToken(token, &G_SubSubCategories);
@@ -719,43 +717,58 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                                 break;
                             case ICSTOK_DETOFFSET:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    detID = atoi(idx1);
-                                    switch (idx2[0]) {
-                                        case  'X':
-                                            icsStruct->
-                                                detectorOffset[i++][detID][0]
-                                                = atof(ptr);
-                                            break;
-                                        case  'Y':
-                                            icsStruct->
-                                                detectorOffset[i++][detID][1]
-                                                = atof(ptr);
-                                            break;
-                                        case  'Z':
-                                            icsStruct->
-                                                detectorOffset[i++][detID][2]
-                                                = atof(ptr);
-                                            break;
-                                        default:
-                                            break;
+                                    if (idx1 && idx2) {
+                                        detID = atoi(idx1);
+                                        switch (idx2[0]) {
+                                            case 'X':
+                                                icsStruct->
+                                                    detectorOffset[i++][detID][0]
+                                                    = atof(ptr);
+                                                break;
+                                            case 'Y':
+                                                icsStruct->
+                                                    detectorOffset[i++][detID][1]
+                                                    = atof(ptr);
+                                                break;
+                                            case 'Z':
+                                                icsStruct->
+                                                    detectorOffset[i++][detID][2]
+                                                    = atof(ptr);
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                        ptr = STRTOK(NULL, seps);
+                                    } else {
+                                        error = IcsErr_MissSensorSubSubCatIndex;
+                                        break;
                                     }
-                                    ptr = STRTOK(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_DETSENS:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    detID = atoi(idx1);
-                                    icsStruct->detectorSensitivity[i++][detID]
-                                        = atof(ptr);
-                                    ptr = STRTOK(NULL, seps);
+                                    if (idx1) {
+                                        detID = atoi(idx1);
+                                        icsStruct->detectorSensitivity[i++][detID]
+                                            = atof(ptr);
+                                        ptr = STRTOK(NULL, seps);
+                                    } else {
+                                        error = IcsErr_MissSensorSubSubCatIndex;
+                                        break;
+                                    }
                                 }
                                 break;
                             case ICSTOK_DETRADIUS:
-                                    /* This is a temporary fix to provide
-                                       support for ics files with a non-vector
+                                if (idx1) {
+                                    /* This supports ics files with a non-vector
                                        detector radius. */
-                                    /* Todo: Remove this in due time. */
-                                if (idx1 == NULL) {
+                                    while (ptr != NULL && i < ICS_MAX_LAMBDA) {
+                                        detID = atoi(idx1);
+                                        icsStruct->detectorRadius[i++][detID]
+                                            = atof(ptr);
+                                        ptr = STRTOK(NULL, seps);
+                                    }
+                                } else {
                                     printf("Using non-vector detRadius.\n");
                                     if (ptr != NULL) {
                                         printf("Filling vector with single "
@@ -769,13 +782,6 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                                             }
                                         }
                                     }
-                                    break;
-                                }
-                                while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    detID = atoi(idx1);
-                                    icsStruct->detectorRadius[i++][detID]
-                                        = atof(ptr);
-                                    ptr = STRTOK(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_DETSCALE:
@@ -825,23 +831,28 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                                 break;
                             case ICSTOK_SPIMPLANEPROPDIR:
                                 while (ptr != NULL && i < ICS_MAX_LAMBDA) {
-                                    switch (idx1[0]) {
-                                        case  'X':
-                                            icsStruct->spimPlanePropDir[i++][0]
-                                                = atof(ptr);
-                                            break;
-                                        case  'Y':
-                                            icsStruct->spimPlanePropDir[i++][1]
-                                                = atof(ptr);
-                                            break;
-                                        case  'Z':
-                                            icsStruct->spimPlanePropDir[i++][2]
-                                                = atof(ptr);
-                                            break;
-                                        default:
-                                            break;
+                                    if (idx1) {
+                                        switch (idx1[0]) {
+                                            case 'X':
+                                                icsStruct->spimPlanePropDir[i++][0]
+                                                    = atof(ptr);
+                                                break;
+                                            case 'Y':
+                                                icsStruct->spimPlanePropDir[i++][1]
+                                                    = atof(ptr);
+                                                break;
+                                            case 'Z':
+                                                icsStruct->spimPlanePropDir[i++][2]
+                                                    = atof(ptr);
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                        ptr = STRTOK(NULL, seps);
+                                    } else {
+                                        error = IcsErr_MissSensorSubSubCatIndex;
+                                        break;
                                     }
-                                    ptr = STRTOK(NULL, seps);
                                 }
                                 break;
                             case ICSTOK_SPIMPLANECENTEROFF:

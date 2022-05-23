@@ -508,6 +508,8 @@ typedef enum {
     IcsErr_MissSensorSubCat,
         /* Missing sensor subsubcategory: */
     IcsErr_MissSensorSubSubCat,
+        /* Missing sensor subsubcategory index: */
+    IcsErr_MissSensorSubSubCatIndex,
         /* Missing sub category: */
     IcsErr_MissSubCat,
         /* There is no Data defined: */
