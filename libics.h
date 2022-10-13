@@ -108,6 +108,100 @@ extern "C" {
 #define ICS_LINE_LENGTH 1024 /* maximum length of the lines in the .ics file. */
 #define ICS_MAXPATHLEN 512   /* maximum length of the file names.             */
 
+/* The following definitions are used by SVI Huygens. They are included as a
+   reference to which strings may be encountered in ics files written by
+   Huygens. */
+
+/* Define sensor type identifying text strings: */
+
+/* This is an incoherent Wide Field microscope: */
+#define ICS_SENSOR_TYPE_INCOH_WF      "IncohWFMicr"
+/* For backwards compatibility, use ICS_SENSOR_TYPE_INCOH_WF instead: */
+#define ICS_SENSOR_TYPE_INCOH_CONV    "IncohConvMicr"
+/* This is an incoherent confocal microscope: */
+#define ICS_SENSOR_TYPE_INCOH_CONF    "IncohConfMicr"
+/* These are multi photon systems: */
+#define ICS_SENSOR_TYPE_MPHOT_WF      "MPhotonWFMicr"
+#define ICS_SENSOR_TYPE_MPHOT_CONF    "MPhotonConfMicr"
+/* This is a 4Pi excitation system: */
+#define ICS_SENSOR_TYPE_4PI           "4PiMicr"
+/* This is a scanning disk confocal microscope: */
+#define ICS_SENSOR_TYPE_NDCM          "NipkowConfMicr"
+/* This is a scanning SoRa disk confocal microscope: */
+#define ICS_SENSOR_TYPE_SORA          "SoRaConfMicr"
+/* This is a STED microscope: */
+#define ICS_SENSOR_TYPE_STED          "STEDMicr"
+/* This is a Structured Illumination microscope: */
+#define ICS_SENSOR_TYPE_SI            "SIMicr"
+/* This is a SPIM microscope: */
+#define ICS_SENSOR_TYPE_SPIM          "SPIMMicr"
+/* This is a (VT-)iSIM confocal microscope (iSIM): */
+#define ICS_SENSOR_TYPE_ISIM          "ISIMConfMicr"
+/* This is a rescan confocal microscope (RCM): */
+#define ICS_SENSOR_TYPE_RCM           "RescanConfMicr"
+/* This is a detector array microscope (AiryScan, NanoSpad): */
+#define ICS_SENSOR_TYPE_ARRDET        "ArrDetConfMicr"
+/* This is a total internal reflection microsope (TIRF): */
+#define ICS_SENSOR_TYPE_TIRF          "TIRFMicr"
+/* This is a special type used for 3d SMLM calibration data: */
+#define ICS_SENSOR_TYPE_SMLM          "SmlmMicr"
+/* This is a brightfield microscope: */
+#define ICS_SENSOR_TYPE_BRIGHT        "Brightfield"
+/* This is a Jack-of-all-trades: */
+#define ICS_SENSOR_TYPE_GENERIC       "Generic"
+
+/* Define STED depletion modes */
+/* Depletion with a pulse laser. */
+#define ICS_STED_MODE_VORTEX_PULSED   "VortexPulsed"
+/* Depletion with a CW laser. */
+#define ICS_STED_MODE_VORTEX_CW       "VortexCW"
+/* Depletion with a CW laser and gated detection */
+#define ICS_STED_MODE_VORTEX_CW_GATED "VortexCWGated"
+/* Abberior stedycon. */
+#define ICS_STED_MODE_ABB_STEDYCON    "AbberiorStedycon"
+/* Should be last in list. */
+#define ICS_STED_MODE_LAST            "StedLast"
+
+/* Define SPIM excitation types */
+#define ICS_SPIM_EXC_SCANNING         "Scanning"
+#define ICS_SPIM_EXC_SCANNING_ANNULUS "ScanningAnnulus"
+#define ICS_SPIM_EXC_SCANNING_LATTICE "ScanningLattice"
+#define ICS_SPIM_EXC_CYLINDER         "Cylinder"
+#define ICS_SPIM_EXC_GAUSS            "Gauss"
+#define ICS_SPIM_EXC_GAUSS_MUVI       "GaussMuVi"
+#define ICS_SPIM_EXC_GAUSS_FLAT       "GaussFlat"
+#define ICS_SPIM_EXC_LAST             "SpimLast"
+
+/* Define scatter models. */
+#define ICS_SCATTER_MODEL_NONE        "None"
+#define ICS_SCATTER_MODEL_EXP_2D      "Exp2D"
+#define ICS_SCATTER_MODEL_GAUSS_2D    "Gauss2D"
+#define ICS_SCATTER_MODEL_MIXED_2D    "Mixed2D"
+#define ICS_SCATTER_MODEL_EXP_1D      "Exp1D"
+#define ICS_SCATTER_MODEL_LAST        "ScatterLast"
+
+/* Define reliability levels of the microscopic parameters */
+#define ICS_TRUST_SAMPLING_X          "reported"
+#define ICS_TRUST_SAMPLING_Y          "reported"
+#define ICS_TRUST_SAMPLING_Z          "reported"
+#define ICS_TRUST_SAMPLING_T          "reported"
+#define ICS_TRUST_MICR_TYPE           "reported"
+#define ICS_TRUST_CHAN_CNT            "default"
+#define ICS_TRUST_IMAGE_DIR           "default"
+#define ICS_TRUST_NUM_APERTURE        "reported"
+#define ICS_TRUST_OBJ_QUALITY         "default"
+#define ICS_TRUST_RI_MEDIA            "reported"
+#define ICS_TRUST_RI_LENS             "reported"
+#define ICS_TRUST_PINH_RADIUS         "reported"
+#define ICS_TRUST_PINH_SPC            "reported"
+#define ICS_TRUST_EX_LAMBDA           "reported"
+#define ICS_TRUST_EM_LAMBDA           "reported"
+#define ICS_TRUST_PHOTON_CNT          "reported"
+#define ICS_TRUST_IFACE_PRIM          "default"
+#define ICS_TRUST_IFACE_SCND          "default"
+
+/* End of definitions that are used specifically by SVI Huygens. */
+
 
 /* These are the known data types for imels. If you use another type, you can't
    use the top-level functions: */
