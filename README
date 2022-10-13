@@ -172,11 +172,14 @@ Which ultimately is based upon stuff written by:
    HISTORY
 =============
 version 1.6.6
-   Fixes:
    - Remove unused variables, avoiding compiler warning.
    - Reorder cases in libics_top.c to match enum order
    - Prevent a NULL pointer dereference on ICS syntax error, instead return
      an Ics error.
+   - Replace fseek by _fseeki64() on Windows (64-bit safe). Based on
+     a patch submitted by Patrick Steele at Bitplane.
+   - For reference, add #define lines for possible string values as
+     used by SVI Huygens.
 
 version 1.6.5
    - Fix typo that causes out-of-bounds read.
