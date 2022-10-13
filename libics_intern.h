@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015-2019:
+ * Copyright 2015-2019, 2022:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
@@ -306,7 +306,7 @@ Ics_Error IcsReadZipBlock(Ics_Header *IcsStruct,
                           size_t      len);
 
 Ics_Error IcsSetZipBlock(Ics_Header *IcsStruct,
-                         long        offset,
+                         ptrdiff_t   offset,
                          int         whence);
 
 /* Reading COMPRESS-compressed data */

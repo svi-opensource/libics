@@ -65,8 +65,10 @@ extern "C" {
    function. */    
 #if defined(WIN32) || defined(WIN64)
 #define ICSSTRCASECMP _stricmp
+#define ICSFSEEK      _fseeki64
 #else
 #define ICSSTRCASECMP strcasecmp
+#define ICSFSEEK      fseek
 #endif
 
 

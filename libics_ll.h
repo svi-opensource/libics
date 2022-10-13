@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015-2017:
+ * Copyright 2015-2017, 2022:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
@@ -95,7 +95,7 @@ ICSEXPORT Ics_Error IcsSkipIdsBlock(Ics_Header *icsStruct,
 
 /* Sets the file pointer into the image data on disk (fseek anywhere). */
 ICSEXPORT Ics_Error IcsSetIdsBlock(Ics_Header *icsStruct,
-                                   long        offset,
+                                   ptrdiff_t   offset,
                                    int         whence);
 
 /* Reads image data from disk. */

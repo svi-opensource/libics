@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015-2017:
+ * Copyright 2015-2017, 2022:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
@@ -213,7 +213,7 @@ Ics_Error IcsCopyIds(const char *infilename,
         error = IcsErr_FCopyIds;
         goto exit;
     }
-    if (fseek(in, (long)inoffset, SEEK_SET) != 0) {
+    if (ICSFSEEK(in, (ptrdiff_t)inoffset, SEEK_SET) != 0) {
         error = IcsErr_FCopyIds;
         goto exit;
     }
@@ -423,7 +423,7 @@ Ics_Error IcsOpenIds(Ics_Header *icsStruct)
 
     br->dataFilePtr = IcsFOpen(filename, "rb");
     if (br->dataFilePtr == NULL) return IcsErr_FOpenIds;
-    if (fseek(br->dataFilePtr, (long)offset, SEEK_SET) != 0) {
+    if (ICSFSEEK(br->dataFilePtr, (ptrdiff_t)offset, SEEK_SET) != 0) {
         fclose(br->dataFilePtr);
         free(br);
         return IcsErr_FReadIds;
@@ -524,13 +524,13 @@ Ics_Error IcsReadIdsBlock(Ics_Header *icsStruct,
 Ics_Error IcsSkipIdsBlock(Ics_Header *icsStruct,
                           size_t      n)
 {
-    return IcsSetIdsBlock (icsStruct, (long)n, SEEK_CUR);
+    return IcsSetIdsBlock (icsStruct, (ptrdiff_t)n, SEEK_CUR);
 }
 
 
 /* Sets the file pointer into the IDS file. */
 Ics_Error IcsSetIdsBlock(Ics_Header *icsStruct,
-                         long        offset,
+                         ptrdiff_t   offset,
                          int         whence)
 {
     ICSINIT;
@@ -542,7 +542,7 @@ Ics_Error IcsSetIdsBlock(Ics_Header *icsStruct,
             switch (whence) {
                 case SEEK_SET:
                 case SEEK_CUR:
-                    if (fseek(br->dataFilePtr, (long)offset, whence) != 0) {
+                    if (ICSFSEEK(br->dataFilePtr, offset, whence) != 0) {
                         if (ferror(br->dataFilePtr)) {
                             error = IcsErr_FReadIds;
                         } else {

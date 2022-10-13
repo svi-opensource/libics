@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015-2017:
+ * Copyright 2015-2017, 2022:
  *   Scientific Volume Imaging Holding B.V.
  *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
  *   https://www.svi.nl
@@ -407,13 +407,13 @@ Ics_Error IcsOpenZip(Ics_Header *icsStruct)
     flags = getc(file);
     if ((method != Z_DEFLATED) || ((flags & RESERVED) != 0))
         return IcsErr_CorruptedStream;
-    fseek(file, 6, SEEK_CUR);          /* Discard time, xflags and OS code: */
+    ICSFSEEK(file, 6, SEEK_CUR);          /* Discard time, xflags and OS code: */
     if ((flags & EXTRA_FIELD) != 0) {  /* skip the extra field */
         size_t len;
         len  =  (uInt)getc(file);
         len += ((uInt)getc(file)) << 8;
         if (feof (file)) return IcsErr_CorruptedStream;
-        fseek(file, (long)len, SEEK_CUR);
+        ICSFSEEK(file, (ptrdiff_t)len, SEEK_CUR);
     }
     if ((flags & ORIG_NAME) != 0) {   /* skip the original file name */
         int c;
@@ -424,7 +424,7 @@ Ics_Error IcsOpenZip(Ics_Header *icsStruct)
         while (((c = getc(file)) != 0) && (c != EOF));
     }
     if ((flags & HEAD_CRC) != 0) {    /* skip the header crc */
-        fseek(file, 2, SEEK_CUR);
+        ICSFSEEK(file, 2, SEEK_CUR);
     }
     if (feof(file) || ferror(file)) return IcsErr_CorruptedStream;
 
@@ -544,7 +544,7 @@ Ics_Error IcsReadZipBlock(Ics_Header *icsStruct,
     } while (err != Z_STREAM_END && todo > 0);
 
         /* Set the file pointer back so that unused input can be read again. */
-    fseek(file, -(int)stream->avail_in, SEEK_CUR);
+    ICSFSEEK(file, -(ptrdiff_t)stream->avail_in, SEEK_CUR);
 
     if (err == Z_STREAM_END) {
             /* All the data has been decompressed: Check CRC and original data
@@ -578,7 +578,7 @@ Ics_Error IcsReadZipBlock(Ics_Header *icsStruct,
 /* Skip ZIP compressed data block. This function mostly does:
      gzseek((gzFile)br->ZlibStream, (z_off_t)offset, whence); */
 Ics_Error IcsSetZipBlock(Ics_Header *icsStruct,
-                         long        offset,
+                         ptrdiff_t   offset,
                          int         whence)
 {
 #ifdef ICS_ZLIB
@@ -589,7 +589,7 @@ Ics_Error IcsSetZipBlock(Ics_Header *icsStruct,
     z_stream*      stream = (z_stream*)br->zlibStream;
 
     if ((whence == SEEK_CUR) && (offset<0)) {
-        offset += (long)stream->total_out;
+        offset += (ptrdiff_t)stream->total_out;
         whence = SEEK_SET;
     }
     if (whence == SEEK_SET) {
@@ -601,7 +601,7 @@ Ics_Error IcsSetZipBlock(Ics_Header *icsStruct,
         if (offset==0) return IcsErr_Ok;
     }
 
-    bufsize = (unsigned int)(offset < ICS_BUF_SIZE ? offset : ICS_BUF_SIZE);
+    bufsize = (size_t)(offset < ICS_BUF_SIZE ? offset : ICS_BUF_SIZE);
     buf = malloc(bufsize);
     if (buf == NULL) return IcsErr_Alloc;
 
