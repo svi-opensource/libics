@@ -4,6 +4,7 @@
 #include "..\..\libics.h"
 
 /* Functions in readics.c */
+#define ERRORTEXT_LENGTH 300
 HANDLE ReadICS (char *filename, char *errortext);
 int NumberOfPlanesInICS (char *filename, char *errortext);
 /* Functions in writedib.c */
@@ -17,7 +18,7 @@ LPCTSTR lpszAppName  = "IcsViewer";
 LPCTSTR lpszTitle    = "ICS Viewer Test";
 HANDLE DIB;
 BITMAPINFO* bi;
-char errortext[300];
+char errortext[ERRORTEXT_LENGTH];
 char filename[300];
 
 /**********************************************************************/
@@ -74,7 +75,7 @@ int LoadICSFile( HWND hWnd, char *filename )
       return 0L;
    }
    else {
-      //sprintf (errortext, "%d planes in file.", planes);
+      //snprintf (errortext, ERRORTEXT_LENGTH, "%d planes in file.", planes);
       //MessageBox (hWnd, errortext, "ICSviewer", MB_ICONINFORMATION|MB_OK);
    }
 
@@ -174,7 +175,7 @@ LRESULT CALLBACK WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
                   strcat( ofn.lpstrFile, ".bmp" );
 
                /*
-               sprintf( textBuf, "Saving to %s", ofn.lpstrFile );
+               snprintf( textBuf, ERRORTEXT_LENGTH, "Saving to %s", ofn.lpstrFile );
                MessageBox( hWnd, textBuf, "Boo", MB_OK|MB_ICONINFORMATION );
                */
 

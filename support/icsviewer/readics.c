@@ -10,6 +10,7 @@ int IsICS (char *filename) {
 }
 
 int NumberOfPlanesInICS (char *filename, char *errortext) {
+   /* errortext must point to ERRORTEXT_LENGTH=300 bytes. */
    ICS* ip;
    Ics_Error retval;
    int ii, numberofplanes = 0;
@@ -97,7 +98,7 @@ HANDLE ReadICS (char *filename, char *errortext) {
    padding = ((dims[0]+3)/4)*4 - dims[0];
 
    /*
-   sprintf (errortext, "Image size: %d x %d. Padding = %d.", dims[0], dims[1], padding);
+   snprintf (errortext, ERRORTEXT_LENGTH, "Image size: %d x %d. Padding = %d.", dims[0], dims[1], padding);
    MessageBox (0, errortext, "ICSviewer", MB_ICONINFORMATION|MB_OK);
    */
 

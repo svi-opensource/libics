@@ -37,6 +37,7 @@
 #ifndef LIBICS_CPP_H
 #define LIBICS_CPP_H
 
+#include <cstdint>
 #include <string>
 #include <utility>
 #include <vector>
