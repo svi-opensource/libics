@@ -6,16 +6,15 @@
  *        - Complex data is not read.
  *
  * Copyright (C) 2000-2007 Cris Luengo and others
- * email: clluengo@users.sourceforge.net
- * Last change: April 30, 2007
  */
 
-/* For MATLAB 7.3 and newer, remove the following line: */
-typedef int mwSize;
+/* For MATLAB 7.2 and older, uncomment the following line: */
+/* typedef int mwSize; */
 
 #include "mex.h"
 #include <string.h>
 #include "libics.h"
+#define ERROR_MESSAGE_LEN 2048
 
 void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
    ICS* ip;
@@ -23,7 +22,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
    mwSize mx_dims[ICS_MAXDIM];
    int ndims;
    size_t dims[ICS_MAXDIM];
-   size_t strides[ICS_MAXDIM];
+   ptrdiff_t strides[ICS_MAXDIM];
    size_t bufsize;
    void* buf;
    Ics_Error retval;
@@ -32,7 +31,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
    int elemsize;
    int ii;
    size_t tmp;
-   char errormessage[2048];
+   char errormessage[ERROR_MESSAGE_LEN];
 
    if (strcmp (ICSLIB_VERSION, IcsGetLibVersion ()))
       mexErrMsgTxt ("Linking against the wrong version of the library.");
@@ -71,7 +70,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
          mexErrMsgTxt ("Couldn't open the file for reading.");
          break;
       default:
-         sprintf (errormessage, "Couldn't read the ICS header: %s", IcsGetErrorText (retval));
+         snprintf (errormessage, ERROR_MESSAGE_LEN, "Couldn't read the ICS header: %s", IcsGetErrorText (retval));
          mexErrMsgTxt (errormessage);
    }
    IcsGetLayout (ip, &dt, &ndims, dims);
@@ -133,12 +132,12 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
    bufsize = mxGetNumberOfElements (plhs[0]) * elemsize;
    retval = IcsGetDataWithStrides (ip, buf, bufsize, strides, ndims);
    if (retval != IcsErr_Ok) {
-      sprintf (errormessage, "Couldn't read the image data: %s", IcsGetErrorText (retval));
+      snprintf (errormessage, ERROR_MESSAGE_LEN, "Couldn't read the image data: %s", IcsGetErrorText (retval));
       mexErrMsgTxt (errormessage);
    }
    retval = IcsClose (ip);
    if (retval != IcsErr_Ok) {
-      sprintf (errormessage, "Couldn't close the file pointer: %s", IcsGetErrorText (retval));
+      snprintf (errormessage, ERROR_MESSAGE_LEN, "Couldn't close the file pointer: %s", IcsGetErrorText (retval));
       mexErrMsgTxt (errormessage);
    }
 }
