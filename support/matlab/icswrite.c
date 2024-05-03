@@ -7,16 +7,15 @@
  *        - Complex data is not written.
  *
  * Copyright (C) 2000-2007 Cris Luengo and others
- * email: clluengo@users.sourceforge.net
- * Last change: April 30, 2007
  */
 
-/* For MATLAB 7.3 and newer, remove the following line: */
-typedef int mwSize;
+/* For MATLAB 7.2 and older, uncomment the following line: */
+/* typedef int mwSize; */
 
 #include "mex.h"
 #include <string.h>
 #include "libics.h"
+#define ERROR_MESSAGE_LEN 2048
 
 void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
    ICS* ip;
@@ -24,7 +23,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
    int ndims;
    const mwSize* mx_dims;
    size_t dims[ICS_MAXDIM];
-   size_t strides[ICS_MAXDIM];
+   ptrdiff_t strides[ICS_MAXDIM];
    size_t bufsize;
    void* buf;
    Ics_Error retval;
@@ -33,7 +32,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
    int elemsize, compress = 0;
    int ii;
    size_t tmp;
-   char errormessage[2048];
+   char errormessage[ERROR_MESSAGE_LEN];
 
    if (strcmp (ICSLIB_VERSION, IcsGetLibVersion ()))
       mexErrMsgTxt ("Linking against the wrong version of the library.");
@@ -124,7 +123,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
    /* Now we know everything we need to write the data. */
    retval = IcsOpen (&ip, filename, "w1");
    if (retval != IcsErr_Ok) {
-      sprintf (errormessage, "Couldn't open the file for writing: %s", IcsGetErrorText (retval));
+      snprintf (errormessage, ERROR_MESSAGE_LEN, "Couldn't open the file for writing: %s", IcsGetErrorText (retval));
       mexErrMsgTxt (errormessage);
    }
    IcsSetLayout (ip, dt, ndims, dims);
@@ -133,7 +132,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       mexWarnMsgTxt ("Couldn't create a SCIL_TYPE string.");
    retval = IcsSetDataWithStrides (ip, buf, bufsize, strides, ndims);
    if (retval != IcsErr_Ok) {
-      sprintf (errormessage, "Failed to set the data: %s", IcsGetErrorText (retval));
+      snprintf (errormessage, ERROR_MESSAGE_LEN, "Failed to set the data: %s", IcsGetErrorText (retval));
       mexErrMsgTxt (errormessage);
    }
    if (compress)
@@ -141,7 +140,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
    IcsAddHistory (ip, "software", "ICSWRITE under MATLAB with libics");
    retval = IcsClose (ip);
    if (retval != IcsErr_Ok) {
-      sprintf (errormessage, "Failed to create the ICS file: %s", IcsGetErrorText (retval));
+      snprintf (errormessage, ERROR_MESSAGE_LEN, "Failed to create the ICS file: %s", IcsGetErrorText (retval));
       mexErrMsgTxt (errormessage);
    }
 }

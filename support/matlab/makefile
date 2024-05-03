@@ -1,6 +1,5 @@
 #
 # Copyright (C) 2000-2010 Cris Luengo and others
-# email: clluengo@users.sourceforge.net
 #
 # Makefile to compile matlab interface under Win32
 #

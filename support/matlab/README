@@ -38,15 +38,18 @@ ICSWRITE   Writes a numeric array to an ICS file.
 COMPILING
 =========
 
-If your version of MATLAB is 7.3 or newer, remove the line at
-the top of both source files that defines mwSize.
+If your version of MATLAB is 7.2 or older, uncomment the line at
+the top of both source files that defines `mwSize`.
 
-Within MATLAB (on UNIX), type
-  mex -I<icspath> icsread.c <icspath>/libics.a <zpath>/libz.a
-  mex -I<icspath> icswrite.c <icspath>/libics.a <zpath>/libz.a
-from the directory containing both source files.
+- UNIX or macOS:
+Within MATLAB, type
+  mex -I<icspath> icsread.c <icspath>/libics.a -lz
+  mex -I<icspath> icswrite.c <icspath>/libics.a -lz
+from the directory containing both source files. If the Zlib library is not in a standard location, you will have
+to specify it explicitly, replace `-lz` with `<zlibpath>/libz.a`.
 
-Within MATLAB (on Windows), type:
+- Windows:
+Within MATLAB, type:
   mex -I<icspath> -DWIN32 icsread.c <icspath>\libics.lib <zpath>\libz.lib
   mex -I<icspath> -DWIN32 icswrite.c <icspath>\libics.lib <zpath>\libz.lib
 from the directory containing both source files. If you compiled
@@ -66,5 +69,4 @@ the makefile.
 
 -------------------------------------------------------------
 Copyright (C) 2000-2010 Cris Luengo and others
-email: clluengo@users.sourceforge.net
 -------------------------------------------------------------
