@@ -172,8 +172,8 @@ Which ultimately is based upon stuff written by:
    HISTORY
 =============
 version 1.6.7
-   - Remove snprintf() calls: these are declared deprecated by the
-     Apple Clang compiler.
+   - Remove sprintf() calls: these are declared deprecated by the
+     Apple clang compiler. Replace them with snprintf().
 
 version 1.6.6
    - Remove unused variables, avoiding compiler warning.
