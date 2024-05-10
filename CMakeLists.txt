@@ -5,7 +5,7 @@
 # Copyright (C) 2000-2013, 2016 Cris Luengo and others
 # Copyright 2015, 2016:
 #   Scientific Volume Imaging Holding B.V.
-#   Laapersveld 63, 1213 VB Hilversum, The Netherlands
+#   Hilversum, The Netherlands.
 #   https://www.svi.nl
 #
 #   CMakeLists.txt
@@ -213,3 +213,4 @@ set(LIBICS_INCLUDE_CPP TRUE CACHE BOOL "Include the C++ interface")
 if(LIBICS_INCLUDE_CPP)
    include(support/cpp_interface/CMakeLists.txt)
 endif()
+

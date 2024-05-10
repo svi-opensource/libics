@@ -4,7 +4,7 @@
 # Copyright (C) 2000-2013, 2016 Cris Luengo and others
 # Copyright 2015, 2016:
 #   Scientific Volume Imaging Holding B.V.
-#   Laapersveld 63, 1213 VB Hilversum, The Netherlands
+#   Hilversum, The Netherlands.
 #   https://www.svi.nl
 #
 # Script for automake and autoconfig.
@@ -140,3 +140,4 @@ EXTRA_DIST = INSTALL \
 #MOSTLYCLEANFILES = result_v1.ics result_v1.ids  result_v2a.ics result_v2b.ics
 mostlyclean-local:
 	-rm -f result*
+

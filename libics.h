@@ -3,7 +3,7 @@
  *
  * Copyright 2015-2019, 2021, 2022, 2024:
  *   Scientific Volume Imaging Holding B.V.
- *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
+ *   Hilversum, The Netherlands.
  *   https://www.svi.nl
  *
  * Contact: libics@svi.nl
@@ -1006,3 +1006,4 @@ ICSEXPORT Ics_Error IcsReplaceHistoryStringI(ICS                 *ics,
 #endif
 
 #endif
+

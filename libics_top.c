@@ -3,7 +3,7 @@
  *
  * Copyright 2015-2018:
  *   Scientific Volume Imaging Holding B.V.
- *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
+ *   Hilversum, The Netherlands.
  *   https://www.svi.nl
  *
  * Copyright (C) 2000-2013 Cris Luengo and others
@@ -1338,3 +1338,4 @@ const char *IcsGetErrorText(Ics_Error error)
     }
     return msg;
 }
+

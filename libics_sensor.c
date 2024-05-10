@@ -3,7 +3,7 @@
  *
  * Copyright 2015-2019:
  *   Scientific Volume Imaging Holding B.V.
- *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
+ *   Hilversum, The Netherlands.
  *   https://www.svi.nl
  *
  * Copyright (C) 2000-2013 Cris Luengo and others
@@ -1172,3 +1172,4 @@ Ics_Error IcsSetSensorParameterString(ICS                 *ics,
 
     return IcsErr_Ok;
 }
+

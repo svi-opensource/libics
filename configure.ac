@@ -4,7 +4,7 @@ dnl
 dnl Copyright (C) 2000-2013, 2016 Cris Luengo and others
 dnl Copyright 2015, 2016:
 dnl   Scientific Volume Imaging Holding B.V.
-dnl   Laapersveld 63, 1213 VB Hilversum, The Netherlands
+dnl   Hilversum, The Netherlands.
 dnl   https://www.svi.nl
 dnl
 dnl Script for automake and autoconfig.
@@ -127,3 +127,4 @@ AC_CHECK_FUNC(strtok_r, [AC_DEFINE(HAVE_STRTOK_R, 1)], [])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
+

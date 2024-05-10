@@ -3,7 +3,7 @@
  *
  * Copyright 2015-2017:
  *   Scientific Volume Imaging Holding B.V.
- *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
+ *   Hilversum, The Netherlands.
  *   https://www.svi.nl
  *
  * Copyright (C) 2000-2013, 2016 Cris Luengo and others
@@ -178,3 +178,4 @@ void IcsPrintError (Ics_Error error)
     msg = IcsGetErrorText (error);
     printf ("libics error: %s.\n", msg);
 }
+

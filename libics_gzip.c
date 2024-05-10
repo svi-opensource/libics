@@ -3,7 +3,7 @@
  *
  * Copyright 2015-2017, 2022:
  *   Scientific Volume Imaging Holding B.V.
- *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
+ *   Hilversum, The Netherlands.
  *   https://www.svi.nl
  *
  * Contact: libics@svi.nl
@@ -629,3 +629,4 @@ Ics_Error IcsSetZipBlock(Ics_Header *icsStruct,
     return IcsErr_UnknownCompression;
 #endif
 }
+

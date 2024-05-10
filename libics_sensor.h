@@ -3,7 +3,7 @@
  *
  * Copyright 2015-2018:
  *   Scientific Volume Imaging Holding B.V.
- *   Laapersveld 63, 1213 VB Hilversum, The Netherlands
+ *   Hilversum, The Netherlands.
  *   https://www.svi.nl
  *
  * Contact: libics@svi.nl
@@ -311,3 +311,4 @@ ICSEXPORT Ics_Error IcsSetSensorParameterString(ICS                 *ics,
 
 
 #endif
+

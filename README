@@ -135,7 +135,7 @@ or use cmake GUI. Next, open sln file in Visual Studio and build solution.
 
 As of 2016, this library is maintained by Scientific Volume Imaging:
    Scientific Volume Imaging Holding B.V.
-   Laapersveld 63, 1213 VB Hilversum, The Netherlands
+   Hilversum, The Netherlands.
    https://www.svi.nl
 
 This library was originally written and maintained by
@@ -161,7 +161,7 @@ With help from
 Most of the code herein hasn't changed since the previous version, by
    Dr. Hans T.M. van der Voort
    Scientific Volume Imaging Holding B.V.
-   Laapersveld 63, 1213 VB Hilversum, The Netherlands
+   Hilversum, The Netherlands.
    https://www.svi.nl
 
 Which ultimately is based upon stuff written by:
@@ -381,3 +381,4 @@ version 1.1
 
 version 1.0
    Initial release.
+
