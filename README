@@ -1,5 +1,5 @@
 
-                             libics v.1.6.7
+                             libics v.1.6.8
           Image Cytometry Standard file reading and writing.
 
 This is the reference library for ICS (Image Cytometry Standard), an
@@ -171,6 +171,9 @@ Which ultimately is based upon stuff written by:
 
    HISTORY
 =============
+version 1.6.8
+   - Add support for the Matrix STED Microscope type.
+
 version 1.6.7
    - Remove sprintf() calls: these are declared deprecated by the
      Apple clang compiler. Replace them with snprintf().

@@ -50,7 +50,7 @@ extern "C" {
 #endif
 
 /* Library versioning is in the form major, minor, patch: */
-#define ICSLIB_VERSION "1.6.7" /* also defined in configure.ac */
+#define ICSLIB_VERSION "1.6.8" /* also defined in configure.ac */
 
 #if defined(__WIN32__) && !defined(WIN32)
 #define WIN32
@@ -141,6 +141,8 @@ extern "C" {
 #define ICS_SENSOR_TYPE_RCM           "RescanConfMicr"
 /* This is a detector array microscope (AiryScan, NanoSpad): */
 #define ICS_SENSOR_TYPE_ARRDET        "ArrDetConfMicr"
+/* This is a STED detector array microscope (MatrixSTED): */
+#define ICS_SENSOR_TYPE_ARRDETSTED    "ArrDetSTEDMicr"
 /* This is a total internal reflection microsope (TIRF): */
 #define ICS_SENSOR_TYPE_TIRF          "TIRFMicr"
 /* This is a special type used for 3d SMLM calibration data: */
