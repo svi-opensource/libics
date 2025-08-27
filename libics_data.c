@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015-2019:
+ * Copyright 2015-2019, 2025:
  *   Scientific Volume Imaging Holding B.V.
  *   Hilversum, The Netherlands.
  *   https://www.svi.nl
@@ -127,7 +127,8 @@ Ics_Symbol G_SubSubCatSymbols[] =
     {"ScatterModel",        ICSTOK_SCATTERMODEL},
     {"ScatterFreePath",     ICSTOK_SCATTERFREEPATH},
     {"ScatterRelContrib",   ICSTOK_SCATTERRELCONTRIB},
-    {"ScatterBlurring",     ICSTOK_SCATTERBLURRING}
+    {"ScatterBlurring",     ICSTOK_SCATTERBLURRING},
+    {"ScalingFactor",       ICSTOK_SCALINGFACTOR}
 };
 
 

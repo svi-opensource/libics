@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015-2019:
+ * Copyright 2015-2019, 2025:
  *   Scientific Volume Imaging Holding B.V.
  *   Hilversum, The Netherlands.
  *   https://www.svi.nl
@@ -274,10 +274,10 @@ static Ics_Error icsAddDouble(char   *line,
     char dStr[ICS_STRLEN_OTHER];
 
 
-    if (d == 0 ||(fabs(d) < ICS_MAX_DOUBLE && fabs(d) >= ICS_MIN_DOUBLE)) {
-        snprintf(dStr, ICS_STRLEN_OTHER, "%f%c", d, ICS_FIELD_SEP);
+    if (d == 0 ||(fabs(d) < ICS_MAX_DOUBLE)) {
+        snprintf(dStr, ICS_STRLEN_OTHER, "%.17g%c", d, ICS_FIELD_SEP);
     } else {
-        snprintf(dStr, ICS_STRLEN_OTHER, "%e%c", d, ICS_FIELD_SEP);
+        snprintf(dStr, ICS_STRLEN_OTHER, "%.16e%c", d, ICS_FIELD_SEP);
     }
     if (strlen(line) + strlen(dStr) + 1 > ICS_LINE_LENGTH)
         return IcsErr_LineOverflow;
@@ -883,6 +883,8 @@ static Ics_Error writeIcsSensorData(Ics_Header *icsStruct,
         ICS_ADD_SENSOR_DOUBLE(ICSTOK_SCATTERFREEPATH, scatterFreePath);
         ICS_ADD_SENSOR_DOUBLE(ICSTOK_SCATTERRELCONTRIB, scatterRelContrib);
         ICS_ADD_SENSOR_DOUBLE(ICSTOK_SCATTERBLURRING, scatterBlurring);
+
+        ICS_ADD_SENSOR_DOUBLE(ICSTOK_SCALINGFACTOR, scalingFactor);
     }
 
     return error;
@@ -985,6 +987,7 @@ static Ics_Error writeIcsSensorStates(Ics_Header *icsStruct,
         ICS_ADD_SENSOR_STATE(ICSTOK_SCATTERRELCONTRIB, scatterRelContrib);
         ICS_ADD_SENSOR_STATE(ICSTOK_SCATTERBLURRING, scatterBlurring);
 
+        ICS_ADD_SENSOR_STATE(ICSTOK_SCALINGFACTOR, scalingFactor);
     }
 
     return error;

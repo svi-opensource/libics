@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015-2019:
+ * Copyright 2015-2019, 2025:
  *   Scientific Volume Imaging Holding B.V.
  *   Hilversum, The Netherlands.
  *   https://www.svi.nl
@@ -700,6 +700,10 @@ Ics_Error IcsGetSensorParameter(const ICS           *ics,
             *value = ics->scatterBlurring[channel];
             *state = ics->scatterBlurringState[channel];
             break;
+        case ICS_SENSOR_SCALINGFACTOR:
+            *value = ics->scalingFactor[channel];
+            *state = ics->scalingFactorState[channel];
+            break;
         default:
             *value = 0;
             *state = IcsSensorState_default;
@@ -994,6 +998,10 @@ Ics_Error IcsSetSensorParameter(ICS                 *ics,
         case ICS_SENSOR_SCATTER_BLURRING:
             ics->scatterBlurring[channel] = value;
             ics->scatterBlurringState[channel] = state;
+            break;
+        case ICS_SENSOR_SCALINGFACTOR:
+            ics->scalingFactor[channel] = value;
+            ics->scalingFactorState[channel] = state;
             break;
         default:
             return IcsErr_NotValidAction;

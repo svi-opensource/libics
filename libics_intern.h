@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015-2019, 2022:
+ * Copyright 2015-2019, 2022, 2025:
  *   Scientific Volume Imaging Holding B.V.
  *   Hilversum, The Netherlands.
  *   https://www.svi.nl
@@ -153,6 +153,7 @@ typedef enum {
     ICSTOK_SCATTERFREEPATH,
     ICSTOK_SCATTERRELCONTRIB,
     ICSTOK_SCATTERBLURRING,
+    ICSTOK_SCALINGFACTOR,
     ICSTOK_LASTSUBSUB,
 
         /* Value tokens: */

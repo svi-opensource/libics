@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015-2019:
+ * Copyright 2015-2019, 2025:
  *   Scientific Volume Imaging Holding B.V.
  *   Hilversum, The Netherlands.
  *   https://www.svi.nl
@@ -873,6 +873,9 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                             case ICSTOK_SCATTERBLURRING:
                                 ICS_SET_SENSOR_DOUBLE(scatterBlurring);
                                 break;
+                            case ICSTOK_SCALINGFACTOR:
+                                ICS_SET_SENSOR_DOUBLE(scalingFactor);
+                                break;
                             default:
                                 error = IcsErr_MissSensorSubSubCat;
                         }
@@ -1013,6 +1016,9 @@ Ics_Error IcsReadIcs(Ics_Header *icsStruct,
                                 break;
                             case ICSTOK_SCATTERBLURRING:
                                 ICS_SET_SENSOR_STATE(scatterBlurring);
+                                break;
+                            case ICSTOK_SCALINGFACTOR:
+                                ICS_SET_SENSOR_STATE(scalingFactor);
                                 break;
                             default:
                                 error = IcsErr_MissSensorSubSubCat;

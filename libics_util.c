@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015-2019:
+ * Copyright 2015-2019, 2025:
  *   Scientific Volume Imaging Holding B.V.
  *   Hilversum, The Netherlands.
  *   https://www.svi.nl
@@ -461,6 +461,9 @@ void IcsInit(Ics_Header *icsStruct)
         icsStruct->scatterRelContribState[i] = IcsSensorState_default;
         icsStruct->scatterBlurring[i] = 0.0;
         icsStruct->scatterBlurringState[i] = IcsSensorState_default;
+
+        icsStruct->scalingFactor[i] = 1.0;
+        icsStruct->scalingFactorState[i] = IcsSensorState_default;
     }
     icsStruct->scilType[0] = '\0';
 }

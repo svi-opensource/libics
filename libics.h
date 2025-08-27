@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015-2019, 2021, 2022, 2024:
+ * Copyright 2015-2019, 2021, 2022, 2024, 2025:
  *   Scientific Volume Imaging Holding B.V.
  *   Hilversum, The Netherlands.
  *   https://www.svi.nl
@@ -50,7 +50,7 @@ extern "C" {
 #endif
 
 /* Library versioning is in the form major, minor, patch: */
-#define ICSLIB_VERSION "1.6.8" /* also defined in configure.ac */
+#define ICSLIB_VERSION "1.6.9" /* also defined in configure.ac */
 
 #if defined(__WIN32__) && !defined(WIN32)
 #define WIN32
@@ -326,7 +326,9 @@ typedef enum {
     ICS_SENSOR_SCATTER_MODEL,
     ICS_SENSOR_SCATTER_FREE_PATH,
     ICS_SENSOR_SCATTER_REL_CONTRIB,
-    ICS_SENSOR_SCATTER_BLURRING,    
+    ICS_SENSOR_SCATTER_BLURRING,
+
+    ICS_SENSOR_SCALINGFACTOR,
     ICS_SENSOR_LAST
 } Ics_SensorParameter;
 
@@ -523,6 +525,9 @@ typedef struct _ICS {
         /* Scatter blurring: */
     double                  scatterBlurring[ICS_MAX_LAMBDA];
     Ics_SensorState         scatterBlurringState[ICS_MAX_LAMBDA];
+          /* Scaling factor applied to the data, per channel */
+    double                  scalingFactor[ICS_MAX_LAMBDA];
+    Ics_SensorState         scalingFactorState[ICS_MAX_LAMBDA];
 
         /* SCIL_Image compatibility parameter: */
     char                    scilType[ICS_STRLEN_TOKEN];
