@@ -3,7 +3,7 @@
  *
  * C++ interface.
  *
- * Copyright 2018 Cris Luengo.
+ * Copyright 2018, 2025 Cris Luengo.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -99,6 +99,9 @@ ICS::Layout ICS::GetLayout() const {
       case Ics_sint64:
          dt = DataType::SInt64;
          break;
+      case Ics_real16:
+         dt = DataType::Real16;
+         break;
       case Ics_real32:
          dt = DataType::Real32;
          break;
@@ -145,6 +148,9 @@ void ICS::SetLayout(DataType dt, std::vector<std::size_t> const& dims) {
          break;
       case DataType::SInt64:
          type = Ics_sint64;
+         break;
+      case DataType::Real16:
+         type = Ics_real16;
          break;
       case DataType::Real32:
          type = Ics_real32;

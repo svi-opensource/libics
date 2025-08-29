@@ -12,7 +12,7 @@ dnl Written by Peter Verveer, Cris Luengo
 dnl
 
 dnl Library version number (make sure to also change it in 'libics.h'):
-AC_INIT([libics],[1.6.9])
+AC_INIT([libics],[1.7.0])
 AC_CONFIG_SRCDIR([libics.h])
 AC_CONFIG_HEADERS([config.h libics_conf.h])
 AC_CONFIG_MACRO_DIR([m4])
@@ -117,6 +117,21 @@ AM_CONDITIONAL([ICS_DO_GZEXT], [test "x$enable_gz_extensions" != "xno"])
 if test "x$enable_c_locale" != "xno" ; then
   AC_DEFINE(ICS_FORCE_C_LOCALE, 1, [Whether to force the c locale for reading and writing.])
 fi
+
+dnl ---------------------------------------------------------------------------
+
+dnl Check for _Float16 support in the compiler.
+AC_MSG_CHECKING([for _Float16 support])
+AC_COMPILE_IFELSE(
+  [AC_LANG_PROGRAM(
+    [[
+      _Float16 x = 1.0;
+    ]]
+  )],
+  [AC_MSG_RESULT([yes])
+   AC_DEFINE([HAVE_FLOAT16], [1], [Define if the compiler supports _Float16])],
+  [AC_MSG_RESULT([no])]
+)
 
 dnl ---------------------------------------------------------------------------
 

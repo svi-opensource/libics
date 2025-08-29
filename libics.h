@@ -50,7 +50,7 @@ extern "C" {
 #endif
 
 /* Library versioning is in the form major, minor, patch: */
-#define ICSLIB_VERSION "1.6.9" /* also defined in configure.ac */
+#define ICSLIB_VERSION "1.7.0" /* also defined in configure.ac */
 
 #if defined(__WIN32__) && !defined(WIN32)
 #define WIN32
@@ -129,6 +129,8 @@ extern "C" {
 #define ICS_SENSOR_TYPE_NDCM          "NipkowConfMicr"
 /* This is a scanning SoRa disk confocal microscope: */
 #define ICS_SENSOR_TYPE_SORA          "SoRaConfMicr"
+/* This is an scanning Aurox disk confocal microscope: */
+#define ICS_SENSOR_TYPE_AUROX         "AuroxConfMicr"
 /* This is a STED microscope: */
 #define ICS_SENSOR_TYPE_STED          "STEDMicr"
 /* This is a Structured Illumination microscope: */
@@ -217,6 +219,7 @@ typedef enum {
     Ics_sint32,    /* integer, signed,   32 bpp */
     Ics_uint64,    /* integer, unsigned, 64 bpp */
     Ics_sint64,    /* integer, signed,   64 bpp */
+    Ics_real16,    /* real,    signed,   16 bpp */
     Ics_real32,    /* real,    signed,   32 bpp */
     Ics_real64,    /* real,    signed,   64 bpp */
     Ics_complex32, /* complex, signed, 2*32 bpp */

@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright 2015-2017:
+ * Copyright 2015-2017, 2025:
  *   Scientific Volume Imaging Holding B.V.
  *   Hilversum, The Netherlands.
  *   https://www.svi.nl
@@ -264,6 +264,28 @@ Ics_Error IcsGetPreviewData(ICS    *ics,
             }
         }
         break;
+#ifdef HAVE_FLOAT16
+        case Ics_real16:
+        {
+            ics_t_real16 *in  = buf;
+            ics_t_uint8  *out = dest;
+            double        offset, gain;
+            _Float16      max = *in, min = *in;
+
+            in++;
+            for (i = 1; i < roiSize; i++, in++) {
+                if (max < *in) max = *in;
+                if (min > *in) min = *in;
+            }
+            in = buf;
+            offset = min;
+            gain = 255.0 / (max - min);
+            for (i = 0; i < roiSize; i++, in++, out++) {
+                *out = (ics_t_uint8)((*in - offset) * gain);
+            }
+        }
+        break;
+#endif
         case Ics_real32:
         {
             ics_t_real32 *in  = buf;

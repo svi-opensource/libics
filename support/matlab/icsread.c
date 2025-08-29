@@ -111,6 +111,9 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       case Ics_complex32:
          mexErrMsgTxt ("Cannot read complex data (I'm too lazy).");
          break;
+      case Ics_real16:
+         mexErrMsgTxt ("Half float data not supported in Matlab.");
+         break;
       default:
          mexErrMsgTxt ("Unknown data type in ICS file.");
    }

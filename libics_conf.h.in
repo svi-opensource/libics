@@ -1,7 +1,7 @@
 /*
  * libics: Image Cytometry Standard file reading and writing.
  *
- * Copyright (C) 2000-2013, 2017 Cris Luengo and others
+ * Copyright (C) 2000-2013, 2017, 2025 Cris Luengo and others
  * Copyright 2015, 2017:
  *   Scientific Volume Imaging Holding B.V.
  *   Hilversum, The Netherlands.
@@ -131,6 +131,13 @@ typedef double   ics_t_real64;
 #undef HAVE_STRTOK_R
 
 
+/* Whether the compiler supports _Float16 as a data type. */
+#undef HAVE_FLOAT16
+
+
+#endif
+#ifdef HAVE_FLOAT16
+typedef _Float16    ics_t_real16;
 #endif
 #endif
 

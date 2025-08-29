@@ -10,7 +10,7 @@
   </head>
 
   <body>
-    <p class=header>libics v.1.6.9 Online Documentation. &copy;2000-2010 by Cris Luengo and others.</p>
+    <p class=header>libics v.1.7.0 Online Documentation. &copy;2000-2010 by Cris Luengo and others.</p>
 
     <div class="navbar">
       <ul>
@@ -146,7 +146,9 @@
     <tt class="funcident"><a href="#IcsGetPreviewData">IcsGetPreviewData</a></tt>).
 
     <p>This function does currently not work when the data is compressed with
-    <tt class="constant"><a href="Enums.html#Ics_Compression">IcsCompr_compress</a></tt>.</p>
+    <tt class="constant"><a href="Enums.html#Ics_Compression">IcsCompr_compress</a></tt>.
+    In order to work on 16-bits floats (Ics_real16), the compiler needs to support this
+    data type. </p>
 
     <p class="info"><span class="headtxt">errors</span>:
     <tt class="constant">IcsErr_Alloc</tt>,
