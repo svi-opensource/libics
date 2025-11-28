@@ -50,7 +50,7 @@ extern "C" {
 #endif
 
 /* Library versioning is in the form major, minor, patch: */
-#define ICSLIB_VERSION "1.7.0" /* also defined in configure.ac */
+#define ICSLIB_VERSION "1.7.1" /* also defined in configure.ac */
 
 #if defined(__WIN32__) && !defined(WIN32)
 #define WIN32

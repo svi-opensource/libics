@@ -1,5 +1,5 @@
 
-                             libics v.1.7.0
+                             libics v.1.7.1
           Image Cytometry Standard file reading and writing.
 
 This is the reference library for ICS (Image Cytometry Standard), an
@@ -171,6 +171,10 @@ Which ultimately is based upon stuff written by:
 
    HISTORY
 =============
+version 1.7.1
+   - Fix the state of the ICS_SENSOR_EXCITATION_BEAM_FILL not being correctly
+     read.
+
 version 1.7.0
    - Add support for 16-bit floating point ("half float") as Ics_real16.
      Huygens 25.10 writes Ics_real16 data divided by 16.0 in order to make this 

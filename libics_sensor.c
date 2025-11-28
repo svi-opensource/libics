@@ -598,7 +598,7 @@ Ics_Error IcsGetSensorParameter(const ICS           *ics,
             break;
         case ICS_SENSOR_EXCITATION_BEAM_FILL:
             *value = ics->excitationBeamFill[channel];
-            *state = ics->excitationBeamFill[channel];
+            *state = ics->excitationBeamFillState[channel];
             break;
         case ICS_SENSOR_LAMBDA_EXCITATION:
             *value = ics->lambdaEx[channel];
